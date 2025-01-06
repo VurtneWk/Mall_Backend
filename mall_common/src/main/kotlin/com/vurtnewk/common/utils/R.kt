@@ -14,36 +14,40 @@ class R : HashMap<String, Any>() {
         put("msg", "success")
     }
 
-    fun error(): R {
-        return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, "未知异常，请联系管理员")
+    companion object {
+        fun error(): R {
+            return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, "未知异常，请联系管理员")
+        }
+
+        fun error(msg: String): R {
+            return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, msg)
+        }
+
+        fun error(code: Int, msg: String): R {
+            val r = R()
+            r["code"] = code
+            r["msg"] = msg
+            return r
+        }
+
+        fun ok(msg: String): R {
+            val r = R()
+            r["msg"] = msg
+            return r
+        }
+
+        fun ok(map: Map<String, Any>): R {
+            val r = R()
+            r.putAll(map)
+            return r
+        }
+
+        fun ok(): R {
+            return R()
+        }
+
     }
 
-    fun error(msg: String): R {
-        return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, msg)
-    }
-
-    fun error(code: Int, msg: String): R {
-        val r = R()
-        r["code"] = code
-        r["msg"] = msg
-        return r
-    }
-
-    fun ok(msg: String): R {
-        val r = R()
-        r["msg"] = msg
-        return r
-    }
-
-    fun ok(map: Map<String, Any>): R {
-        val r = R()
-        r.putAll(map)
-        return r
-    }
-
-    fun ok(): R {
-        return R()
-    }
 
     override fun put(key: String, value: Any): R {
         super.put(key, value)

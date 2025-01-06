@@ -35,15 +35,15 @@ public class GenUtils {
 
     public static List<String> getTemplates() {
         List<String> templates = new ArrayList<String>();
-        templates.add("template/Entity.java.vm");
+        templates.add("template/Entity.kt.vm");
         templates.add("template/Dao.xml.vm");
 
         templates.add("template/menu.sql.vm");
 
-        templates.add("template/Service.java.vm");
-        templates.add("template/ServiceImpl.java.vm");
-        templates.add("template/Controller.java.vm");
-        templates.add("template/Dao.java.vm");
+        templates.add("template/Service.kt.vm");
+        templates.add("template/ServiceImpl.kt.vm");
+        templates.add("template/Controller.kt.vm");
+        templates.add("template/Dao.kt.vm");
 
         templates.add("template/index.vue.vm");
         templates.add("template/add-or-update.vue.vm");
@@ -298,31 +298,31 @@ public class GenUtils {
      * 获取文件名
      */
     public static String getFileName(String template, String className, String packageName, String moduleName) {
-        String packagePath = "main" + File.separator + "java" + File.separator;
+        String packagePath = "main" + File.separator + "kotlin" + File.separator;
         if (StringUtils.isNotBlank(packageName)) {
             packagePath += packageName.replace(".", File.separator) + File.separator + moduleName + File.separator;
         }
         if (template.contains("MongoChildrenEntity.java.vm")) {
             return packagePath + "entity" + File.separator + "inner" + File.separator + currentTableName+ File.separator + splitInnerName(className)+ "InnerEntity.java";
         }
-        if (template.contains("Entity.java.vm") || template.contains("MongoEntity.java.vm")) {
-            return packagePath + "entity" + File.separator + className + "Entity.java";
+        if (template.contains("Entity.kt.vm") || template.contains("MongoEntity.java.vm")) {
+            return packagePath + "entity" + File.separator + className + "Entity.kt";
         }
 
-        if (template.contains("Dao.java.vm")) {
-            return packagePath + "dao" + File.separator + className + "Dao.java";
+        if (template.contains("Dao.kt.vm")) {
+            return packagePath + "dao" + File.separator + className + "Dao.kt";
         }
 
-        if (template.contains("Service.java.vm")) {
-            return packagePath + "service" + File.separator + className + "Service.java";
+        if (template.contains("Service.kt.vm")) {
+            return packagePath + "service" + File.separator + className + "Service.kt";
         }
 
-        if (template.contains("ServiceImpl.java.vm")) {
-            return packagePath + "service" + File.separator + "impl" + File.separator + className + "ServiceImpl.java";
+        if (template.contains("ServiceImpl.kt.vm")) {
+            return packagePath + "service" + File.separator + "impl" + File.separator + className + "ServiceImpl.kt";
         }
 
-        if (template.contains("Controller.java.vm")) {
-            return packagePath + "controller" + File.separator + className + "Controller.java";
+        if (template.contains("Controller.kt.vm")) {
+            return packagePath + "controller" + File.separator + className + "Controller.kt";
         }
 
         if (template.contains("Dao.xml.vm")) {

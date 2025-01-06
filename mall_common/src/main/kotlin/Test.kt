@@ -1,4 +1,5 @@
 import com.vurtnewk.common.utils.R
+import java.io.Serializable
 
 /**
  * createTime:  2025/1/6 01:37

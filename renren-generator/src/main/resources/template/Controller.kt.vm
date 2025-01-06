@@ -1,0 +1,72 @@
+package ${package}.${moduleName}.controller
+
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
+import ${package}.${moduleName}.entity.${className}Entity
+import ${package}.${moduleName}.service.${className}Service
+import ${mainPath}.common.utils.PageUtils
+import ${mainPath}.common.utils.R
+
+/**
+ * ${comments}
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@RestController
+@RequestMapping("${moduleName}/${pathName}")
+class ${className}Controller @Autowired constructor(
+        private val ${classname}Service: ${className}Service
+) {
+
+    /**
+     * 列表
+     */
+    @RequestMapping("/list")
+    //@RequiresPermissions("${moduleName}:${pathName}:list")
+    fun list(@RequestParam params: Map<String, Any>): R {
+        val page: PageUtils = ${classname}Service.queryPage(params)
+        return R.ok().put("page", page)
+    }
+
+    /**
+     * 信息
+     */
+    @RequestMapping("/info/{${pk.attrname}}")
+    // @RequiresPermissions("${moduleName}:${pathName}:info")
+    fun info(@PathVariable("${pk.attrname}") ${pk.attrname}: ${pk.attrType}): R {
+        val ${classname}: ${className}Entity = ${classname}Service.getById(${pk.attrname})
+        return R.ok().put("${classname}", ${classname})
+    }
+
+    /**
+     * 保存
+     */
+    @RequestMapping("/save")
+    //@RequiresPermissions("${moduleName}:${pathName}:save")
+    fun save(@RequestBody ${classname}: ${className}Entity): R {
+            ${classname}Service.save(${classname})
+        return R.ok()
+    }
+
+    /**
+     * 修改
+     */
+    @RequestMapping("/update")
+    // @RequiresPermissions("${moduleName}:${pathName}:update")
+    fun update(@RequestBody ${classname}: ${className}Entity): R {
+            ${classname}Service.updateById(${classname})
+        return R.ok()
+    }
+
+    /**
+     * 删除
+     */
+    @RequestMapping("/delete")
+    // @RequiresPermissions("${moduleName}:${pathName}:delete")
+    fun delete(@RequestBody ${pk.attrname}s: Array<${pk.attrType}>): R {
+            ${classname}Service.removeByIds(${pk.attrname}s.asList())
+        return R.ok()
+    }
+}
