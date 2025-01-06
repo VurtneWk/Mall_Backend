@@ -6,6 +6,7 @@ import com.vurtnewk.mall.member.entity.MemberEntity
 import com.vurtnewk.mall.member.service.MemberService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.member.feign.CouponFeignService
 
 /**
  * 会员
@@ -17,8 +18,17 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("member/member")
 class MemberController @Autowired constructor(
-        private val memberService: MemberService
+    private val memberService: MemberService,
+    private val couponFeignService: CouponFeignService
 ) {
+
+    @RequestMapping("/coupons")
+    fun test(): R {
+        val entity = MemberEntity()
+        entity.nickname = "张三"
+        val r = couponFeignService.memberCoupons()
+        return R.ok().put("member", entity).put("coupons", r.get("coupons")!!)
+    }
 
     /**
      * 列表
@@ -46,7 +56,7 @@ class MemberController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("member:member:save")
     fun save(@RequestBody member: MemberEntity): R {
-            memberService.save(member)
+        memberService.save(member)
         return R.ok()
     }
 
@@ -56,7 +66,7 @@ class MemberController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("member:member:update")
     fun update(@RequestBody member: MemberEntity): R {
-            memberService.updateById(member)
+        memberService.updateById(member)
         return R.ok()
     }
 
@@ -66,7 +76,7 @@ class MemberController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("member:member:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            memberService.removeByIds(ids.asList())
+        memberService.removeByIds(ids.asList())
         return R.ok()
     }
 }

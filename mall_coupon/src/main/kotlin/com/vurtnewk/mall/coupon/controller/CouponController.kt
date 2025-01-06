@@ -20,6 +20,13 @@ class CouponController @Autowired constructor(
         private val couponService: CouponService
 ) {
 
+    @RequestMapping("/member/list")
+    fun memberCoupons(): R{
+        val couponEntity = CouponEntity()
+        couponEntity.couponName = "满100减10"
+        return R.ok().put("coupons", listOf(couponEntity))
+    }
+
     /**
      * 列表
      */
