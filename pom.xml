@@ -20,6 +20,7 @@
         <module>renren-fast</module>
         <module>renren-generator</module>
         <module>mall_common</module>
+        <module>mall_gateway</module>
     </modules>
 
 </project>

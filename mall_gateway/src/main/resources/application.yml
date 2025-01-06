@@ -1,0 +1,27 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false
+    gateway:
+      mvc:
+        routes:
+          # 可通过 http://127.0.0.1:88/?url=baidu 进入baidu
+#          - id: test_route #随意取的ID
+#            uri: https://www.baidu.com # 指定网址
+#            predicates: # 断言规则
+#              - Query=url, baidu
+#          - id: qq_route
+#            uri: https://www.qq.com
+#            predicates:
+#            - Query=url, qq
+
+
+  # 如果没有名字，nacos里看不到
+  application:
+    name: mall-gateway
+server:
+  port: 88
