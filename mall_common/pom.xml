@@ -21,14 +21,25 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.3.1</version>
+            <version>3.5.9</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>mybatis-spring</artifactId>
+                    <groupId>org.mybatis</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>3.0.3</version>
         </dependency>
         <!--lombok-->
-<!--        <dependency>-->
-<!--            <groupId>org.projectlombok</groupId>-->
-<!--            <artifactId>lombok</artifactId>-->
-<!--            <version>1.18.28</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.projectlombok</groupId>-->
+        <!--            <artifactId>lombok</artifactId>-->
+        <!--            <version>1.18.28</version>-->
+        <!--        </dependency>-->
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -40,6 +51,22 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
+        </dependency>
+
+        <!--mysql驱动-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
+
+        <!--servlet api-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <!--因为tomcat等容器一般都自带，所以使用provided，仅编译时可用，打包时不用上传-->
+            <scope>provided</scope>
         </dependency>
 
         <!--kotlin-->
@@ -88,6 +115,14 @@
                 </executions>
                 <configuration>
                     <jvmTarget>1.8</jvmTarget>
+<!--                    &lt;!&ndash; 添加 allopen 插件 &ndash;&gt;-->
+<!--                    <compilerPlugins>-->
+<!--                        <plugin>all-open</plugin>-->
+<!--                    </compilerPlugins>-->
+<!--                    <pluginOptions>-->
+<!--                        &lt;!&ndash; 指定需要处理的注解 &ndash;&gt;-->
+<!--                        <option>all-open:annotation=org.apache.ibatis.annotations.Mapper</option>-->
+<!--                    </pluginOptions>-->
                 </configuration>
             </plugin>
         </plugins>
