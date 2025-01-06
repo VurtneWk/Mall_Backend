@@ -4,6 +4,13 @@ spring:
     password: 123456
     url: jdbc:mysql://127.0.0.1:3306/mall_oms
     driver-class-name: com.mysql.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+  # 如果没有名字，nacos里看不到
+  application:
+    name: mall-order
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
