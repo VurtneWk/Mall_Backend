@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/mall_ums
+    driver-class-name: com.mysql.jdbc.Driver
+
+mybatis-plus:
+  # 配置mapper的位置 , 默认值也是这个
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 配置ID自增
+  global-config:
+    db-config:
+      id-type: auto
+
+
+server:
+  port: 5002
