@@ -6,6 +6,8 @@ import com.vurtnewk.mall.coupon.entity.CouponEntity
 import com.vurtnewk.mall.coupon.service.CouponService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.cloud.context.config.annotation.RefreshScope
 
 /**
  * 优惠券信息
@@ -16,12 +18,25 @@ import com.vurtnewk.common.utils.R
  */
 @RestController
 @RequestMapping("coupon/coupon")
+@RefreshScope //刷新配置
 class CouponController @Autowired constructor(
-        private val couponService: CouponService
+    private val couponService: CouponService
 ) {
 
+    @Value("\${coupon.user.name}")
+    private var name: String = "defaultName"
+
+    @Value("\${coupon.user.age}")
+    private var age: Int = 0
+
+    @RequestMapping("/test")
+    fun test(): R {
+        return R.ok().put("name", name).put("age", age)
+    }
+
+
     @RequestMapping("/member/list")
-    fun memberCoupons(): R{
+    fun memberCoupons(): R {
         val couponEntity = CouponEntity()
         couponEntity.couponName = "满100减10"
         return R.ok().put("coupons", listOf(couponEntity))
@@ -53,7 +68,7 @@ class CouponController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("coupon:coupon:save")
     fun save(@RequestBody coupon: CouponEntity): R {
-            couponService.save(coupon)
+        couponService.save(coupon)
         return R.ok()
     }
 
@@ -63,7 +78,7 @@ class CouponController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("coupon:coupon:update")
     fun update(@RequestBody coupon: CouponEntity): R {
-            couponService.updateById(coupon)
+        couponService.updateById(coupon)
         return R.ok()
     }
 
@@ -73,7 +88,7 @@ class CouponController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("coupon:coupon:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            couponService.removeByIds(ids.asList())
+        couponService.removeByIds(ids.asList())
         return R.ok()
     }
 }
