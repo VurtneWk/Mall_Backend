@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
-import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 
 /**
@@ -17,17 +16,16 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/category")
 class CategoryController @Autowired constructor(
-        private val categoryService: CategoryService
+    private val categoryService: CategoryService
 ) {
 
     /**
-     * 列表
+     * 查出所有分类以及子分类，已树形结构组装
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/tree")
     //@RequiresPermissions("product:category:list")
-    fun list(@RequestParam params: Map<String, Any>): R {
-        val page: PageUtils = categoryService.queryPage(params)
-        return R.ok().put("page", page)
+    fun list(): R {
+        return R.ok().put("data", categoryService.listWithTree())
     }
 
     /**
@@ -46,7 +44,7 @@ class CategoryController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("product:category:save")
     fun save(@RequestBody category: CategoryEntity): R {
-            categoryService.save(category)
+        categoryService.save(category)
         return R.ok()
     }
 
@@ -56,7 +54,7 @@ class CategoryController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:category:update")
     fun update(@RequestBody category: CategoryEntity): R {
-            categoryService.updateById(category)
+        categoryService.updateById(category)
         return R.ok()
     }
 
@@ -66,7 +64,7 @@ class CategoryController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:category:delete")
     fun delete(@RequestBody catIds: Array<Long>): R {
-            categoryService.removeByIds(catIds.asList())
+        categoryService.removeByIds(catIds.asList())
         return R.ok()
     }
 }

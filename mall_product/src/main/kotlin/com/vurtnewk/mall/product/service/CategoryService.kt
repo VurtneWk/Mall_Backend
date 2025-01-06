@@ -13,6 +13,7 @@ import com.vurtnewk.mall.product.entity.CategoryEntity
  */
 interface CategoryService : IService<CategoryEntity> {
 
-    fun queryPage(params: Map<String, Any> ): PageUtils
+    fun queryPage(params: Map<String, Any>): PageUtils
+    fun listWithTree(): List<CategoryEntity>
 }
 
