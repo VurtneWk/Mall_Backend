@@ -19,9 +19,22 @@ spring:
 #            predicates:
 #            - Query=url, qq
 
+            # lb 代表负载均衡 ，RewritePath 重写路径 把/api/(?<segment>.*) 重写成 /renren-fast/$\{segment}
+          - id: admin_route
+            uri: lb://renren-fast
+            predicates:
+              - Path=/api/**
+            filters:
+              - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+# http://localhost:88/api/captcha.jpg  http://localhost:8080/renren-fast/captcha.jpg
 
-  # 如果没有名字，nacos里看不到
+# 如果没有名字，nacos里看不到
   application:
     name: mall-gateway
 server:
   port: 88
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
