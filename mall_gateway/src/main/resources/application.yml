@@ -7,7 +7,6 @@ spring:
         import-check:
           enabled: false
     gateway:
-      mvc:
         routes:
           # 可通过 http://127.0.0.1:88/?url=baidu 进入baidu
 #          - id: test_route #随意取的ID

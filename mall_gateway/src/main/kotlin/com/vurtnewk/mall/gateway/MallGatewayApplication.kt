@@ -1,4 +1,4 @@
-package com.vurtnewk.amll.gateway
+package com.vurtnewk.mall.gateway
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
