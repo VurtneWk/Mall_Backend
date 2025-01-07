@@ -42,6 +42,14 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
     }
 
     /**
+     * 批量删除菜单
+     */
+    override fun removeMenuByIds(asList: List<Long>) {
+        //TODO 检查当前删除的菜单 是否被其它地方引用过
+        baseMapper.deleteByIds(asList)
+    }
+
+    /**
      * 递归查找从entities中查找root的子菜单
      */
     private fun getChildrenList(root: CategoryEntity, entities: List<CategoryEntity>): MutableList<CategoryEntity> {

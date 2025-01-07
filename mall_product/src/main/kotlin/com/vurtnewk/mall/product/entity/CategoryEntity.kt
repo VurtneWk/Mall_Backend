@@ -2,6 +2,7 @@ package com.vurtnewk.mall.product.entity
 
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableId
+import com.baomidou.mybatisplus.annotation.TableLogic
 import com.baomidou.mybatisplus.annotation.TableName
 import java.io.Serializable
 
@@ -34,6 +35,7 @@ data class CategoryEntity(
     /**
      * 是否显示[0-不显示，1显示]
      */
+    @TableLogic(value = "1", delval = "0")
     var showStatus: Int? = null,
     /**
      * 排序
@@ -59,6 +61,7 @@ data class CategoryEntity(
     var childrenList: MutableList<CategoryEntity> = mutableListOf()
 ) : Serializable {
     companion object {
-        private const val serialVersionUID: Long = 1L
+        @JvmStatic
+        val serialVersionUID: Long = 1L
     }
 }

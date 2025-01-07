@@ -64,7 +64,12 @@ class CategoryController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:category:delete")
     fun delete(@RequestBody catIds: Array<Long>): R {
-        categoryService.removeByIds(catIds.asList())
+        //原来的 为检测
+//        categoryService.removeByIds(catIds.asList())
+
+        //1 检查当前删除的菜单 是否被其它地方引用过
+        categoryService.removeMenuByIds(catIds.asList())
+
         return R.ok()
     }
 }
