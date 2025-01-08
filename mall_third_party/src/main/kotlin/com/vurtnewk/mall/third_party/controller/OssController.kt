@@ -38,7 +38,6 @@ class OssController {
 
         // 用户上传文件时指定的前缀。  此处定义每天建立一个文件夹
         val format = SimpleDateFormat("yyyy-MM-dd").format(Date())
-        val dir = "$format/"
         var respMap: MutableMap<String?, String?>? = null
         try {
             val expireTime: Long = 30
@@ -47,7 +46,7 @@ class OssController {
             // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
             val policyConds = PolicyConditions()
             policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000)
-            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, dir)
+            policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, format)
             val postPolicy = ossClient!!.generatePostPolicy(expiration, policyConds)
             val binaryData = postPolicy.toByteArray(charset("utf-8"))
             val encodedPolicy = BinaryUtil.toBase64String(binaryData)
@@ -56,7 +55,7 @@ class OssController {
             respMap["accessid"] = accessId
             respMap["policy"] = encodedPolicy
             respMap["signature"] = postSignature
-            respMap["dir"] = dir
+            respMap["dir"] = format
             respMap["host"] = host
             respMap["expire"] = (expireEndTime / 1000).toString()
         } catch (e: Exception) {
