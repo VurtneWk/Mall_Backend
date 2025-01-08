@@ -8,7 +8,7 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.common.valid.AddGroup
 import com.vurtnewk.common.valid.UpdateGroup
-import jakarta.validation.Valid
+import com.vurtnewk.common.valid.UpdateStatusGroup
 import org.springframework.validation.annotation.Validated
 
 /**
@@ -60,6 +60,16 @@ class BrandController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:brand:update")
     fun update(@RequestBody @Validated(UpdateGroup::class) brand: BrandEntity): R {
+        brandService.updateById(brand)
+        return R.ok()
+    }
+
+    /**
+     * 快速修改状态
+     */
+    @RequestMapping("/updateStatus")
+    // @RequiresPermissions("product:brand:update")
+    fun updateStatus(@RequestBody @Validated(UpdateStatusGroup::class) brand: BrandEntity): R {
         brandService.updateById(brand)
         return R.ok()
     }

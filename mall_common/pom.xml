@@ -95,6 +95,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
             <version>3.4.1</version>
         </dependency>
+        <!--   log日志     -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+            <version>3.4.1</version>
+        </dependency>
         <!--kotlin-->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
