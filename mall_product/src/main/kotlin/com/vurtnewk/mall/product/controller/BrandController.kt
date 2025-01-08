@@ -6,6 +6,7 @@ import com.vurtnewk.mall.product.entity.BrandEntity
 import com.vurtnewk.mall.product.service.BrandService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import jakarta.validation.Valid
 
 /**
  * 品牌
@@ -17,7 +18,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/brand")
 class BrandController @Autowired constructor(
-        private val brandService: BrandService
+    private val brandService: BrandService
 ) {
 
     /**
@@ -45,8 +46,8 @@ class BrandController @Autowired constructor(
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:brand:save")
-    fun save(@RequestBody brand: BrandEntity): R {
-            brandService.save(brand)
+    fun save(@RequestBody @Valid  brand: BrandEntity): R {
+        brandService.save(brand)
         return R.ok()
     }
 
@@ -56,7 +57,7 @@ class BrandController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:brand:update")
     fun update(@RequestBody brand: BrandEntity): R {
-            brandService.updateById(brand)
+        brandService.updateById(brand)
         return R.ok()
     }
 
@@ -66,7 +67,7 @@ class BrandController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:brand:delete")
     fun delete(@RequestBody brandIds: Array<Long>): R {
-            brandService.removeByIds(brandIds.asList())
+        brandService.removeByIds(brandIds.asList())
         return R.ok()
     }
 }
