@@ -25,4 +25,4 @@ mybatis-plus:
 
 
 server:
-  port: 5002
+  port: 5200

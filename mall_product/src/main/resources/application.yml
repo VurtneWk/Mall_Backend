@@ -26,7 +26,7 @@ mybatis-plus:
       logic-not-delete-value: 0 # 逻辑未删除值
 
 server:
-  port: 5004
+  port: 5400
 
 logging:
   level:

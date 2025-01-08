@@ -24,6 +24,5 @@ mybatis-plus:
     db-config:
       id-type: auto
 
-
 server:
-  port: 5001
+  port: 5100
