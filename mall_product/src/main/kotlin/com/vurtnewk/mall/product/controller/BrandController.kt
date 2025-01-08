@@ -6,7 +6,10 @@ import com.vurtnewk.mall.product.entity.BrandEntity
 import com.vurtnewk.mall.product.service.BrandService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.common.valid.AddGroup
+import com.vurtnewk.common.valid.UpdateGroup
 import jakarta.validation.Valid
+import org.springframework.validation.annotation.Validated
 
 /**
  * 品牌
@@ -46,7 +49,7 @@ class BrandController @Autowired constructor(
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:brand:save")
-    fun save(@RequestBody @Valid  brand: BrandEntity): R {
+    fun save(@RequestBody @Validated(AddGroup::class)  brand: BrandEntity): R {
         brandService.save(brand)
         return R.ok()
     }
@@ -56,7 +59,7 @@ class BrandController @Autowired constructor(
      */
     @RequestMapping("/update")
     // @RequiresPermissions("product:brand:update")
-    fun update(@RequestBody brand: BrandEntity): R {
+    fun update(@RequestBody @Validated(UpdateGroup::class) brand: BrandEntity): R {
         brandService.updateById(brand)
         return R.ok()
     }

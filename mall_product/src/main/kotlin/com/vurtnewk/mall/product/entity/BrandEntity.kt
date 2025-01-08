@@ -2,10 +2,13 @@ package com.vurtnewk.mall.product.entity
 
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.annotation.TableName
+import com.vurtnewk.common.valid.AddGroup
+import com.vurtnewk.common.valid.UpdateGroup
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Null
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.URL
 import java.io.Serializable
@@ -23,17 +26,19 @@ data class BrandEntity(
      * 品牌id
      */
     @TableId
+    @field:Null(message = "新增不能指定ID", groups = [AddGroup::class])
+    @field:NotNull(message = "修改必须指定品牌ID", groups = [UpdateGroup::class])
     var brandId: Long? = null,
     /**
      * 品牌名
      */
-    @field:NotBlank(message = "品牌名不能为空")
+    @field:NotBlank(message = "品牌名不能为空", groups = [AddGroup::class, UpdateGroup::class])
     var name: String = "",
     /**
      * 品牌logo地址
      */
-    @field:URL(message = "logo必须是一个合法的url地址")
-    @field:NotEmpty
+    @field:URL(message = "logo必须是一个合法的url地址", groups = [AddGroup::class, UpdateGroup::class])
+    @field:NotBlank(groups = [AddGroup::class])
     var logo: String = "",
     /**
      * 介绍
@@ -46,14 +51,18 @@ data class BrandEntity(
     /**
      * 检索首字母
      */
-    @field:NotEmpty
-    @field:Pattern(regexp = "/^[a-zA-Z]$/", message = "检索首字母必须是一个字母")
+    @field:NotEmpty(groups = [AddGroup::class])
+    @field:Pattern(
+        regexp = "/^[a-zA-Z]$/",
+        message = "检索首字母必须是一个字母",
+        groups = [AddGroup::class, UpdateGroup::class]
+    )
     var firstLetter: String = "",
     /**
      * 排序
      */
-    @field:NotNull
-    @field:Min(value = 0, message = "排序必须大于等于0")
+    @field:NotNull(groups = [AddGroup::class])
+    @field:Min(value = 0, message = "排序必须大于等于0", groups = [AddGroup::class, UpdateGroup::class])
     var sort: Int = 0,
 ) : Serializable {
     companion object {
