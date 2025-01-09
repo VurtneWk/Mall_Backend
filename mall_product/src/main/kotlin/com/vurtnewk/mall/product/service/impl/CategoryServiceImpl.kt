@@ -2,7 +2,6 @@ package com.vurtnewk.mall.product.service.impl
 
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
-import com.baomidou.mybatisplus.core.metadata.IPage
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
@@ -32,7 +31,7 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
         val list = entities.asSequence()
             .filter { it.parentCid == 0L }
             .map {
-                it.childrenList = getChildrenList(it, entities)
+                it.children = getChildrenList(it, entities)
                 it
             }
             .sortedBy { it.sort ?: 0 }
@@ -57,7 +56,7 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
             .filter { it.parentCid == root.catId }
             .map {
                 //递归查找子菜单
-                it.childrenList = getChildrenList(it, entities)
+                it.children = getChildrenList(it, entities)
                 it
             }
             //进行排序

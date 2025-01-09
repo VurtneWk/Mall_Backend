@@ -29,8 +29,9 @@ class MallProductExceptionControllerAdvice {
     }
 
 
-    @ExceptionHandler(value = [Throwable::class])
-    fun handleException(): R {
-        return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.code, BizCodeEnum.UNKNOWN_EXCEPTION.msg)
-    }
+//    @ExceptionHandler(value = [Throwable::class])
+//    fun handleException(e:Throwable): R {
+//        println(e.message)
+//        return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.code, BizCodeEnum.UNKNOWN_EXCEPTION.msg)
+//    }
 }

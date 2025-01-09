@@ -13,6 +13,8 @@ import com.vurtnewk.mall.product.entity.AttrGroupEntity
  */
 interface AttrGroupService : IService<AttrGroupEntity> {
 
-    fun queryPage(params: Map<String, Any> ): PageUtils
+    fun queryPage(params: Map<String, Any>): PageUtils
+
+    fun queryPage(params: Map<String, Any>, catelogId: Long): PageUtils
 }
 

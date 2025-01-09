@@ -35,7 +35,7 @@ data class BrandEntity(
      * 品牌名
      */
     @field:NotBlank(message = "品牌名不能为空", groups = [AddGroup::class, UpdateGroup::class])
-    var name: String = "",
+    var name: String? = null,
     /**
      * 品牌logo地址
      */

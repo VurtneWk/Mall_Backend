@@ -58,7 +58,7 @@ data class CategoryEntity(
      * 因为不在数据库中存在的字段，所以需要添加@TableField(exist = false)
      */
     @TableField(exist = false)
-    var childrenList: MutableList<CategoryEntity> = mutableListOf()
+    var children: MutableList<CategoryEntity> = mutableListOf()
 ) : Serializable {
     companion object {
         @JvmStatic

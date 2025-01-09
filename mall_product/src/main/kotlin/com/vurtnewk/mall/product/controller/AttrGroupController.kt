@@ -17,16 +17,20 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/attrgroup")
 class AttrGroupController @Autowired constructor(
-        private val attrGroupService: AttrGroupService
+    private val attrGroupService: AttrGroupService
 ) {
 
     /**
      * 列表
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list/{catelogId}")
     //@RequiresPermissions("product:attrgroup:list")
-    fun list(@RequestParam params: Map<String, Any>): R {
-        val page: PageUtils = attrGroupService.queryPage(params)
+    fun list(
+        @RequestParam params: Map<String, Any>,
+        @PathVariable("catelogId") catelogId: Long
+    ): R {
+//        val page: PageUtils = attrGroupService.queryPage(params)
+        val page: PageUtils = attrGroupService.queryPage(params,catelogId)
         return R.ok().put("page", page)
     }
 
@@ -46,7 +50,7 @@ class AttrGroupController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("product:attrgroup:save")
     fun save(@RequestBody attrGroup: AttrGroupEntity): R {
-            attrGroupService.save(attrGroup)
+        attrGroupService.save(attrGroup)
         return R.ok()
     }
 
@@ -56,7 +60,7 @@ class AttrGroupController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:attrgroup:update")
     fun update(@RequestBody attrGroup: AttrGroupEntity): R {
-            attrGroupService.updateById(attrGroup)
+        attrGroupService.updateById(attrGroup)
         return R.ok()
     }
 
@@ -66,7 +70,7 @@ class AttrGroupController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:attrgroup:delete")
     fun delete(@RequestBody attrGroupIds: Array<Long>): R {
-            attrGroupService.removeByIds(attrGroupIds.asList())
+        attrGroupService.removeByIds(attrGroupIds.asList())
         return R.ok()
     }
 }

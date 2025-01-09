@@ -29,7 +29,6 @@ class AliyunOssConfiguration {
     @Bean
     fun ossClient(): OSS {
         println("endpoint = $endpoint , accessKeyId = $accessKeyId , accessKeySecret = $accessKeySecret")
-        val build = OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret)
-        return build
+        return OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret)
     }
 }
