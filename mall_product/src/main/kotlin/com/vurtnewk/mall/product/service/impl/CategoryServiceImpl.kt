@@ -5,14 +5,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
+import com.vurtnewk.common.utils.ext.logInfo
+import com.vurtnewk.mall.product.dao.CategoryBrandRelationDao
 
 import com.vurtnewk.mall.product.dao.CategoryDao
 import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
+import org.springframework.beans.factory.annotation.Autowired
 
 
 @Service("categoryService")
 class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), CategoryService {
+
+    @Autowired
+    private lateinit var mCategoryBrandRelationDao: CategoryBrandRelationDao
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
@@ -50,6 +56,14 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
 
     override fun findCatelogPath(catelogId: Long): List<Long> {
         return findParentPath(catelogId, mutableListOf()).reversed()
+    }
+
+    override fun updateCascade(category: CategoryEntity) {
+        this.updateById(category)
+        //修改关联的分类名
+        if (!category.name.isNullOrBlank()) {
+            mCategoryBrandRelationDao.updateCategoryName(category.catId!!, category.name!!)
+        }
     }
 
     /**

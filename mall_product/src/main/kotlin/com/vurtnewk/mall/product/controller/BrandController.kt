@@ -60,7 +60,8 @@ class BrandController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:brand:update")
     fun update(@RequestBody @Validated(UpdateGroup::class) brand: BrandEntity): R {
-        brandService.updateById(brand)
+//        brandService.updateById(brand)
+        brandService.updateCascade(brand) //品牌修改时，要修改关联的名
         return R.ok()
     }
 

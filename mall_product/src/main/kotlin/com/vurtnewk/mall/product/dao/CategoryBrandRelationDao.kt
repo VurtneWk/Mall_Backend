@@ -3,6 +3,7 @@ package com.vurtnewk.mall.product.dao
 import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 
 /**
  * 品牌分类关联
@@ -13,5 +14,5 @@ import org.apache.ibatis.annotations.Mapper
  */
 @Mapper
 interface CategoryBrandRelationDao : BaseMapper<CategoryBrandRelationEntity> {
-	
+    fun updateCategoryName(@Param("catId") catId: Long, @Param("name")name: String)
 }

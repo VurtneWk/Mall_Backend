@@ -35,7 +35,7 @@ class CategoryController @Autowired constructor(
     // @RequiresPermissions("product:category:info")
     fun info(@PathVariable("catId") catId: Long): R {
         val category: CategoryEntity = categoryService.getById(catId)
-        return R.ok().put("category", category)
+        return R.ok().put("data", category)
     }
 
     /**
@@ -54,7 +54,8 @@ class CategoryController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:category:update")
     fun update(@RequestBody category: CategoryEntity): R {
-        categoryService.updateById(category)
+//        categoryService.updateById(category)
+        categoryService.updateCascade(category)
         return R.ok()
     }
 

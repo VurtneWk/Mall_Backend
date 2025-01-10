@@ -17,5 +17,6 @@ interface CategoryService : IService<CategoryEntity> {
     fun listWithTree(): List<CategoryEntity>
     fun removeMenuByIds(asList: List<Long>)
     fun findCatelogPath(catelogId: Long): List<Long>
+    fun updateCascade(category: CategoryEntity)
 }
 

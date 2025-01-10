@@ -1,11 +1,13 @@
 package com.vurtnewk.mall.product.controller
 
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.web.bind.annotation.*
-import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
-import com.vurtnewk.mall.product.service.CategoryBrandRelationService
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
+import com.vurtnewk.mall.product.service.CategoryBrandRelationService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
 
 /**
  * 品牌分类关联
@@ -17,7 +19,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/categorybrandrelation")
 class CategoryBrandRelationController @Autowired constructor(
-        private val categoryBrandRelationService: CategoryBrandRelationService
+    private val categoryBrandRelationService: CategoryBrandRelationService
 ) {
 
     /**
@@ -28,6 +30,19 @@ class CategoryBrandRelationController @Autowired constructor(
     fun list(@RequestParam params: Map<String, Any>): R {
         val page: PageUtils = categoryBrandRelationService.queryPage(params)
         return R.ok().put("page", page)
+    }
+
+    /**
+     * 获取当前品牌关联的所有分类列表
+     */
+//    @RequestMapping(value = ["/catelog/list"], method = [RequestMethod.GET])
+    @GetMapping("/catelog/list")
+    //@RequiresPermissions("product:categorybrandrelation:list")
+    fun cateloglist(@RequestParam brandId: Long): R {
+        val list = KtQueryChainWrapper(CategoryBrandRelationEntity::class.java)
+            .eq(CategoryBrandRelationEntity::brandId, brandId)
+            .list()
+        return R.ok().put("data", list)
     }
 
     /**
@@ -46,7 +61,7 @@ class CategoryBrandRelationController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("product:categorybrandrelation:save")
     fun save(@RequestBody categoryBrandRelation: CategoryBrandRelationEntity): R {
-            categoryBrandRelationService.save(categoryBrandRelation)
+        categoryBrandRelationService.saveDetail(categoryBrandRelation)
         return R.ok()
     }
 
@@ -56,7 +71,7 @@ class CategoryBrandRelationController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:categorybrandrelation:update")
     fun update(@RequestBody categoryBrandRelation: CategoryBrandRelationEntity): R {
-            categoryBrandRelationService.updateById(categoryBrandRelation)
+        categoryBrandRelationService.updateById(categoryBrandRelation)
         return R.ok()
     }
 
@@ -66,7 +81,7 @@ class CategoryBrandRelationController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:categorybrandrelation:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            categoryBrandRelationService.removeByIds(ids.asList())
+        categoryBrandRelationService.removeByIds(ids.asList())
         return R.ok()
     }
 }

@@ -9,6 +9,6 @@ import com.vurtnewk.common.utils.PageUtils
  * @since    2025/1/8 23:39
  */
 
-fun IPage<*>.utils(): PageUtils {
+fun IPage<*>.pageUtils(): PageUtils {
     return PageUtils(this)
 }

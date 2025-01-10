@@ -14,5 +14,7 @@ import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
 interface CategoryBrandRelationService : IService<CategoryBrandRelationEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun saveDetail(categoryBrandRelation: CategoryBrandRelationEntity)
+    fun updateBrandName(brandId: Long, name: String)
 }
 

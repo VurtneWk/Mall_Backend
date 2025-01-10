@@ -14,5 +14,6 @@ import com.vurtnewk.mall.product.entity.BrandEntity
 interface BrandService : IService<BrandEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun updateCascade(brand: BrandEntity)
 }
 
