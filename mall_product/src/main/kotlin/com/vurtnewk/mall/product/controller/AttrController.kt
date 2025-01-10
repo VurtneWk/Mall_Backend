@@ -44,8 +44,9 @@ class AttrController @Autowired constructor(
     @RequestMapping("/info/{attrId}")
     // @RequiresPermissions("product:attr:info")
     fun info(@PathVariable("attrId") attrId: Long): R {
-        val attr: AttrEntity = attrService.getById(attrId)
-        return R.ok().put("attr", attr)
+//        val attr: AttrEntity = attrService.getById(attrId)
+        val attrRespVO = attrService.getAttrInfo(attrId)
+        return R.ok().put("attr", attrRespVO)
     }
 
     /**
@@ -63,8 +64,9 @@ class AttrController @Autowired constructor(
      */
     @RequestMapping("/update")
     // @RequiresPermissions("product:attr:update")
-    fun update(@RequestBody attr: AttrEntity): R {
-        attrService.updateById(attr)
+    fun update(@RequestBody attr: AttrVO): R {
+//        attrService.updateById(attr)
+        attrService.updateAttrVO(attr)
         return R.ok()
     }
 

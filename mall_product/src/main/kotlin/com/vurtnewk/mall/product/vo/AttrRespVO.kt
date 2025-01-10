@@ -49,5 +49,13 @@ data class AttrRespVO(
     /**
      * 所属分组名 ： “主体”
      */
-    var groupName: String? = null
+    var groupName: String? = null,
+    /**
+     * 所属分组ID
+     */
+    var attrGroupId: Long? = null,
+    /**
+     * 分类完整路径
+     */
+    var catelogPath: List<Long>? = null
 )

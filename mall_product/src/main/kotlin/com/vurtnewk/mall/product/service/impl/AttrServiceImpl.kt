@@ -2,12 +2,11 @@ package com.vurtnewk.mall.product.service.impl
 
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
-import com.baomidou.mybatisplus.core.metadata.IPage
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
-import com.vurtnewk.common.utils.ext.logDebug
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.mall.product.dao.AttrAttrgroupRelationDao
@@ -18,6 +17,7 @@ import com.vurtnewk.mall.product.entity.AttrEntity
 import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.AttrService
+import com.vurtnewk.mall.product.service.CategoryService
 import com.vurtnewk.mall.product.vo.AttrRespVO
 import com.vurtnewk.mall.product.vo.AttrVO
 import org.springframework.beans.BeanUtils
@@ -30,6 +30,9 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
 
     @Autowired
     lateinit var mAttrAttrgroupRelationDao: AttrAttrgroupRelationDao
+
+    @Autowired
+    lateinit var mCategoryService: CategoryService
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
@@ -83,7 +86,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
                 KtQueryChainWrapper(AttrGroupEntity::class.java)
                     .eq(AttrGroupEntity::attrGroupId, attrAttrgroupRelationEntity.attrGroupId)
                     .one()
-                    .let { attrGroupEntity ->
+                    ?.let { attrGroupEntity ->
                         attrRespVO.groupName = attrGroupEntity.attrGroupName
                     }
             }
@@ -98,5 +101,72 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         }.toList()
         pageUtils.list = list
         return pageUtils
+    }
+
+    /**
+     * 反显
+     * <img src="https://gitee.com/vurtnewk/typora-image/raw/master/images03/202501110038234.png">
+     */
+    override fun getAttrInfo(attrId: Long): AttrRespVO {
+        val attrEntity = this.getById(attrId)
+        val attrRespVO = AttrRespVO()
+        BeanUtils.copyProperties(attrEntity, attrRespVO)
+
+        //attrGroupId
+        val attrAttrgroupRelationEntity = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
+            .eq(AttrAttrgroupRelationEntity::attrId, attrId)
+            .one()
+        if (attrAttrgroupRelationEntity != null) {
+            //现在根据关系表查询对应的分组名
+            KtQueryChainWrapper(AttrGroupEntity::class.java)
+                .eq(AttrGroupEntity::attrGroupId, attrAttrgroupRelationEntity.attrGroupId)
+                .one()
+                ?.let { attrGroupEntity ->
+                    attrRespVO.groupName = attrGroupEntity.attrGroupName
+                    attrRespVO.attrGroupId = attrGroupEntity.attrGroupId
+                }
+        }
+
+        //属性所属分类路径
+        attrRespVO.catelogId
+            ?.takeIf { it != 0L }
+            ?.let {
+                attrRespVO.catelogPath = mCategoryService.findCatelogPath(attrRespVO.catelogId!!)
+            }
+        //属性所属分类名字
+        KtQueryChainWrapper(CategoryEntity::class.java)
+            .eq(CategoryEntity::catId, attrRespVO.catelogId)
+            .one()
+            ?.let {
+                attrRespVO.catelogName = it.name
+            }
+        return attrRespVO
+    }
+
+    override fun updateAttrVO(attrVo: AttrVO) {
+        val attrEntity = AttrEntity()
+        BeanUtils.copyProperties(attrVo, attrEntity)
+        this.updateById(attrEntity)
+
+        val attrAttrgroupRelationEntity = AttrAttrgroupRelationEntity()
+            .apply {
+                attrGroupId = attrVo.attrGroupId
+                attrId = attrVo.attrId
+            }
+        //修改分组关联
+        KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
+            .eq(AttrAttrgroupRelationEntity::attrId, attrVo.attrId)
+            .count()//先查询数据库中有没有该数据
+            .also {
+                //修改操作
+                if (it > 0) {
+                    KtUpdateChainWrapper(AttrAttrgroupRelationEntity::class.java)
+                        .eq(AttrAttrgroupRelationEntity::attrId,attrVo.attrId)
+                        .update(attrAttrgroupRelationEntity)
+                } else {
+                    //新增操作
+                    mAttrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity)
+                }
+            }
     }
 }
