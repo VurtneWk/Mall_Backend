@@ -49,5 +49,9 @@ data class AttrVO(
     /**
      * 属性所属的分组
      */
-    var attrGroupId: Long? = null
+    var attrGroupId: Long? = null,
+    /**
+     * 值类型 （0-单个值，1可以选择多个值）
+     */
+    var valueType: Int? = null
 ) : Serializable

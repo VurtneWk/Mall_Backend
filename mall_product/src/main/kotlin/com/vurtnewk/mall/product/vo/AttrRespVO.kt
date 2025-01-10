@@ -57,5 +57,9 @@ data class AttrRespVO(
     /**
      * 分类完整路径
      */
-    var catelogPath: List<Long>? = null
+    var catelogPath: List<Long>? = null,
+    /**
+     * 值类型 （0-单个值，1可以选择多个值）
+     */
+    var valueType: Int? = null
 )

@@ -51,6 +51,10 @@ data class AttrEntity(
      * 快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整
      */
     var showDesc: Int? = null,
+    /**
+     * 值类型 （0-单个值，1可以选择多个值）
+     */
+    var valueType: Int? = null
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L
