@@ -6,6 +6,7 @@ import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.vurtnewk.mall.product.service.AttrGroupService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.service.CategoryService
 
 /**
  * 属性分组
@@ -17,7 +18,8 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/attrgroup")
 class AttrGroupController @Autowired constructor(
-    private val attrGroupService: AttrGroupService
+    private val attrGroupService: AttrGroupService,
+    private val categoryService: CategoryService
 ) {
 
     /**
@@ -30,7 +32,7 @@ class AttrGroupController @Autowired constructor(
         @PathVariable("catelogId") catelogId: Long
     ): R {
 //        val page: PageUtils = attrGroupService.queryPage(params)
-        val page: PageUtils = attrGroupService.queryPage(params,catelogId)
+        val page: PageUtils = attrGroupService.queryPage(params, catelogId)
         return R.ok().put("page", page)
     }
 
@@ -41,6 +43,12 @@ class AttrGroupController @Autowired constructor(
     // @RequiresPermissions("product:attrgroup:info")
     fun info(@PathVariable("attrGroupId") attrGroupId: Long): R {
         val attrGroup: AttrGroupEntity = attrGroupService.getById(attrGroupId)
+            .apply {
+                catelogId?.let {
+                    //查出当前这个catelogId的所有父级ID
+                    this.catelogPath = categoryService.findCatelogPath(it)
+                }
+            }
         return R.ok().put("attrGroup", attrGroup)
     }
 

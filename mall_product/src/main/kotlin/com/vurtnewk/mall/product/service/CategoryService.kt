@@ -16,5 +16,6 @@ interface CategoryService : IService<CategoryEntity> {
     fun queryPage(params: Map<String, Any>): PageUtils
     fun listWithTree(): List<CategoryEntity>
     fun removeMenuByIds(asList: List<Long>)
+    fun findCatelogPath(catelogId: Long): List<Long>
 }
 

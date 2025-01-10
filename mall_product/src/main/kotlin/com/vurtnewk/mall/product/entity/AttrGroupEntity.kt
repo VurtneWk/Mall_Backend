@@ -1,5 +1,6 @@
 package com.vurtnewk.mall.product.entity
 
+import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.annotation.TableName
 import java.io.Serializable
@@ -17,8 +18,7 @@ data class AttrGroupEntity(
     /**
      * 分组id
      */
-    @TableId
-    var attrGroupId: Long? = null,
+    @TableId var attrGroupId: Long? = null,
     /**
      * 组名
      */
@@ -39,6 +39,12 @@ data class AttrGroupEntity(
      * 所属分类id
      */
     var catelogId: Long? = null,
+
+    /**
+     *  @TableField(exist = false) 数据库中不存在
+     */
+    @TableField(exist = false)
+    var catelogPath: List<Long>? = emptyList()
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L

@@ -1,8 +1,8 @@
 package com.vurtnewk.mall.product
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
-import com.vurtnewk.mall.product.entity.BrandEntity
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.product.service.BrandService
+import com.vurtnewk.mall.product.service.CategoryService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,6 +12,20 @@ class MallProductApplicationTests {
 
     @Autowired
     lateinit var brandService: BrandService
+
+
+    @Autowired
+    lateinit var categoryService: CategoryService
+
+    @Test
+    fun testFindCategoryPath(){
+        val findCatelogPath = categoryService.findCatelogPath(225L)
+        logInfo("完整路径：$findCatelogPath")
+    }
+
+
+
+
 
     @Test
     fun contextLoads() {
@@ -28,10 +42,10 @@ class MallProductApplicationTests {
 
         //查询
 
-        val list = brandService.list(QueryWrapper<BrandEntity>().eq("brand_id", 1))
-        list.forEach {
-            println(it)
-        }
+//        val list = brandService.list(QueryWrapper<BrandEntity>().eq("brand_id", 1))
+//        list.forEach {
+//            println(it)
+//        }
     }
 
 }

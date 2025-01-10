@@ -48,6 +48,22 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
         baseMapper.deleteByIds(asList)
     }
 
+    override fun findCatelogPath(catelogId: Long): List<Long> {
+        return findParentPath(catelogId, mutableListOf()).reversed()
+    }
+
+    /**
+     * 递归查找指定catelogId的父ID
+     */
+    private fun findParentPath(catelogId: Long, paths: MutableList<Long>): MutableList<Long> {
+        paths.add(catelogId)
+        val categoryEntity = this.getById(catelogId)
+        if (categoryEntity.parentCid != null && categoryEntity.parentCid != 0L) {
+            findParentPath(categoryEntity.parentCid!!, paths)
+        }
+        return paths
+    }
+
     /**
      * 递归查找从entities中查找root的子菜单
      */
