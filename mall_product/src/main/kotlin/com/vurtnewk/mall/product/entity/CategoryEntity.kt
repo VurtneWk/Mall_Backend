@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.annotation.TableLogic
 import com.baomidou.mybatisplus.annotation.TableName
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.io.Serializable
 
 /**
@@ -56,7 +57,9 @@ data class CategoryEntity(
     /**
      * 当前分类的子分类
      * 因为不在数据库中存在的字段，所以需要添加@TableField(exist = false)
+     * @JsonInclude(JsonInclude.Include.NON_EMPTY) 当数据时空的时候，不传给前端
      */
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @TableField(exist = false)
     var children: MutableList<CategoryEntity> = mutableListOf()
 ) : Serializable {
