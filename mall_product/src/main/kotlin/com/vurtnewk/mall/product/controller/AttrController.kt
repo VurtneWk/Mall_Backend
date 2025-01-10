@@ -21,6 +21,13 @@ class AttrController @Autowired constructor(
     private val attrService: AttrService
 ) {
 
+    // /base/list/0?t=1736503492495&page=1&limit=10&key=1
+    @RequestMapping("/base/list/{catelogId}")
+    fun baseAttrList(@RequestParam params: Map<String, Any>, @PathVariable("catelogId") catelogId: Long): R {
+        val page: PageUtils = attrService.queryBaseAttrPage(params, catelogId)
+        return R.ok().put("page", page)
+    }
+
     /**
      * 列表
      */

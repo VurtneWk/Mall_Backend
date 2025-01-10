@@ -1,15 +1,11 @@
 package com.vurtnewk.mall.product.vo
 
-import com.baomidou.mybatisplus.annotation.TableId
-import java.io.Serializable
-
 /**
- * 商品属性 Vo
+ * 属性数据返回时的数据
  * @author   vurtnewk
- * @since    2025/1/10 17:17
+ * @since    2025/1/10 18:56
  */
-
-data class AttrVO(
+data class AttrRespVO(
     /**
      * 属性id
      */
@@ -47,7 +43,11 @@ data class AttrVO(
      */
     var showDesc: Int? = null,
     /**
-     * 属性所属的分组
+     * 分组名 ： "手机/数码/手机"
      */
-    var attrGroupId: Long? = null
-) : Serializable
+    var catelogName: String? = null,
+    /**
+     * 所属分组名 ： “主体”
+     */
+    var groupName: String? = null
+)

@@ -16,5 +16,6 @@ interface AttrService : IService<AttrEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
     fun saveAttrVO(attr: AttrVO)
+    fun queryBaseAttrPage(params: Map<String, Any>, catelogId: Long): PageUtils
 }
 

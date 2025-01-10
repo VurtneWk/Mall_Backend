@@ -24,7 +24,7 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
             Query<CategoryEntity>().getPage(params),
-            QueryWrapper<CategoryEntity>()
+            QueryWrapper()
         )
         return PageUtils(page)
     }
