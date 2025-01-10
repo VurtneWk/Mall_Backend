@@ -6,6 +6,7 @@ import com.vurtnewk.mall.product.entity.AttrEntity
 import com.vurtnewk.mall.product.service.AttrService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.vo.AttrVO
 
 /**
  * 商品属性
@@ -17,7 +18,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/attr")
 class AttrController @Autowired constructor(
-        private val attrService: AttrService
+    private val attrService: AttrService
 ) {
 
     /**
@@ -45,8 +46,8 @@ class AttrController @Autowired constructor(
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:attr:save")
-    fun save(@RequestBody attr: AttrEntity): R {
-            attrService.save(attr)
+    fun save(@RequestBody attr: AttrVO): R {
+        attrService.saveAttrVO(attr)
         return R.ok()
     }
 
@@ -56,7 +57,7 @@ class AttrController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:attr:update")
     fun update(@RequestBody attr: AttrEntity): R {
-            attrService.updateById(attr)
+        attrService.updateById(attr)
         return R.ok()
     }
 
@@ -66,7 +67,7 @@ class AttrController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:attr:delete")
     fun delete(@RequestBody attrIds: Array<Long>): R {
-            attrService.removeByIds(attrIds.asList())
+        attrService.removeByIds(attrIds.asList())
         return R.ok()
     }
 }

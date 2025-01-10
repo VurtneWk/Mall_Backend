@@ -1,19 +1,15 @@
-package com.vurtnewk.mall.product.entity
+package com.vurtnewk.mall.product.vo
 
 import com.baomidou.mybatisplus.annotation.TableId
-import com.baomidou.mybatisplus.annotation.TableName
 import java.io.Serializable
-import java.util.Date
 
 /**
- * 商品属性
- *
- * @author vurtnewk
- * @email vurtnewk@gmail.com
- * @date 2025-01-06 12:58:45
+ * 商品属性 Vo
+ * @author   vurtnewk
+ * @since    2025/1/10 17:17
  */
-@TableName("pms_attr")
-data class AttrEntity(
+
+data class AttrVO(
     /**
      * 属性id
      */
@@ -32,7 +28,7 @@ data class AttrEntity(
      */
     var icon: String? = null,
     /**
-     * 可选值列表[用逗号分隔]
+     * 可选值列表(用逗号分隔)
      */
     var valueSelect: String? = null,
     /**
@@ -51,8 +47,8 @@ data class AttrEntity(
      * 快速展示【是否展示在介绍上；0-否 1-是】，在sku中仍然可以调整
      */
     var showDesc: Int? = null,
-) : Serializable {
-    companion object {
-        private const val serialVersionUID: Long = 1L
-    }
-}
+    /**
+     * 属性所属的分组
+     */
+    var attrGroupId: Long? = null
+) : Serializable

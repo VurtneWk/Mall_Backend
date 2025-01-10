@@ -26,22 +26,16 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
 
     override fun queryPage(params: Map<String, Any>, catelogId: Long): PageUtils {
         val iPage = Query<AttrGroupEntity>().getPage(params)
-        return if (catelogId == 0L) {
-            KtQueryChainWrapper(AttrGroupEntity::class.java)
-                .page(iPage)
-                .pageUtils()
-        } else {
-            //select * from pms_attr_group where catelog_id = ? and (attr_group_id = key or attr_group_name like key)
-            val key = params["key"] as String?
-
-            KtQueryChainWrapper(AttrGroupEntity::class.java)
-                .eq(AttrGroupEntity::catelogId, catelogId)
-                .and(!key.isNullOrEmpty()) {
-                    it.eq(AttrGroupEntity::attrGroupId, key)
-                        .or().like(AttrGroupEntity::attrGroupName, key)
-                }
-                .page(iPage)
-                .pageUtils()
+        val key = params["key"] as String?
+        //select * from pms_attr_group where catelog_id = ? and (attr_group_id = key or attr_group_name like key)
+        val ktQueryChainWrapper = KtQueryChainWrapper(AttrGroupEntity::class.java)
+            .and(!key.isNullOrEmpty()) {
+                it.eq(AttrGroupEntity::attrGroupId, key)
+                    .or().like(AttrGroupEntity::attrGroupName, key)
+            }
+        if (catelogId != 0L) {
+            ktQueryChainWrapper.eq(AttrGroupEntity::catelogId, catelogId)
         }
+        return ktQueryChainWrapper.page(iPage).pageUtils()
     }
 }

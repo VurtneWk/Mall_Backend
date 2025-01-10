@@ -12,6 +12,7 @@ import com.vurtnewk.mall.product.dao.CategoryDao
 import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
 
 @Service("categoryService")
@@ -58,6 +59,7 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
         return findParentPath(catelogId, mutableListOf()).reversed()
     }
 
+    @Transactional
     override fun updateCascade(category: CategoryEntity) {
         this.updateById(category)
         //修改关联的分类名

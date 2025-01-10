@@ -12,6 +12,7 @@ import com.vurtnewk.mall.product.entity.BrandEntity
 import com.vurtnewk.mall.product.service.BrandService
 import com.vurtnewk.mall.product.service.CategoryBrandRelationService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.transaction.annotation.Transactional
 
 
 @Service("brandService")
@@ -47,6 +48,7 @@ class BrandServiceImpl : ServiceImpl<BrandDao, BrandEntity>(), BrandService {
 //            .pageUtils()
     }
 
+    @Transactional
     override fun updateCascade(brand: BrandEntity) {
         this.updateById(brand) //更改自己
         if (!brand.name.isNullOrEmpty()) {

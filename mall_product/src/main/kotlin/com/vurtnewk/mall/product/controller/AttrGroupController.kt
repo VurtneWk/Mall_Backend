@@ -18,8 +18,7 @@ import com.vurtnewk.mall.product.service.CategoryService
 @RestController
 @RequestMapping("product/attrgroup")
 class AttrGroupController @Autowired constructor(
-    private val attrGroupService: AttrGroupService,
-    private val categoryService: CategoryService
+    private val attrGroupService: AttrGroupService, private val categoryService: CategoryService
 ) {
 
     /**
@@ -27,10 +26,7 @@ class AttrGroupController @Autowired constructor(
      */
     @RequestMapping("/list/{catelogId}")
     //@RequiresPermissions("product:attrgroup:list")
-    fun list(
-        @RequestParam params: Map<String, Any>,
-        @PathVariable("catelogId") catelogId: Long
-    ): R {
+    fun list(@RequestParam params: Map<String, Any>, @PathVariable("catelogId") catelogId: Long): R {
 //        val page: PageUtils = attrGroupService.queryPage(params)
         val page: PageUtils = attrGroupService.queryPage(params, catelogId)
         return R.ok().put("page", page)
@@ -42,13 +38,12 @@ class AttrGroupController @Autowired constructor(
     @RequestMapping("/info/{attrGroupId}")
     // @RequiresPermissions("product:attrgroup:info")
     fun info(@PathVariable("attrGroupId") attrGroupId: Long): R {
-        val attrGroup: AttrGroupEntity = attrGroupService.getById(attrGroupId)
-            .apply {
-                catelogId?.let {
-                    //查出当前这个catelogId的所有父级ID
-                    this.catelogPath = categoryService.findCatelogPath(it)
-                }
+        val attrGroup: AttrGroupEntity = attrGroupService.getById(attrGroupId).apply {
+            catelogId?.let {
+                //查出当前这个catelogId的所有父级ID
+                this.catelogPath = categoryService.findCatelogPath(it)
             }
+        }
         return R.ok().put("attrGroup", attrGroup)
     }
 
