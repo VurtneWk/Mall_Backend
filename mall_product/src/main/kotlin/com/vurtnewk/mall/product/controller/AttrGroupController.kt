@@ -6,6 +6,7 @@ import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.vurtnewk.mall.product.service.AttrGroupService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.service.AttrAttrgroupRelationService
 import com.vurtnewk.mall.product.service.CategoryService
 import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
 
@@ -19,7 +20,8 @@ import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
 @RestController
 @RequestMapping("product/attrgroup")
 class AttrGroupController @Autowired constructor(
-    private val attrGroupService: AttrGroupService, private val categoryService: CategoryService
+    private val attrGroupService: AttrGroupService, private val categoryService: CategoryService,
+    private val attrgroupRelationService: AttrAttrgroupRelationService
 ) {
 
     /**
@@ -63,6 +65,16 @@ class AttrGroupController @Autowired constructor(
         val page = attrGroupService.attrNotRelation(params, attrGroupId)
         return R.ok().put("page", page)
     }
+
+    /**
+     * 新增关联关系
+     */
+    @PostMapping("attr/relation")
+    fun addRelation(@RequestBody attrGroupRelationVOList: List<AttrGroupRelationVO>): R {
+        attrgroupRelationService.saveBatch(attrGroupRelationVOList)
+        return R.ok()
+    }
+
 
     /**
      * 信息

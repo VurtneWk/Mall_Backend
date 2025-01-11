@@ -10,10 +10,13 @@ import com.vurtnewk.common.utils.Query
 import com.vurtnewk.mall.product.dao.AttrAttrgroupRelationDao
 import com.vurtnewk.mall.product.entity.AttrAttrgroupRelationEntity
 import com.vurtnewk.mall.product.service.AttrAttrgroupRelationService
+import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
+import org.springframework.beans.BeanUtils
+import org.springframework.transaction.annotation.Transactional
 
 
 @Service("attrAttrgroupRelationService")
-class AttrAttrgroupRelationServiceImpl : ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity>() , AttrAttrgroupRelationService {
+class AttrAttrgroupRelationServiceImpl : ServiceImpl<AttrAttrgroupRelationDao, AttrAttrgroupRelationEntity>(), AttrAttrgroupRelationService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
@@ -21,5 +24,16 @@ class AttrAttrgroupRelationServiceImpl : ServiceImpl<AttrAttrgroupRelationDao, A
             QueryWrapper<AttrAttrgroupRelationEntity>()
         )
         return PageUtils(page)
+    }
+
+    @Transactional
+    override fun saveBatch(attrGroupRelationVOList: List<AttrGroupRelationVO>) {
+        val list = attrGroupRelationVOList
+            .map {
+                val relationEntity = AttrAttrgroupRelationEntity()
+                BeanUtils.copyProperties(it, relationEntity)
+                relationEntity
+            }
+        this.saveBatch(list)
     }
 }

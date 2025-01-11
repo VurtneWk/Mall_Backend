@@ -49,7 +49,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         BeanUtils.copyProperties(attr, attrEntity)
         this.save(attrEntity)
         //2.保存所属分组到关联表
-        if (attr.attrType == AttrEnum.ATTR_TYPE_BASE.code) {
+        if (attr.attrType == AttrEnum.ATTR_TYPE_BASE.code && attr.attrGroupId != null) {
             val entity = AttrAttrgroupRelationEntity()
             entity.attrGroupId = attr.attrGroupId
             entity.attrId = attrEntity.attrId
@@ -162,7 +162,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
                 attrId = attrVo.attrId
             }
         //修改分组关联
-        if (attrEntity.attrType == AttrEnum.ATTR_TYPE_BASE.code) {
+        if (attrEntity.attrType == AttrEnum.ATTR_TYPE_BASE.code && attrVo.attrGroupId != null) {
             KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
                 .eq(AttrAttrgroupRelationEntity::attrId, attrVo.attrId)
                 .count()//先查询数据库中有没有该数据

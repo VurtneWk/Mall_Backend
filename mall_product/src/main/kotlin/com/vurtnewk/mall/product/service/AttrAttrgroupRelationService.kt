@@ -3,6 +3,7 @@ package com.vurtnewk.mall.product.service
 import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.product.entity.AttrAttrgroupRelationEntity
+import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
 
 /**
  * 属性&属性分组关联
@@ -14,5 +15,6 @@ import com.vurtnewk.mall.product.entity.AttrAttrgroupRelationEntity
 interface AttrAttrgroupRelationService : IService<AttrAttrgroupRelationEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun saveBatch(attrGroupRelationVOList: List<AttrGroupRelationVO>)
 }
 

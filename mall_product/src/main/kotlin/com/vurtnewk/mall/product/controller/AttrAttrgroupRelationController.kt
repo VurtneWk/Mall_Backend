@@ -46,7 +46,7 @@ class AttrAttrgroupRelationController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("product:attrattrgrouprelation:save")
     fun save(@RequestBody attrAttrgroupRelation: AttrAttrgroupRelationEntity): R {
-            attrAttrgroupRelationService.save(attrAttrgroupRelation)
+        attrAttrgroupRelationService.save(attrAttrgroupRelation)
         return R.ok()
     }
 
