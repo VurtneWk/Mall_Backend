@@ -3,8 +3,8 @@ package com.vurtnewk.mall.product.service.impl
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
-import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.constants.AttrEnum
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.pageUtils
@@ -81,10 +81,53 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
         //为了 Dao 只操作 Entity (PO) ，而不直接操作 VO
         val list = attrGroupRelationVOList.map {
             val attrAttrgroupRelationEntity = AttrAttrgroupRelationEntity()
-            BeanUtils.copyProperties(it,attrAttrgroupRelationEntity)
+            BeanUtils.copyProperties(it, attrAttrgroupRelationEntity)
             attrAttrgroupRelationEntity
         }
         mAttrAttrgroupRelationDao.deleteRelation(list)
+    }
+
+    /**
+     * 指定属性 attrGroupId 下没有被关系的属性
+     * 1. pms_attr_group 表和 pms_attr 表、 catelog_id 要一致
+     * 2. 且 不在 pms_attr_attrgroup_relation 表中 （也就是没有和其它分组进行关联）
+     */
+    override fun attrNotRelation(params: Map<String, Any>, attrGroupId: Long): PageUtils {
+        // 根据 attrGroupId 在 pms_attr_group 里获取 catelog_id
+        // 根据 pms_attr 获取 catelog_id 的数据
+        // 不要 pms_attr_attrgroup_relation 中
+
+        // 1. 根据 attrGroupId 在 pms_attr_group 里获取 catelog_id
+        val attrGroupEntity = KtQueryChainWrapper(AttrGroupEntity::class.java)
+            .eq(AttrGroupEntity::attrGroupId, attrGroupId)
+            .one()
+        // 2. 当前分类 catelog_id 的所有分组 的ID
+        val idsList = KtQueryChainWrapper(AttrGroupEntity::class.java)
+            .eq(AttrGroupEntity::catelogId, attrGroupEntity.catelogId)
+            .list()//这里肯定不可能为空，两次都是通过AttrGroup来查的
+            .map {
+                it.attrGroupId
+            }
+        // 3. 查询这些分组 已经关联的 属性
+        val attrIdList = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
+            .`in`(AttrAttrgroupRelationEntity::attrGroupId, idsList)
+            .list()//这里可能为空，有可能所有分组都还没关联属性
+            ?.mapNotNull {
+                it.attrId
+            }
+
+        //4.最终去查询符合条件的属性
+        val key = params["key"] as? String
+        return KtQueryChainWrapper(AttrEntity::class.java)
+            .eq(AttrEntity::catelogId, attrGroupEntity.catelogId)
+            .eq(AttrEntity::attrType, AttrEnum.ATTR_TYPE_BASE.code)//销售属性没有分组，所以不用关联
+            .notIn(!attrIdList.isNullOrEmpty(), AttrEntity::attrId, attrIdList) //不为null或空时，查的ID不能是attrIdList里的
+            //key 不是 空时添加模糊查询条件
+            .and(!key.isNullOrBlank()) {
+                it.eq(AttrEntity::attrId, key).or().like(AttrEntity::attrName, key)
+            }
+            .page(Query<AttrEntity>().getPage(params))
+            .pageUtils()
     }
 
     override fun getAttrGrouprelation(attrgroupId: Long): List<AttrEntity> {

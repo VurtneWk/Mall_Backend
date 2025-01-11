@@ -43,12 +43,25 @@ class AttrGroupController @Autowired constructor(
     }
 
     /**
-     *
+     * 删除关联的属性
+     * @param attrGroupRelationVOList 要删除的关联的属性集合
      */
     @RequestMapping("attr/relation/delete")
     fun deleteRelation(@RequestBody attrGroupRelationVOList: List<AttrGroupRelationVO>): R {
         attrGroupService.deleteRelation(attrGroupRelationVOList)
         return R.ok()
+    }
+
+    /**
+     * 指定 attrGroupId 下没有关联的属性
+     */
+    @RequestMapping("{attrGroupId}/noattr/relation")
+    fun attrNotRelation(
+        @RequestParam params: Map<String, Any>,
+        @PathVariable("attrGroupId") attrGroupId: Long
+    ): R {
+        val page = attrGroupService.attrNotRelation(params, attrGroupId)
+        return R.ok().put("page", page)
     }
 
     /**

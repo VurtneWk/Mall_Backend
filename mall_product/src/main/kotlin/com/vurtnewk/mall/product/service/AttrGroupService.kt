@@ -20,5 +20,6 @@ interface AttrGroupService : IService<AttrGroupEntity> {
     fun queryPage(params: Map<String, Any>, catelogId: Long): PageUtils
     fun getAttrGrouprelation(attrgroupId: Long): List<AttrEntity>
     fun deleteRelation(attrGroupRelationVOList: List<AttrGroupRelationVO>)
+    fun attrNotRelation(params: Map<String, Any>, attrGroupId: Long): PageUtils
 }
 
