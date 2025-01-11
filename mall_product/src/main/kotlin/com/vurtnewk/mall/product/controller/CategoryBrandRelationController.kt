@@ -6,6 +6,7 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
 import com.vurtnewk.mall.product.service.CategoryBrandRelationService
+import com.vurtnewk.mall.product.vo.BrandVO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 
@@ -42,6 +43,23 @@ class CategoryBrandRelationController @Autowired constructor(
         val list = KtQueryChainWrapper(CategoryBrandRelationEntity::class.java)
             .eq(CategoryBrandRelationEntity::brandId, brandId)
             .list()
+        return R.ok().put("data", list)
+    }
+
+    /**
+     * 获取分类关联的品牌
+     * Controller 处理请求 接口和校验数据
+     * Service 接受 Controller 传递的数据， 进行业务处理
+     * Controller 接受 Service 处理完的数据 ， 封装页面指定的VO
+     */
+    @GetMapping("/brands/list")
+    fun relationBrandList(@RequestParam(value = "catId", required = true) catId: Long): R {
+        // pms_category_brand_relation 表里已有 brandID 和 brandName ，
+        // 不过别的查询可能需要全部数据，所以这里又额外查询所有数据
+        val categoryBrandRelationEntityList = categoryBrandRelationService.getBrandsByCatId(catId)
+        val list = categoryBrandRelationEntityList.map {
+            BrandVO(it.brandId, it.name)
+        }
         return R.ok().put("data", list)
     }
 

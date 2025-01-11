@@ -2,6 +2,7 @@ package com.vurtnewk.mall.product.service
 
 import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
+import com.vurtnewk.mall.product.entity.BrandEntity
 import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
 
 /**
@@ -13,8 +14,9 @@ import com.vurtnewk.mall.product.entity.CategoryBrandRelationEntity
  */
 interface CategoryBrandRelationService : IService<CategoryBrandRelationEntity> {
 
-    fun queryPage(params: Map<String, Any> ): PageUtils
+    fun queryPage(params: Map<String, Any>): PageUtils
     fun saveDetail(categoryBrandRelation: CategoryBrandRelationEntity)
     fun updateBrandName(brandId: Long, name: String)
+    fun getBrandsByCatId(catId: Long): List<BrandEntity>
 }
 
