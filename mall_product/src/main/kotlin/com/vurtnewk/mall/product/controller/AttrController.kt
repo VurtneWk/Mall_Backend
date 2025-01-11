@@ -19,6 +19,10 @@ import com.vurtnewk.mall.product.vo.AttrVO
 class AttrController @Autowired constructor(
     private val attrService: AttrService
 ) {
+
+    /**
+     * 获取基本属性或者销售属性列表
+     */
     // /sale/list/0?t=1736581760356&page=1&limit=10&key=
     // /base/list/0?t=1736503492495&page=1&limit=10&key=1
     @RequestMapping("/{attrType}/list/{catelogId}")

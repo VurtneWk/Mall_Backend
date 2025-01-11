@@ -7,6 +7,7 @@ import com.vurtnewk.mall.product.service.AttrGroupService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.mall.product.service.CategoryService
+import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
 
 /**
  * 属性分组
@@ -30,6 +31,24 @@ class AttrGroupController @Autowired constructor(
 //        val page: PageUtils = attrGroupService.queryPage(params)
         val page: PageUtils = attrGroupService.queryPage(params, catelogId)
         return R.ok().put("page", page)
+    }
+
+    /**
+     * 查询指定 attrgroupId 下所有关联的属性
+     */
+    @RequestMapping("{attrgroupId}/attr/relation")
+    fun attrGroupRelation(@PathVariable("attrgroupId") attrgroupId: Long): R {
+        val list = attrGroupService.getAttrGrouprelation(attrgroupId)
+        return R.ok().put("data", list)
+    }
+
+    /**
+     *
+     */
+    @RequestMapping("attr/relation/delete")
+    fun deleteRelation(@RequestBody attrGroupRelationVOList: List<AttrGroupRelationVO>): R {
+        attrGroupService.deleteRelation(attrGroupRelationVOList)
+        return R.ok()
     }
 
     /**

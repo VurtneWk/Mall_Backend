@@ -111,8 +111,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
     }
 
     /**
-     * 反显
-     * <img src="https://gitee.com/vurtnewk/typora-image/raw/master/images03/202501110038234.png">
+     * [反显](https://gitee.com/vurtnewk/typora-image/raw/master/images03/202501110038234.png)
      */
     override fun getAttrInfo(attrId: Long): AttrRespVO {
         val attrEntity = this.getById(attrId)
