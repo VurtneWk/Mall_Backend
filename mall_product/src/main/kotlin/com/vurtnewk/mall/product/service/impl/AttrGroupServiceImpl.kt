@@ -17,6 +17,7 @@ import com.vurtnewk.mall.product.entity.AttrEntity
 import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.vurtnewk.mall.product.service.AttrGroupService
 import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
+import com.vurtnewk.mall.product.vo.AttrGroupWithAttrsVO
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -130,10 +131,37 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
             .pageUtils()
     }
 
-    override fun getAttrGrouprelation(attrgroupId: Long): List<AttrEntity> {
+    /**
+     * 根据分类ID查询出所有分组已经分组下的所有属性
+     */
+    override fun getAttrGroupWithAttrsByCatelogId(catelogId: Long): List<AttrGroupWithAttrsVO> {
+        //查询分类ID的所有的分组
+        val attrGroupList = KtQueryChainWrapper(AttrGroupEntity::class.java)
+            .eq(AttrGroupEntity::catelogId, catelogId)
+            .list()
+        val vos = mutableListOf<AttrGroupWithAttrsVO>()
+        attrGroupList.forEach { attrGroupEntity ->
+            // copy 数据到 vo
+            val vo = AttrGroupWithAttrsVO()
+            BeanUtils.copyProperties(attrGroupEntity, vo)
+
+            attrGroupEntity.attrGroupId?.let {
+                //这里有：教程的方法是在AttrService，我这在AttrGroupService
+                vo.attrs = getRelationAttrs(it)
+            }
+            vos.add(vo)
+        }
+        return vos
+    }
+
+    /**
+     * 根据分组ID ， 查询出所有的分组数据
+     *
+     */
+    override fun getRelationAttrs(attrGroupId: Long): List<AttrEntity> {
         //通过中间表 查询指定attrGroupId的所有attrId
         val idList = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
-            .eq(AttrAttrgroupRelationEntity::attrGroupId, attrgroupId)
+            .eq(AttrAttrgroupRelationEntity::attrGroupId, attrGroupId)
             .list()
             ?.mapNotNull {
                 it.attrId

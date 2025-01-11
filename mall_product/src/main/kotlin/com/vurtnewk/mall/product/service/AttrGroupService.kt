@@ -5,6 +5,7 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.product.entity.AttrEntity
 import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
+import com.vurtnewk.mall.product.vo.AttrGroupWithAttrsVO
 
 /**
  * 属性分组
@@ -18,8 +19,9 @@ interface AttrGroupService : IService<AttrGroupEntity> {
     fun queryPage(params: Map<String, Any>): PageUtils
 
     fun queryPage(params: Map<String, Any>, catelogId: Long): PageUtils
-    fun getAttrGrouprelation(attrgroupId: Long): List<AttrEntity>
+    fun getRelationAttrs(attrGroupId: Long): List<AttrEntity>
     fun deleteRelation(attrGroupRelationVOList: List<AttrGroupRelationVO>)
     fun attrNotRelation(params: Map<String, Any>, attrGroupId: Long): PageUtils
+    fun getAttrGroupWithAttrsByCatelogId(catelogId: Long): List<AttrGroupWithAttrsVO>
 }
 

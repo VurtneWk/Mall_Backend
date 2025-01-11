@@ -20,7 +20,8 @@ import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
 @RestController
 @RequestMapping("product/attrgroup")
 class AttrGroupController @Autowired constructor(
-    private val attrGroupService: AttrGroupService, private val categoryService: CategoryService,
+    private val attrGroupService: AttrGroupService,
+    private val categoryService: CategoryService,
     private val attrgroupRelationService: AttrAttrgroupRelationService
 ) {
 
@@ -39,8 +40,8 @@ class AttrGroupController @Autowired constructor(
      * 查询指定 attrgroupId 下所有关联的属性
      */
     @RequestMapping("{attrgroupId}/attr/relation")
-    fun attrGroupRelation(@PathVariable("attrgroupId") attrgroupId: Long): R {
-        val list = attrGroupService.getAttrGrouprelation(attrgroupId)
+    fun relationAttrs(@PathVariable("attrgroupId") attrgroupId: Long): R {
+        val list = attrGroupService.getRelationAttrs(attrgroupId)
         return R.ok().put("data", list)
     }
 
@@ -59,8 +60,7 @@ class AttrGroupController @Autowired constructor(
      */
     @RequestMapping("{attrGroupId}/noattr/relation")
     fun attrNotRelation(
-        @RequestParam params: Map<String, Any>,
-        @PathVariable("attrGroupId") attrGroupId: Long
+        @RequestParam params: Map<String, Any>, @PathVariable("attrGroupId") attrGroupId: Long
     ): R {
         val page = attrGroupService.attrNotRelation(params, attrGroupId)
         return R.ok().put("page", page)
@@ -119,5 +119,18 @@ class AttrGroupController @Autowired constructor(
     fun delete(@RequestBody attrGroupIds: Array<Long>): R {
         attrGroupService.removeByIds(attrGroupIds.asList())
         return R.ok()
+    }
+
+
+    /**
+     * 获取分类下所有分组&关联属性
+     *
+     * /product/attrgroup/{catelogId}/withattr
+     * @param catelogId 分类ID
+     */
+    @GetMapping("/{catelogId}/withattr")
+    fun getAttrGroupWithAttrs(@PathVariable("catelogId", required = true) catelogId: Long): R {
+        val list = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId)
+        return R.ok().put("data", list)
     }
 }
