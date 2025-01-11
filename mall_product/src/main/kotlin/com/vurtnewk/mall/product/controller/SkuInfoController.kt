@@ -6,6 +6,7 @@ import com.vurtnewk.mall.product.entity.SkuInfoEntity
 import com.vurtnewk.mall.product.service.SkuInfoService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.vo.SpuInfoVO
 
 /**
  * sku信息
@@ -17,7 +18,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/skuinfo")
 class SkuInfoController @Autowired constructor(
-        private val skuInfoService: SkuInfoService
+    private val skuInfoService: SkuInfoService
 ) {
 
     /**
@@ -45,8 +46,9 @@ class SkuInfoController @Autowired constructor(
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:skuinfo:save")
-    fun save(@RequestBody skuInfo: SkuInfoEntity): R {
-            skuInfoService.save(skuInfo)
+    fun save(@RequestBody spuInfoVO: SpuInfoVO): R {
+//        skuInfoService.save(spuInfoVO)
+
         return R.ok()
     }
 
@@ -56,7 +58,7 @@ class SkuInfoController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:skuinfo:update")
     fun update(@RequestBody skuInfo: SkuInfoEntity): R {
-            skuInfoService.updateById(skuInfo)
+        skuInfoService.updateById(skuInfo)
         return R.ok()
     }
 
@@ -66,7 +68,7 @@ class SkuInfoController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:skuinfo:delete")
     fun delete(@RequestBody skuIds: Array<Long>): R {
-            skuInfoService.removeByIds(skuIds.asList())
+        skuInfoService.removeByIds(skuIds.asList())
         return R.ok()
     }
 }
