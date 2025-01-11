@@ -17,7 +17,7 @@ interface AttrService : IService<AttrEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
     fun saveAttrVO(attr: AttrVO)
-    fun queryBaseAttrPage(params: Map<String, Any>, catelogId: Long): PageUtils
+    fun queryBaseAttrPage(params: Map<String, Any>, catelogId: Long, attrType: String): PageUtils
     fun getAttrInfo(attrId: Long): AttrRespVO
     fun updateAttrVO(attrVo: AttrVO)
 }

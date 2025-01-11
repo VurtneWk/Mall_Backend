@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.constants.AttrEnum
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
-import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.mall.product.dao.AttrAttrgroupRelationDao
 
@@ -49,17 +49,21 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         BeanUtils.copyProperties(attr, attrEntity)
         this.save(attrEntity)
         //2.保存所属分组到关联表
-        val entity = AttrAttrgroupRelationEntity()
-        entity.attrGroupId = attr.attrGroupId
-        entity.attrId = attrEntity.attrId
-        mAttrAttrgroupRelationDao.insert(entity)
+        if (attr.attrType == AttrEnum.ATTR_TYPE_BASE.code) {
+            val entity = AttrAttrgroupRelationEntity()
+            entity.attrGroupId = attr.attrGroupId
+            entity.attrId = attrEntity.attrId
+            mAttrAttrgroupRelationDao.insert(entity)
+        }
     }
 
     //所属分类、所属分组没有
-    override fun queryBaseAttrPage(params: Map<String, Any>, catelogId: Long): PageUtils {
+    override fun queryBaseAttrPage(params: Map<String, Any>, catelogId: Long, attrType: String): PageUtils {
         val key = params["key"] as? String?
         val page = KtQueryChainWrapper(AttrEntity::class.java)
             .eq(catelogId != 0L, AttrEntity::catelogId, catelogId)
+            // 根据属性分类进行查询
+            .eq(AttrEntity::attrType, if ("base".equals(attrType, ignoreCase = true)) AttrEnum.ATTR_TYPE_BASE.code else AttrEnum.ATTR_TYPE_SALE.code)
             .and(!key.isNullOrBlank()) { it.eq(AttrEntity::attrId, key).or().like(AttrEntity::attrName, key) }
             .page(Query<AttrEntity>().getPage(params))
 
@@ -77,20 +81,23 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
             val attrRespVO = AttrRespVO()
             BeanUtils.copyProperties(attrEntity, attrRespVO)
             //1. 设置分类和分组的名字
-            //查询关系表
-            val attrAttrgroupRelationEntity = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
-                .eq(AttrAttrgroupRelationEntity::attrId, attrEntity.attrId)
-                .one()
-            if (attrAttrgroupRelationEntity != null) {
-                //现在根据关系表查询对应的分组名
-                KtQueryChainWrapper(AttrGroupEntity::class.java)
-                    .eq(AttrGroupEntity::attrGroupId, attrAttrgroupRelationEntity.attrGroupId)
+            if ("base".equals(attrType, ignoreCase = true)) { //销售属性是没有分组的 可以不用查
+                //查询关系表
+                val attrAttrgroupRelationEntity = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
+                    .eq(AttrAttrgroupRelationEntity::attrId, attrEntity.attrId)
                     .one()
-                    ?.let { attrGroupEntity ->
-                        attrRespVO.groupName = attrGroupEntity.attrGroupName
-                    }
+                if (attrAttrgroupRelationEntity != null) {
+                    //现在根据关系表查询对应的分组名
+                    KtQueryChainWrapper(AttrGroupEntity::class.java)
+                        .eq(AttrGroupEntity::attrGroupId, attrAttrgroupRelationEntity.attrGroupId)
+                        .one()
+                        ?.let { attrGroupEntity ->
+                            attrRespVO.groupName = attrGroupEntity.attrGroupName
+                        }
+                }
             }
-            //
+
+            //查询分类名
             KtQueryChainWrapper(CategoryEntity::class.java)
                 .eq(CategoryEntity::catId, attrEntity.catelogId)
                 .one()
@@ -113,18 +120,20 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         BeanUtils.copyProperties(attrEntity, attrRespVO)
 
         //attrGroupId
-        val attrAttrgroupRelationEntity = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
-            .eq(AttrAttrgroupRelationEntity::attrId, attrId)
-            .one()
-        if (attrAttrgroupRelationEntity != null) {
-            //现在根据关系表查询对应的分组名
-            KtQueryChainWrapper(AttrGroupEntity::class.java)
-                .eq(AttrGroupEntity::attrGroupId, attrAttrgroupRelationEntity.attrGroupId)
+        if (attrEntity.attrType == AttrEnum.ATTR_TYPE_BASE.code) {
+            val attrAttrgroupRelationEntity = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
+                .eq(AttrAttrgroupRelationEntity::attrId, attrId)
                 .one()
-                ?.let { attrGroupEntity ->
-                    attrRespVO.groupName = attrGroupEntity.attrGroupName
-                    attrRespVO.attrGroupId = attrGroupEntity.attrGroupId
-                }
+            if (attrAttrgroupRelationEntity != null) {
+                //现在根据关系表查询对应的分组名
+                KtQueryChainWrapper(AttrGroupEntity::class.java)
+                    .eq(AttrGroupEntity::attrGroupId, attrAttrgroupRelationEntity.attrGroupId)
+                    .one()
+                    ?.let { attrGroupEntity ->
+                        attrRespVO.groupName = attrGroupEntity.attrGroupName
+                        attrRespVO.attrGroupId = attrGroupEntity.attrGroupId
+                    }
+            }
         }
 
         //属性所属分类路径
@@ -154,19 +163,21 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
                 attrId = attrVo.attrId
             }
         //修改分组关联
-        KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
-            .eq(AttrAttrgroupRelationEntity::attrId, attrVo.attrId)
-            .count()//先查询数据库中有没有该数据
-            .also {
-                //修改操作
-                if (it > 0) {
-                    KtUpdateChainWrapper(AttrAttrgroupRelationEntity::class.java)
-                        .eq(AttrAttrgroupRelationEntity::attrId,attrVo.attrId)
-                        .update(attrAttrgroupRelationEntity)
-                } else {
-                    //新增操作
-                    mAttrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity)
+        if (attrEntity.attrType == AttrEnum.ATTR_TYPE_BASE.code) {
+            KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
+                .eq(AttrAttrgroupRelationEntity::attrId, attrVo.attrId)
+                .count()//先查询数据库中有没有该数据
+                .also {
+                    //修改操作
+                    if (it > 0) {
+                        KtUpdateChainWrapper(AttrAttrgroupRelationEntity::class.java)
+                            .eq(AttrAttrgroupRelationEntity::attrId, attrVo.attrId)
+                            .update(attrAttrgroupRelationEntity)
+                    } else {
+                        //新增操作
+                        mAttrAttrgroupRelationDao.insert(attrAttrgroupRelationEntity)
+                    }
                 }
-            }
+        }
     }
 }

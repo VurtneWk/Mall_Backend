@@ -2,7 +2,6 @@ package com.vurtnewk.mall.product.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
-import com.vurtnewk.mall.product.entity.AttrEntity
 import com.vurtnewk.mall.product.service.AttrService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
@@ -20,11 +19,15 @@ import com.vurtnewk.mall.product.vo.AttrVO
 class AttrController @Autowired constructor(
     private val attrService: AttrService
 ) {
-
+    // /sale/list/0?t=1736581760356&page=1&limit=10&key=
     // /base/list/0?t=1736503492495&page=1&limit=10&key=1
-    @RequestMapping("/base/list/{catelogId}")
-    fun baseAttrList(@RequestParam params: Map<String, Any>, @PathVariable("catelogId") catelogId: Long): R {
-        val page: PageUtils = attrService.queryBaseAttrPage(params, catelogId)
+    @RequestMapping("/{attrType}/list/{catelogId}")
+    fun baseAttrList(
+        @RequestParam params: Map<String, Any>,
+        @PathVariable("catelogId") catelogId: Long,
+        @PathVariable("attrType") attrType: String
+    ): R {
+        val page: PageUtils = attrService.queryBaseAttrPage(params, catelogId, attrType)
         return R.ok().put("page", page)
     }
 
