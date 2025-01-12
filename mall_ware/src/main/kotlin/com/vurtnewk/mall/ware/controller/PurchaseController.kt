@@ -17,7 +17,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("ware/purchase")
 class PurchaseController @Autowired constructor(
-        private val purchaseService: PurchaseService
+    private val purchaseService: PurchaseService
 ) {
 
     /**
@@ -46,7 +46,7 @@ class PurchaseController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchase:save")
     fun save(@RequestBody purchase: PurchaseEntity): R {
-            purchaseService.save(purchase)
+        purchaseService.save(purchase)
         return R.ok()
     }
 
@@ -56,7 +56,7 @@ class PurchaseController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("ware:purchase:update")
     fun update(@RequestBody purchase: PurchaseEntity): R {
-            purchaseService.updateById(purchase)
+        purchaseService.updateById(purchase)
         return R.ok()
     }
 
@@ -66,7 +66,7 @@ class PurchaseController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("ware:purchase:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            purchaseService.removeByIds(ids.asList())
+        purchaseService.removeByIds(ids.asList())
         return R.ok()
     }
 }

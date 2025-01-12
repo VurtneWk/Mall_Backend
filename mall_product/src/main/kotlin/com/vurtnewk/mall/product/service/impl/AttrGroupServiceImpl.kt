@@ -118,7 +118,7 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
             }
 
         //4.最终去查询符合条件的属性
-        val key = params["key"] as? String
+        val key = params["key"] as? String?
         return KtQueryChainWrapper(AttrEntity::class.java)
             .eq(AttrEntity::catelogId, attrGroupEntity.catelogId)
             .eq(AttrEntity::attrType, AttrEnum.ATTR_TYPE_BASE.code)//销售属性没有分组，所以不用关联

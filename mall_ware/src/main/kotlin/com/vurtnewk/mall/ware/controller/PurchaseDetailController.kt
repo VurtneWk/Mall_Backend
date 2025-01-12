@@ -8,8 +8,8 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 
 /**
- * 
  *
+ * 采购需求
  * @author vurtnewk
  * @email vurtnewk@gmail.com
  * @date 2025-01-06 14:43:38
@@ -17,7 +17,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("ware/purchasedetail")
 class PurchaseDetailController @Autowired constructor(
-        private val purchaseDetailService: PurchaseDetailService
+    private val purchaseDetailService: PurchaseDetailService
 ) {
 
     /**
@@ -46,7 +46,7 @@ class PurchaseDetailController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchasedetail:save")
     fun save(@RequestBody purchaseDetail: PurchaseDetailEntity): R {
-            purchaseDetailService.save(purchaseDetail)
+        purchaseDetailService.save(purchaseDetail)
         return R.ok()
     }
 
@@ -56,7 +56,7 @@ class PurchaseDetailController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("ware:purchasedetail:update")
     fun update(@RequestBody purchaseDetail: PurchaseDetailEntity): R {
-            purchaseDetailService.updateById(purchaseDetail)
+        purchaseDetailService.updateById(purchaseDetail)
         return R.ok()
     }
 
@@ -66,7 +66,7 @@ class PurchaseDetailController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("ware:purchasedetail:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            purchaseDetailService.removeByIds(ids.asList())
+        purchaseDetailService.removeByIds(ids.asList())
         return R.ok()
     }
 }
