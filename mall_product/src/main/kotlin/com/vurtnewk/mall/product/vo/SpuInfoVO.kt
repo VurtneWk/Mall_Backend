@@ -74,6 +74,14 @@ data class SpuInfoVO(
     )
 
     data class Sku(
+        //region SkuInfoEntity中前端有传的数据
+        var skuName: String? = null,
+        var skuSubtitle: String? = null,
+        var skuTitle: String? = null,
+        var price: BigDecimal? = null,
+        //endregion
+
+        var reducePrice: BigDecimal? = null,
         var attr: List<Attr?>? = null,
         var countStatus: Int? = null,
         var descar: List<String?>? = null,
@@ -82,12 +90,8 @@ data class SpuInfoVO(
         var fullPrice: BigDecimal? = null,
         var images: List<Image?>? = null,
         var memberPrice: List<MemberPrice?>? = null,
-        var price: BigDecimal? = null,
-        var priceStatus: Int? = null,
-        var reducePrice: BigDecimal? = null,
-        var skuName: String? = null,
-        var skuSubtitle: String? = null,
-        var skuTitle: String? = null
+        var priceStatus: Int? = null
+
     ) {
         data class Attr(
             var attrId: Long? = null,

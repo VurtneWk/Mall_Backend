@@ -14,6 +14,5 @@ import com.vurtnewk.mall.product.entity.SpuImagesEntity
 interface SpuImagesService : IService<SpuImagesEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
-    fun saveImages(id: Long, images: List<String>)
 }
 

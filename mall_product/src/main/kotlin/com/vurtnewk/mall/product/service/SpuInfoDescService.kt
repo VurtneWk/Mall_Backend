@@ -15,6 +15,5 @@ import com.vurtnewk.mall.product.vo.SpuInfoVO
 interface SpuInfoDescService : IService<SpuInfoDescEntity> {
 
     fun queryPage(params: Map<String, Any>): PageUtils
-    fun saveSpuInfoDesc(spuInfoDescEntity: SpuInfoDescEntity)
 }
 

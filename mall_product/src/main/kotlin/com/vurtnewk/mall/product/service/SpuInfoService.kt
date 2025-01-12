@@ -17,6 +17,5 @@ interface SpuInfoService : IService<SpuInfoEntity> {
 
     fun queryPage(params: Map<String, Any>): PageUtils
     fun saveSpuInfo(spuInfoVO: SpuInfoVO)
-    fun saveBaseSpuInfo(spuInfoEntity: SpuInfoEntity)
 }
 

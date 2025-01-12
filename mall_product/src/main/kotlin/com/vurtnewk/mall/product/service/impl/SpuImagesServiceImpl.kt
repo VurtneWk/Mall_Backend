@@ -24,19 +24,4 @@ class SpuImagesServiceImpl : ServiceImpl<SpuImagesDao, SpuImagesEntity>(), SpuIm
         return PageUtils(page)
     }
 
-    /**
-     * @param id spuID
-     * @param images 商品图集
-     */
-    @Transactional
-    override fun saveImages(id: Long, images: List<String>) {
-        val list = images.map {
-            SpuImagesEntity().apply {
-                spuId = id
-                imgUrl = it
-            }
-        }
-        this.saveBatch(list)
-    }
-
 }

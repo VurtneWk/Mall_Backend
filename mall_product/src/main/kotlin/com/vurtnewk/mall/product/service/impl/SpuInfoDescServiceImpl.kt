@@ -24,7 +24,4 @@ class SpuInfoDescServiceImpl : ServiceImpl<SpuInfoDescDao, SpuInfoDescEntity>(),
         return PageUtils(page)
     }
 
-    override fun saveSpuInfoDesc(spuInfoDescEntity: SpuInfoDescEntity) {
-        this.baseMapper.insert(spuInfoDescEntity)
-    }
 }
