@@ -73,7 +73,7 @@ class SkuFullReductionController @Autowired constructor(
 
     @PostMapping("/saveInfo")
     //@RequiresPermissions("coupon:skufullreduction:list")
-    fun saveInfo(@RequestParam skuReductionDto: SkuReductionDto): R {
+    fun saveInfo(@RequestBody skuReductionDto: SkuReductionDto): R {
         skuFullReductionService.saveSkuReduction(skuReductionDto)
         return R.ok()
     }

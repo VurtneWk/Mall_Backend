@@ -16,6 +16,7 @@ import com.vurtnewk.mall.product.service.*
 import com.vurtnewk.mall.product.vo.SpuInfoVO
 import org.springframework.beans.BeanUtils
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.util.*
 
 
@@ -75,7 +76,7 @@ class SpuInfoServiceImpl(
         //region 3. 保存spu的图片集 pms_spu_images
         val spuImagesEntities = spuInfoVO.images.map {
             SpuImagesEntity().apply {
-                spuId = id
+                spuId = spuInfoEntity.id
                 imgUrl = it
             }
         }
@@ -105,7 +106,7 @@ class SpuInfoServiceImpl(
             BeanUtils.copyProperties(it, spuBoundsDto)
             spuBoundsDto.spuId = spuInfoEntity.id
             val r = mCouponFeignService.saveSpuBounds(spuBoundsDto)
-            if(!r.isSuccess()){
+            if (!r.isSuccess()) {
                 logError("远程保存spu的积分信息失败")
             }
             r
@@ -124,7 +125,7 @@ class SpuInfoServiceImpl(
                 this.catalogId = spuInfoEntity.catalogId
                 this.saleCount = 0
                 this.spuId = spuInfoEntity.id
-                this.skuDefaultImg = sku.images?.first { it?.defaultImg == 1 }?.imgUrl
+                this.skuDefaultImg = sku.images?.firstOrNull { it?.defaultImg == 1 }?.imgUrl
             }
             // 因为图片存储时需要用到 skuInfoEntity id ， 所以需要单个存储
             mSkuInfoService.save(skuInfoEntity)
@@ -136,7 +137,9 @@ class SpuInfoServiceImpl(
                 skuImagesEntity.skuId = skuInfoEntity.skuId
                 skuImagesEntity.imgUrl = image.imgUrl
                 skuImagesEntity.defaultImg = image.defaultImg
-                skuImagesEntity
+                skuImagesEntity//
+            }?.filter {
+                !it.imgUrl.isNullOrEmpty()
             }?.let {
                 mSkuImagesService.saveBatch(it)
             }
@@ -156,9 +159,11 @@ class SpuInfoServiceImpl(
             val skuReductionDto = SkuReductionDto()
             BeanUtils.copyProperties(sku, skuReductionDto)
             skuReductionDto.skuId = skuInfoEntity.skuId
-            mCouponFeignService.saveSkuReduction(skuReductionDto).apply {
-                if(!this.isSuccess()){
-                    logError("远程保存sku的优惠、满减等信息失败")
+            if ((skuReductionDto.fullCount ?: 0) > 0 || (skuReductionDto.fullPrice?.compareTo(BigDecimal.ZERO) ?: 0) > 0) {
+                mCouponFeignService.saveSkuReduction(skuReductionDto).apply {
+                    if (!this.isSuccess()) {
+                        logError("远程保存sku的优惠、满减等信息失败")
+                    }
                 }
             }
         }

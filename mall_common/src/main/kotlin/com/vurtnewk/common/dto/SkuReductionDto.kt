@@ -1,5 +1,6 @@
 package com.vurtnewk.common.dto
 
+import java.io.Serializable
 import java.math.BigDecimal
 
 /**
@@ -16,10 +17,10 @@ data class SkuReductionDto(
     var discount: BigDecimal? = null,
     var priceStatus: Int? = null,
     var memberPrice: List<MemberPriceDto?>? = null,
-) {
+) : Serializable {
     data class MemberPriceDto(
         var id: Long? = null,
         var name: String? = null,
         var price: BigDecimal? = null
-    )
+    ) : Serializable
 }

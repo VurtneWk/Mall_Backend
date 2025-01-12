@@ -15,6 +15,8 @@ import com.vurtnewk.mall.coupon.service.MemberPriceService
 import com.vurtnewk.mall.coupon.service.SkuFullReductionService
 import com.vurtnewk.mall.coupon.service.SkuLadderService
 import org.springframework.beans.BeanUtils
+import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 
 @Service("skuFullReductionService")
@@ -35,19 +37,27 @@ class SkuFullReductionServiceImpl(
      * production 商品提交时 远程调用该方法
      * 6.4 sku的优惠、满减等信息 mall_sms -> sms_sku_ladder 、sms_sku_full_reduction 、sms_member_price
      */
+    @Transactional
     override fun saveSkuReduction(skuReductionDto: SkuReductionDto) {
         // sms_sku_ladder
-        val skuLadderEntity = SkuLadderEntity()
-        BeanUtils.copyProperties(skuReductionDto, skuLadderEntity)
-        skuLadderEntity.addOther = skuReductionDto.countStatus
+
+        if ((skuReductionDto.fullCount ?: 0) > 0) {
+            val skuLadderEntity = SkuLadderEntity()
+            BeanUtils.copyProperties(skuReductionDto, skuLadderEntity)
+            skuLadderEntity.addOther = skuReductionDto.countStatus
 //        skuLadderEntity.price = ? 折后价
-        skuLadderService.save(skuLadderEntity)
+            skuLadderService.save(skuLadderEntity)
+        }
+
 
         // sms_sku_full_reduction
-        val skuFullReductionEntity = SkuFullReductionEntity()
-        BeanUtils.copyProperties(skuReductionDto, skuFullReductionEntity)
-        skuLadderEntity.addOther = skuReductionDto.countStatus
-        this.save(skuFullReductionEntity)
+        if ((skuReductionDto.fullPrice?.compareTo(BigDecimal.ZERO) ?: 0) > 0) {
+            val skuFullReductionEntity = SkuFullReductionEntity()
+            BeanUtils.copyProperties(skuReductionDto, skuFullReductionEntity)
+            skuFullReductionEntity.addOther = skuReductionDto.countStatus
+            this.save(skuFullReductionEntity)
+        }
+
 
         // sms_member_price
         skuReductionDto.memberPrice?.mapNotNull {
@@ -61,6 +71,8 @@ class SkuFullReductionServiceImpl(
                     addOther = 1 //这里是设置的默认值
                 }
             memberPriceEntity
+        }?.filter {
+            (it.memberPrice?.compareTo(BigDecimal.ZERO) ?: 0) > 0
         }?.let {
             memberPriceService.saveBatch(it)
         }
