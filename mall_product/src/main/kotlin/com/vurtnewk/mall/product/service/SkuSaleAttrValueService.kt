@@ -2,18 +2,16 @@ package com.vurtnewk.mall.product.service
 
 import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
-import com.vurtnewk.mall.product.entity.SkuInfoEntity
-import com.vurtnewk.mall.product.entity.SpuInfoEntity
-import com.vurtnewk.mall.product.vo.SpuInfoVO
+import com.vurtnewk.mall.product.entity.SkuSaleAttrValueEntity
 
 /**
- * sku信息
+ * sku销售属性&值
  *
  * @author vurtnewk
  * @email vurtnewk@gmail.com
- * @date 2025-01-06 12:58:45
+ * @date 2025-01-12 04:03:55
  */
-interface SkuInfoService : IService<SkuInfoEntity> {
+interface SkuSaleAttrValueService : IService<SkuSaleAttrValueEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
 }

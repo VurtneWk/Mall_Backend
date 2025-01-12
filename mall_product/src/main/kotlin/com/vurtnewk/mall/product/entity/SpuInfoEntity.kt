@@ -7,31 +7,27 @@ import java.io.Serializable
 import java.util.Date
 
 /**
- * sku信息
+ * spu信息
  *
  * @author vurtnewk
  * @email vurtnewk@gmail.com
  * @date 2025-01-12 04:03:55
  */
-@TableName("pms_sku_info")
-data class SkuInfoEntity(
+@TableName("pms_spu_info")
+data class SpuInfoEntity(
     /**
-     * skuId
+     * 商品id
      */
     @TableId
-    var skuId: Long? = null,
+    var id: Long? = null,
     /**
-     * spuId
+     * 商品名称
      */
-    var spuId: Long? = null,
+    var spuName: String? = null,
     /**
-     * sku名称
+     * 商品描述
      */
-    var skuName: String? = null,
-    /**
-     * sku介绍描述
-     */
-    var skuDesc: String? = null,
+    var spuDescription: String? = null,
     /**
      * 所属分类id
      */
@@ -40,26 +36,22 @@ data class SkuInfoEntity(
      * 品牌id
      */
     var brandId: Long? = null,
-    /**
-     * 默认图片
+     /**
+     * 重量
      */
-    var skuDefaultImg: String? = null,
+    var weight: BigDecimal? = null,
     /**
-     * 标题
+     * 上架状态[0 - 下架，1 - 上架]
      */
-    var skuTitle: String? = null,
+    var publishStatus: Int? = null,
     /**
-     * 副标题
+     * 创建时间
      */
-    var skuSubtitle: String? = null,
+    var createTime: Date? = null,
     /**
-     * 价格
+     * 更新时间
      */
-    var price: BigDecimal? = null,
-    /**
-     * 销量
-     */
-    var saleCount: Long? = null,
+    var updateTime: Date? = null,
 ) : Serializable {
     companion object {
         private const val serialVersionUID: Long = 1L

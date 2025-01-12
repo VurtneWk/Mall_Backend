@@ -6,37 +6,37 @@ import java.io.Serializable
 import java.util.Date
 
 /**
- * sku图片
+ * spu图片
  *
  * @author vurtnewk
  * @email vurtnewk@gmail.com
- * @date 2025-01-06 12:58:45
+ * @date 2025-01-12 04:03:55
  */
-@TableName("pms_sku_images")
-data class SkuImagesEntity(
+@TableName("pms_spu_images")
+data class SpuImagesEntity(
     /**
      * id
      */
     @TableId
     var id: Long? = null,
     /**
-     * sku_id
+     * spu_id
      */
-    var skuId: Long? = null,
+    var spuId: Long? = null,
+    /**
+     * 图片名
+     */
+    var imgName: String? = null,
     /**
      * 图片地址
      */
     var imgUrl: String? = null,
     /**
-     * 排序
+     * 顺序
      */
     var imgSort: Int? = null,
     /**
-     * 默认图[0 - 不是默认图，1 - 是默认图]
+     * 是否默认图
      */
     var defaultImg: Int? = null,
-) : Serializable {
-    companion object {
-        private const val serialVersionUID: Long = 1L
-    }
-}
+) : Serializable

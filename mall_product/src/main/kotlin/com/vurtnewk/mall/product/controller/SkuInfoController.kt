@@ -46,9 +46,8 @@ class SkuInfoController @Autowired constructor(
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:skuinfo:save")
-    fun save(@RequestBody spuInfoVO: SpuInfoVO): R {
-//        skuInfoService.save(spuInfoVO)
-
+    fun save(@RequestBody skuInfoEntity:SkuInfoEntity): R {
+        skuInfoService.save(skuInfoEntity)
         return R.ok()
     }
 

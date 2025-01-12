@@ -7,25 +7,24 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 
-import com.vurtnewk.mall.product.dao.SkuInfoDao
-import com.vurtnewk.mall.product.entity.SkuInfoEntity
-import com.vurtnewk.mall.product.service.SkuInfoService
+import com.vurtnewk.mall.product.dao.SpuInfoDescDao
+import com.vurtnewk.mall.product.entity.SpuInfoDescEntity
+import com.vurtnewk.mall.product.service.SpuInfoDescService
 import com.vurtnewk.mall.product.vo.SpuInfoVO
-import org.springframework.beans.BeanUtils
-import org.springframework.transaction.annotation.Transactional
 
 
-@Service("skuInfoService")
-class SkuInfoServiceImpl : ServiceImpl<SkuInfoDao, SkuInfoEntity>(), SkuInfoService {
+@Service("spuInfoDescService")
+class SpuInfoDescServiceImpl : ServiceImpl<SpuInfoDescDao, SpuInfoDescEntity>(), SpuInfoDescService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
-            Query<SkuInfoEntity>().getPage(params),
-            QueryWrapper<SkuInfoEntity>()
+            Query<SpuInfoDescEntity>().getPage(params),
+            QueryWrapper<SpuInfoDescEntity>()
         )
         return PageUtils(page)
     }
 
-
-
+    override fun saveSpuInfoDesc(spuInfoDescEntity: SpuInfoDescEntity) {
+        this.baseMapper.insert(spuInfoDescEntity)
+    }
 }
