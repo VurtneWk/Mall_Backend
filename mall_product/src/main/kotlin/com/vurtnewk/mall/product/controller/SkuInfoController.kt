@@ -6,7 +6,6 @@ import com.vurtnewk.mall.product.entity.SkuInfoEntity
 import com.vurtnewk.mall.product.service.SkuInfoService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
-import com.vurtnewk.mall.product.vo.SpuInfoVO
 
 /**
  * sku信息
@@ -27,7 +26,7 @@ class SkuInfoController @Autowired constructor(
     @RequestMapping("/list")
     //@RequiresPermissions("product:skuinfo:list")
     fun list(@RequestParam params: Map<String, Any>): R {
-        val page: PageUtils = skuInfoService.queryPage(params)
+        val page: PageUtils = skuInfoService.queryPageByCondition(params)
         return R.ok().put("page", page)
     }
 
