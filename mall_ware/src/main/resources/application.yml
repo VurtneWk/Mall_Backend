@@ -11,6 +11,7 @@ spring:
       config:
         import-check:
           enabled: false
+        server-addr: 127.0.0.1:8848
   # 如果没有名字，nacos里看不到
   application:
     name: mall-ware
@@ -25,3 +26,8 @@ mybatis-plus:
 
 server:
   port: 5500
+
+
+logging:
+  level:
+    com.vurtnewk.mall: debug
