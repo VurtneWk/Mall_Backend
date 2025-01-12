@@ -57,4 +57,9 @@ class R : HashMap<String, Any>() {
     fun getCode(): Int {
         return this["code"].toString().toInt()
     }
+
+
+    fun isSuccess(): Boolean {
+        return this.getCode() == 0
+    }
 }

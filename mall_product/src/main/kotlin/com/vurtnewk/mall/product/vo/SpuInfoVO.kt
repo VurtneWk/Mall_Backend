@@ -82,15 +82,16 @@ data class SpuInfoVO(
         //endregion
 
         var reducePrice: BigDecimal? = null,
-        var attr: List<Attr?>? = null,
         var countStatus: Int? = null,
-        var descar: List<String?>? = null,
-        var discount: BigDecimal? = null,
         var fullCount: Int? = null,
         var fullPrice: BigDecimal? = null,
-        var images: List<Image?>? = null,
+        var discount: BigDecimal? = null,
+        var priceStatus: Int? = null,
         var memberPrice: List<MemberPrice?>? = null,
-        var priceStatus: Int? = null
+
+        var attr: List<Attr?>? = null,
+        var descar: List<String?>? = null,
+        var images: List<Image?>? = null
 
     ) {
         data class Attr(

@@ -3,11 +3,15 @@ package com.vurtnewk.mall.product.service.impl
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.dto.SkuReductionDto
+import com.vurtnewk.common.dto.SpuBoundsDto
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
+import com.vurtnewk.common.utils.ext.logError
 
 import com.vurtnewk.mall.product.dao.SpuInfoDao
 import com.vurtnewk.mall.product.entity.*
+import com.vurtnewk.mall.product.feign.CouponFeignService
 import com.vurtnewk.mall.product.service.*
 import com.vurtnewk.mall.product.vo.SpuInfoVO
 import org.springframework.beans.BeanUtils
@@ -23,7 +27,8 @@ class SpuInfoServiceImpl(
     private val mProductAttrValueService: ProductAttrValueService,
     private val mSkuInfoService: SkuInfoService,
     private val mSkuImagesService: SkuImagesService,
-    private val mSkuSaleAttrValueService: SkuSaleAttrValueService
+    private val mSkuSaleAttrValueService: SkuSaleAttrValueService,
+    private val mCouponFeignService: CouponFeignService
 ) : ServiceImpl<SpuInfoDao, SpuInfoEntity>(), SpuInfoService {
 
 
@@ -94,8 +99,19 @@ class SpuInfoServiceImpl(
         mProductAttrValueService.saveBatch(baseAttrsList)
         //endregion
 
+        //region 5.保存spu的积分信息：mall_sms -> sms_spu_bounds
+        spuInfoVO.bounds?.let {
+            val spuBoundsDto = SpuBoundsDto()
+            BeanUtils.copyProperties(it, spuBoundsDto)
+            spuBoundsDto.spuId = spuInfoEntity.id
+            val r = mCouponFeignService.saveSpuBounds(spuBoundsDto)
+            if(!r.isSuccess()){
+                logError("远程保存spu的积分信息失败")
+            }
+            r
+        }
+        //endregion
 
-//        5.保存spu的积分信息：mall_sms -> sms_spu_bounds
 
         //region 6.保存当前spu对应的sku信息
         spuInfoVO.skus?.forEach { sku ->
@@ -137,8 +153,14 @@ class SpuInfoServiceImpl(
             }
 
             //6.4 sku的优惠、满减等信息 mall_sms -> sms_sku_ladder 、sms_sku_full_reduction 、sms_member_price
-
-
+            val skuReductionDto = SkuReductionDto()
+            BeanUtils.copyProperties(sku, skuReductionDto)
+            skuReductionDto.skuId = skuInfoEntity.skuId
+            mCouponFeignService.saveSkuReduction(skuReductionDto).apply {
+                if(!this.isSuccess()){
+                    logError("远程保存sku的优惠、满减等信息失败")
+                }
+            }
         }
         //endregion
     }

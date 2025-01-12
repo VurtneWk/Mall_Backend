@@ -1,5 +1,6 @@
 package com.vurtnewk.mall.coupon.controller
 
+import com.vurtnewk.common.dto.SkuReductionDto
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import com.vurtnewk.mall.coupon.entity.SkuFullReductionEntity
@@ -17,7 +18,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("coupon/skufullreduction")
 class SkuFullReductionController @Autowired constructor(
-        private val skuFullReductionService: SkuFullReductionService
+    private val skuFullReductionService: SkuFullReductionService
 ) {
 
     /**
@@ -46,7 +47,7 @@ class SkuFullReductionController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("coupon:skufullreduction:save")
     fun save(@RequestBody skuFullReduction: SkuFullReductionEntity): R {
-            skuFullReductionService.save(skuFullReduction)
+        skuFullReductionService.save(skuFullReduction)
         return R.ok()
     }
 
@@ -56,7 +57,7 @@ class SkuFullReductionController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("coupon:skufullreduction:update")
     fun update(@RequestBody skuFullReduction: SkuFullReductionEntity): R {
-            skuFullReductionService.updateById(skuFullReduction)
+        skuFullReductionService.updateById(skuFullReduction)
         return R.ok()
     }
 
@@ -66,7 +67,15 @@ class SkuFullReductionController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("coupon:skufullreduction:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            skuFullReductionService.removeByIds(ids.asList())
+        skuFullReductionService.removeByIds(ids.asList())
         return R.ok()
     }
+
+    @PostMapping("/saveInfo")
+    //@RequiresPermissions("coupon:skufullreduction:list")
+    fun saveInfo(@RequestParam skuReductionDto: SkuReductionDto): R {
+        skuFullReductionService.saveSkuReduction(skuReductionDto)
+        return R.ok()
+    }
+
 }

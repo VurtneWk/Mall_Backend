@@ -17,7 +17,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("coupon/spubounds")
 class SpuBoundsController @Autowired constructor(
-        private val spuBoundsService: SpuBoundsService
+    private val spuBoundsService: SpuBoundsService
 ) {
 
     /**
@@ -46,7 +46,7 @@ class SpuBoundsController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("coupon:spubounds:save")
     fun save(@RequestBody spuBounds: SpuBoundsEntity): R {
-            spuBoundsService.save(spuBounds)
+        spuBoundsService.save(spuBounds)
         return R.ok()
     }
 
@@ -56,7 +56,7 @@ class SpuBoundsController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("coupon:spubounds:update")
     fun update(@RequestBody spuBounds: SpuBoundsEntity): R {
-            spuBoundsService.updateById(spuBounds)
+        spuBoundsService.updateById(spuBounds)
         return R.ok()
     }
 
@@ -66,7 +66,7 @@ class SpuBoundsController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("coupon:spubounds:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            spuBoundsService.removeByIds(ids.asList())
+        spuBoundsService.removeByIds(ids.asList())
         return R.ok()
     }
 }

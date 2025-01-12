@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.coupon.service
 
 import com.baomidou.mybatisplus.extension.service.IService
+import com.vurtnewk.common.dto.SkuReductionDto
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.coupon.entity.SkuFullReductionEntity
 
@@ -14,5 +15,6 @@ import com.vurtnewk.mall.coupon.entity.SkuFullReductionEntity
 interface SkuFullReductionService : IService<SkuFullReductionEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun saveSkuReduction(skuReductionDto: SkuReductionDto)
 }
 
