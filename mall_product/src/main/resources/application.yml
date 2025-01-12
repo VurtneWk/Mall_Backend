@@ -14,6 +14,8 @@ spring:
   # 如果没有名字，nacos里看不到
   application:
     name: mall-product
+  jackson: # 接口返回的JSON里的时间格式处理
+    date-format: yyyy-mm-dd HH:mm:ss
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个

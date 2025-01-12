@@ -2,12 +2,15 @@ package com.vurtnewk.mall.product.service.impl
 
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.dto.SkuReductionDto
 import com.vurtnewk.common.dto.SpuBoundsDto
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.logError
+import com.vurtnewk.common.utils.ext.pageUtils
+import com.vurtnewk.common.utils.ext.toPage
 
 import com.vurtnewk.mall.product.dao.SpuInfoDao
 import com.vurtnewk.mall.product.entity.*
@@ -168,6 +171,40 @@ class SpuInfoServiceImpl(
             }
         }
         //endregion
+    }
+
+    /**
+     * ## 根据条件检索
+     * ### 请求参数
+     * ```json
+     * {
+     *    page: 1,//当前页码
+     *    limit: 10,//每页记录数
+     *    sidx: 'id',//排序字段
+     *    order: 'asc/desc',//排序方式
+     *    key: '华为',//检索关键字
+     *    catelogId: 6,//三级分类id
+     *    brandId: 1,//品牌id
+     *    status: 0,//商品状态
+     * }
+     * ```
+     */
+    override fun queryPageByCondition(params: Map<String, Any>): PageUtils {
+        val key = params["key"] as? String
+        val catalogId = params["catelogId"] as? String
+        val brandId = params["brandId"] as? String
+        val status = params["status"] as? String
+
+        return KtQueryChainWrapper(SpuInfoEntity::class.java)
+            .and(!key.isNullOrBlank()) {
+                it.eq(SpuInfoEntity::id, key).or().like(SpuInfoEntity::spuName, key)
+            }
+            .eq(!status.isNullOrBlank(), SpuInfoEntity::publishStatus, status)
+            .eq(!catalogId.isNullOrBlank(), SpuInfoEntity::catalogId, catalogId)
+            .eq(!brandId.isNullOrBlank(), SpuInfoEntity::brandId, brandId)
+            .toPage(params)
+            .pageUtils()
+//            .page(Query<SpuInfoEntity>().getPage(params))
     }
 
 }

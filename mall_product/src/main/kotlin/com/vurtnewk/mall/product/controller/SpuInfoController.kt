@@ -27,7 +27,7 @@ class SpuInfoController @Autowired constructor(
     @RequestMapping("/list")
     //@RequiresPermissions("product:spuinfo:list")
     fun list(@RequestParam params: Map<String, Any>): R {
-        val page: PageUtils = spuInfoService.queryPage(params)
+        val page: PageUtils = spuInfoService.queryPageByCondition(params)
         return R.ok().put("page", page)
     }
 
