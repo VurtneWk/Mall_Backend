@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*
 import com.vurtnewk.mall.product.service.AttrService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.entity.ProductAttrValueEntity
+import com.vurtnewk.mall.product.service.ProductAttrValueService
 import com.vurtnewk.mall.product.vo.AttrVO
 
 /**
@@ -17,7 +19,8 @@ import com.vurtnewk.mall.product.vo.AttrVO
 @RestController
 @RequestMapping("product/attr")
 class AttrController @Autowired constructor(
-    private val attrService: AttrService
+    private val attrService: AttrService,
+    private val productAttrValueService: ProductAttrValueService,
 ) {
 
     /**
@@ -29,7 +32,7 @@ class AttrController @Autowired constructor(
     fun baseAttrList(
         @RequestParam params: Map<String, Any>,
         @PathVariable("catelogId") catelogId: Long,
-        @PathVariable("attrType") attrType: String
+        @PathVariable("attrType") attrType: String,
     ): R {
         val page: PageUtils = attrService.queryBaseAttrPage(params, catelogId, attrType)
         return R.ok().put("page", page)
@@ -77,6 +80,14 @@ class AttrController @Autowired constructor(
         return R.ok()
     }
 
+    @PostMapping("/update/{spuId}")
+    // @RequiresPermissions("product:attr:update")
+    fun updateSpuAttr(@PathVariable("spuId") spuId: Long, @RequestBody entities: List<ProductAttrValueEntity>): R {
+//        attrService.updateById(attr)
+        productAttrValueService.updateSpuAttr(spuId , entities)
+        return R.ok()
+    }
+
     /**
      * 删除
      */
@@ -85,5 +96,16 @@ class AttrController @Autowired constructor(
     fun delete(@RequestBody attrIds: Array<Long>): R {
         attrService.removeByIds(attrIds.asList())
         return R.ok()
+    }
+
+    /**
+     * ## 获取spu规格
+     * - /product/attr/base/listforspu/{spuId}
+     *
+     */
+    @GetMapping("/base/listforspu/{spuId}")
+    fun baseAttrList(@PathVariable("spuId") spuId: Long): R {
+        val list = productAttrValueService.baseAttrList(spuId)
+        return R.ok().put("data", list)
     }
 }

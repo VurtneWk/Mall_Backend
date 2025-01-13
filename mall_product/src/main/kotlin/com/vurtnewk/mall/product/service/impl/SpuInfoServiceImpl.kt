@@ -200,8 +200,8 @@ class SpuInfoServiceImpl(
                 it.eq(SpuInfoEntity::id, key).or().like(SpuInfoEntity::spuName, key)
             }
             .eq(!status.isNullOrBlank(), SpuInfoEntity::publishStatus, status)
-            .eq(!catalogId.isNullOrBlank(), SpuInfoEntity::catalogId, catalogId)
-            .eq(!brandId.isNullOrBlank(), SpuInfoEntity::brandId, brandId)
+            .eq(!catalogId.isNullOrBlank() && catalogId != "0", SpuInfoEntity::catalogId, catalogId)
+            .eq(!brandId.isNullOrBlank() && brandId != "0", SpuInfoEntity::brandId, brandId)
             .toPage(params)
             .pageUtils()
 //            .page(Query<SpuInfoEntity>().getPage(params))

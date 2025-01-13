@@ -14,5 +14,7 @@ import com.vurtnewk.mall.product.entity.ProductAttrValueEntity
 interface ProductAttrValueService : IService<ProductAttrValueEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun baseAttrList(spuId: Long): List<ProductAttrValueEntity>
+    fun updateSpuAttr(spuId: Long, entities: List<ProductAttrValueEntity>)
 }
 
