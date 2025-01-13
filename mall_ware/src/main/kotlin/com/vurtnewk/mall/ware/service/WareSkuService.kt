@@ -14,5 +14,6 @@ import com.vurtnewk.mall.ware.entity.WareSkuEntity
 interface WareSkuService : IService<WareSkuEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun addStock(skuId: Long, wareId: Long, skuNum: Int)
 }
 

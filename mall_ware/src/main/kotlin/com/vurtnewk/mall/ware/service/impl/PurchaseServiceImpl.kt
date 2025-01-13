@@ -16,7 +16,9 @@ import com.vurtnewk.mall.ware.entity.PurchaseDetailEntity
 import com.vurtnewk.mall.ware.entity.PurchaseEntity
 import com.vurtnewk.mall.ware.service.PurchaseDetailService
 import com.vurtnewk.mall.ware.service.PurchaseService
+import com.vurtnewk.mall.ware.service.WareSkuService
 import com.vurtnewk.mall.ware.vo.MergePurchaseOrderVo
+import com.vurtnewk.mall.ware.vo.PurchaseOrderDoneVo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -24,7 +26,8 @@ import java.util.*
 
 @Service("purchaseService")
 class PurchaseServiceImpl(
-    private val purchaseDetailService: PurchaseDetailService
+    private val purchaseDetailService: PurchaseDetailService,
+    private val wareSkuService: WareSkuService,
 ) : ServiceImpl<PurchaseDao, PurchaseEntity>(), PurchaseService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -121,7 +124,7 @@ class PurchaseServiceImpl(
                 it
             }
         //2、改变采购单的状态
-        if(purchaseEntities.isEmpty()){
+        if (purchaseEntities.isEmpty()) {
             logInfo("没有符合条件的采购需求")
             throw CustomException("没有符合条件的采购需求")
         }
@@ -135,10 +138,43 @@ class PurchaseServiceImpl(
                 it.status = WareConstants.PurchaseDetailStatusEnum.BUYING.code
                 it
             }
-        if(purchaseDetailEntities.isEmpty()) {
+        if (purchaseDetailEntities.isEmpty()) {
             logInfo("这个采购单下，没有采购需求")
             throw CustomException("这个采购单下，没有采购需求")
         }
         purchaseDetailService.updateBatchById(purchaseDetailEntities)
+    }
+
+    /**
+     * 1. 改变采购单状态
+     * 2. 改变采购项的状态
+     * 3. 将成功采购的进行入库
+     */
+    @Transactional
+    override fun donePurchaseOrder(purchaseOrderDoneVo: PurchaseOrderDoneVo) {
+
+        var isSuccess = true
+        val updates = mutableListOf<PurchaseDetailEntity>()
+        purchaseOrderDoneVo.items.forEach { item ->
+            val purchaseDetailEntity = PurchaseDetailEntity()
+            purchaseDetailEntity.status = item.status
+            purchaseDetailEntity.id = item.itemId
+            if (item.status == WareConstants.PurchaseDetailStatusEnum.ERROR.code) {
+                isSuccess = false
+            } else {
+                //将成功采购的进行入库
+                val detailEntity = purchaseDetailService.getById(item.itemId)
+                wareSkuService.addStock(detailEntity.skuId!!, detailEntity.wareId!!, detailEntity.skuNum!!)
+            }
+            updates.add(purchaseDetailEntity)
+        }
+        //改变采购单状态
+        purchaseDetailService.updateBatchById(updates)
+
+        //更新订单
+        KtUpdateChainWrapper(PurchaseEntity::class.java)
+            .set(PurchaseEntity::status, if (isSuccess) WareConstants.PurchaseStatusEnum.FINISH.code else WareConstants.PurchaseStatusEnum.ERROR.code)
+            .eq(PurchaseEntity::id, purchaseOrderDoneVo.id)
+            .update()
     }
 }

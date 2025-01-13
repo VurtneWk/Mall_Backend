@@ -7,6 +7,7 @@ import com.vurtnewk.mall.ware.service.PurchaseService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.mall.ware.vo.MergePurchaseOrderVo
+import com.vurtnewk.mall.ware.vo.PurchaseOrderDoneVo
 import java.util.*
 
 /**
@@ -102,4 +103,18 @@ class PurchaseController @Autowired constructor(
         return R.ok()
     }
 
+    /**
+     * ## 完成采购单
+     * ```json
+     * {
+     *    id: 123,//采购单id
+     *    items: [{itemId:1,status:4,reason:""}]//完成/失败的需求详情
+     * }
+     * ```
+     */
+    @PostMapping("/done")
+    fun donePurchaseOrder(@RequestBody purchaseOrderDoneVo: PurchaseOrderDoneVo): R {
+        purchaseService.donePurchaseOrder(purchaseOrderDoneVo)
+        return R.ok()
+    }
 }

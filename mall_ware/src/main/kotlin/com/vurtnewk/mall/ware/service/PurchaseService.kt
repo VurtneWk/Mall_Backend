@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.ware.entity.PurchaseEntity
 import com.vurtnewk.mall.ware.vo.MergePurchaseOrderVo
+import com.vurtnewk.mall.ware.vo.PurchaseOrderDoneVo
 
 /**
  * 采购信息
@@ -18,5 +19,6 @@ interface PurchaseService : IService<PurchaseEntity> {
     fun queryUnreceivedList(params: Map<String, Any>): PageUtils
     fun mergePurchaseOrder(purchaseOrderVo: MergePurchaseOrderVo)
     fun receivedPurchaseOrder(purchaseIds: List<Long>)
+    fun donePurchaseOrder(purchaseOrderDoneVo: PurchaseOrderDoneVo)
 }
 

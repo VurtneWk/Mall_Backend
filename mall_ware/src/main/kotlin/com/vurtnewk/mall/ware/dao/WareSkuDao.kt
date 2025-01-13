@@ -3,6 +3,7 @@ package com.vurtnewk.mall.ware.dao
 import com.vurtnewk.mall.ware.entity.WareSkuEntity
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 
 /**
  * 商品库存
@@ -13,5 +14,5 @@ import org.apache.ibatis.annotations.Mapper
  */
 @Mapper
 interface WareSkuDao : BaseMapper<WareSkuEntity> {
-	
+    fun updateStock(@Param("skuId") skuId: Long, @Param("wareId") wareId: Long, @Param("skuNum") skuNum: Int)
 }
