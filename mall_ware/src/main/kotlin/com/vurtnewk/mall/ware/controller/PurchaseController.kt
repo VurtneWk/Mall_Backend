@@ -6,6 +6,8 @@ import com.vurtnewk.mall.ware.entity.PurchaseEntity
 import com.vurtnewk.mall.ware.service.PurchaseService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.ware.vo.MergePurchaseOrderVo
+import java.util.*
 
 /**
  * 采购信息
@@ -46,6 +48,8 @@ class PurchaseController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchase:save")
     fun save(@RequestBody purchase: PurchaseEntity): R {
+        purchase.createTime = Date()
+        purchase.updateTime = Date()
         purchaseService.save(purchase)
         return R.ok()
     }
@@ -67,6 +71,25 @@ class PurchaseController @Autowired constructor(
     // @RequiresPermissions("ware:purchase:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
         purchaseService.removeByIds(ids.asList())
+        return R.ok()
+    }
+
+    /**
+     * ## 查询未领取的采购单
+     */
+    @GetMapping("/unreceive/list")
+    fun unreceivedList(@RequestParam params: Map<String, Any>): R {
+        val page: PageUtils = purchaseService.queryUnreceivedList(params)
+        return R.ok().put("page", page)
+    }
+
+    /**
+     * ## 合并采购单
+     *
+     */
+    @PostMapping("/merge")
+    fun mergePurchaseOrder(@RequestBody purchaseOrderVo: MergePurchaseOrderVo): R {
+        purchaseService.mergePurchaseOrder(purchaseOrderVo)
         return R.ok()
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
-import com.vurtnewk.common.constants.AttrEnum
+import com.vurtnewk.common.constants.ProductConstants
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.pageUtils
@@ -121,7 +121,7 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
         val key = params["key"] as? String?
         return KtQueryChainWrapper(AttrEntity::class.java)
             .eq(AttrEntity::catelogId, attrGroupEntity.catelogId)
-            .eq(AttrEntity::attrType, AttrEnum.ATTR_TYPE_BASE.code)//销售属性没有分组，所以不用关联
+            .eq(AttrEntity::attrType, ProductConstants.AttrEnum.ATTR_TYPE_BASE.code)//销售属性没有分组，所以不用关联
             .notIn(!attrIdList.isNullOrEmpty(), AttrEntity::attrId, attrIdList) //不为null或空时，查的ID不能是attrIdList里的
             //key 不是 空时添加模糊查询条件
             .and(!key.isNullOrBlank()) {

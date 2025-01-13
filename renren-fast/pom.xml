@@ -74,6 +74,14 @@
 					<groupId>commons-lang</groupId>
 					<artifactId>commons-lang</artifactId>
 				</exclusion>
+				<exclusion>
+					<artifactId>jsqlparser</artifactId>
+					<groupId>com.github.jsqlparser</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>mybatis-plus-jsqlparser</artifactId>
+					<groupId>com.baomidou</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 

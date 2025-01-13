@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
-import com.vurtnewk.common.constants.AttrEnum
+import com.vurtnewk.common.constants.ProductConstants
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.pageUtils
@@ -37,7 +37,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
             Query<AttrEntity>().getPage(params),
-            QueryWrapper<AttrEntity>()
+            QueryWrapper()
         )
         return PageUtils(page)
     }
@@ -49,7 +49,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         BeanUtils.copyProperties(attr, attrEntity)
         this.save(attrEntity)
         //2.保存所属分组到关联表
-        if (attr.attrType == AttrEnum.ATTR_TYPE_BASE.code && attr.attrGroupId != null) {
+        if (attr.attrType == ProductConstants.AttrEnum.ATTR_TYPE_BASE.code && attr.attrGroupId != null) {
             val entity = AttrAttrgroupRelationEntity()
             entity.attrGroupId = attr.attrGroupId
             entity.attrId = attrEntity.attrId
@@ -63,7 +63,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         val page = KtQueryChainWrapper(AttrEntity::class.java)
             .eq(catelogId != 0L, AttrEntity::catelogId, catelogId)
             // 根据属性分类进行查询
-            .eq(AttrEntity::attrType, if ("base".equals(attrType, ignoreCase = true)) AttrEnum.ATTR_TYPE_BASE.code else AttrEnum.ATTR_TYPE_SALE.code)
+            .eq(AttrEntity::attrType, if ("base".equals(attrType, ignoreCase = true)) ProductConstants.AttrEnum.ATTR_TYPE_BASE.code else ProductConstants.AttrEnum.ATTR_TYPE_SALE.code)
             .and(!key.isNullOrBlank()) { it.eq(AttrEntity::attrId, key).or().like(AttrEntity::attrName, key) }
             .page(Query<AttrEntity>().getPage(params))
 
@@ -119,7 +119,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         BeanUtils.copyProperties(attrEntity, attrRespVO)
 
         //attrGroupId
-        if (attrEntity.attrType == AttrEnum.ATTR_TYPE_BASE.code) {
+        if (attrEntity.attrType == ProductConstants.AttrEnum.ATTR_TYPE_BASE.code) {
             val attrAttrgroupRelationEntity = KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
                 .eq(AttrAttrgroupRelationEntity::attrId, attrId)
                 .one()
@@ -162,7 +162,7 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
                 attrId = attrVo.attrId
             }
         //修改分组关联
-        if (attrEntity.attrType == AttrEnum.ATTR_TYPE_BASE.code && attrVo.attrGroupId != null) {
+        if (attrEntity.attrType == ProductConstants.AttrEnum.ATTR_TYPE_BASE.code && attrVo.attrGroupId != null) {
             KtQueryChainWrapper(AttrAttrgroupRelationEntity::class.java)
                 .eq(AttrAttrgroupRelationEntity::attrId, attrVo.attrId)
                 .count()//先查询数据库中有没有该数据
