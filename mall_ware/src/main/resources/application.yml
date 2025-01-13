@@ -17,6 +17,7 @@ spring:
     name: mall-ware
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai # 这个不加，返回的数据有时差
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个

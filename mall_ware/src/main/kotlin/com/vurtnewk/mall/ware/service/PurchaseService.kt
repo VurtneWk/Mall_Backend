@@ -17,5 +17,6 @@ interface PurchaseService : IService<PurchaseEntity> {
     fun queryPage(params: Map<String, Any> ): PageUtils
     fun queryUnreceivedList(params: Map<String, Any>): PageUtils
     fun mergePurchaseOrder(purchaseOrderVo: MergePurchaseOrderVo)
+    fun receivedPurchaseOrder(purchaseIds: List<Long>)
 }
 

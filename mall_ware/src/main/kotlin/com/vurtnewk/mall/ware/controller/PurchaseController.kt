@@ -92,4 +92,14 @@ class PurchaseController @Autowired constructor(
         purchaseService.mergePurchaseOrder(purchaseOrderVo)
         return R.ok()
     }
+
+    /**
+     * ## 领取采购单
+     */
+    @PostMapping("/received")
+    fun receivedPurchaseOrder(@RequestBody purchaseIds: List<Long>): R {
+        purchaseService.receivedPurchaseOrder(purchaseIds)
+        return R.ok()
+    }
+
 }

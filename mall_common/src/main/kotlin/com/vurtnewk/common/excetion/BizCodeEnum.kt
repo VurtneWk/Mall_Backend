@@ -10,6 +10,6 @@ enum class BizCodeEnum(
     val msg: String
 ) {
     UNKNOWN_EXCEPTION(10000, "系统位置异常"),
-    VALID_EXCEPTION(10001, "参数格式校验失败");
-
+    VALID_EXCEPTION(10001, "参数格式校验失败"),
+    CUSTOM_EXCEPTION(10002, "自定义异常"),
 }

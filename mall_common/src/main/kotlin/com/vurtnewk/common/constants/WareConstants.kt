@@ -8,6 +8,9 @@ package com.vurtnewk.common.constants
 
 object WareConstants {
 
+    /**
+     * 采购单状态
+     */
     enum class PurchaseStatusEnum(val code: Int, val msg: String) {
         CREATED(0, "新建"),
         ASSIGNED(1, "已分配"),
@@ -16,6 +19,9 @@ object WareConstants {
         ERROR(4, "有异常")
     }
 
+    /**
+     * 采购需求状态
+     */
     enum class PurchaseDetailStatusEnum(val code: Int, val msg: String) {
         CREATED(0, "新建"),
         ASSIGNED(1, "已分配"),
