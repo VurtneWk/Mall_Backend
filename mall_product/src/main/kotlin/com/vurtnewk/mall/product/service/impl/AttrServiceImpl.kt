@@ -63,7 +63,10 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         val page = KtQueryChainWrapper(AttrEntity::class.java)
             .eq(catelogId != 0L, AttrEntity::catelogId, catelogId)
             // 根据属性分类进行查询
-            .eq(AttrEntity::attrType, if ("base".equals(attrType, ignoreCase = true)) ProductConstants.AttrEnum.ATTR_TYPE_BASE.code else ProductConstants.AttrEnum.ATTR_TYPE_SALE.code)
+            .eq(
+                AttrEntity::attrType,
+                if ("base".equals(attrType, ignoreCase = true)) ProductConstants.AttrEnum.ATTR_TYPE_BASE.code else ProductConstants.AttrEnum.ATTR_TYPE_SALE.code
+            )
             .and(!key.isNullOrBlank()) { it.eq(AttrEntity::attrId, key).or().like(AttrEntity::attrName, key) }
             .page(Query<AttrEntity>().getPage(params))
 
@@ -108,6 +111,16 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
         }.toList()
         pageUtils.list = list
         return pageUtils
+    }
+
+    override fun selectSearchAttrIds(attrIds: List<Long>): List<Long> {
+        return KtQueryChainWrapper(AttrEntity::class.java)
+            .`in`(AttrEntity::attrId, attrIds)
+            .eq(AttrEntity::searchType, 1)
+            .list()
+            .mapNotNull {
+                it.attrId
+            }
     }
 
     /**

@@ -18,7 +18,7 @@ import com.vurtnewk.mall.product.vo.SpuInfoVO
 @RestController
 @RequestMapping("product/spuinfo")
 class SpuInfoController @Autowired constructor(
-    private val spuInfoService: SpuInfoService
+    private val spuInfoService: SpuInfoService,
 ) {
 
     /**
@@ -68,6 +68,16 @@ class SpuInfoController @Autowired constructor(
     // @RequiresPermissions("product:spuinfo:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
         spuInfoService.removeByIds(ids.asList())
+        return R.ok()
+    }
+
+    /**
+     * ## 商品上架功能
+     * /product/spuinfo/{spuId}/up
+     */
+    @PostMapping("/{spuId}/up")
+    fun spuUp(@PathVariable("spuId") spuId: Long) :R{
+        spuInfoService.spuUp(spuId)
         return R.ok()
     }
 }

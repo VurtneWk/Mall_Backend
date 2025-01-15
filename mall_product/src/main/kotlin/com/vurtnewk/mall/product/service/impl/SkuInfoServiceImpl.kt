@@ -60,5 +60,11 @@ class SkuInfoServiceImpl : ServiceImpl<SkuInfoDao, SkuInfoEntity>(), SkuInfoServ
             .pageUtils()
     }
 
+    override fun getSkusBySpuId(spuId: Long): List<SkuInfoEntity> {
+        return KtQueryChainWrapper(SkuInfoEntity::class.java)
+            .eq(SkuInfoEntity::spuId, spuId)
+            .list()
+    }
+
 
 }

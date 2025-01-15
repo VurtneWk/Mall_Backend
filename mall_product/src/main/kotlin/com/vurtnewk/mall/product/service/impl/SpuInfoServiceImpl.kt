@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.dto.SkuEsModelDto
 import com.vurtnewk.common.dto.SkuReductionDto
 import com.vurtnewk.common.dto.SpuBoundsDto
 import com.vurtnewk.common.utils.PageUtils
@@ -15,6 +16,7 @@ import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.product.dao.SpuInfoDao
 import com.vurtnewk.mall.product.entity.*
 import com.vurtnewk.mall.product.feign.CouponFeignService
+import com.vurtnewk.mall.product.feign.WareFeignService
 import com.vurtnewk.mall.product.service.*
 import com.vurtnewk.mall.product.vo.SpuInfoVO
 import org.springframework.beans.BeanUtils
@@ -32,7 +34,10 @@ class SpuInfoServiceImpl(
     private val mSkuInfoService: SkuInfoService,
     private val mSkuImagesService: SkuImagesService,
     private val mSkuSaleAttrValueService: SkuSaleAttrValueService,
-    private val mCouponFeignService: CouponFeignService
+    private val mCouponFeignService: CouponFeignService,
+    private val mBrandService: BrandService,
+    private val mCategoryService: CategoryService,
+    private val mWareFeignService: WareFeignService,
 ) : ServiceImpl<SpuInfoDao, SpuInfoEntity>(), SpuInfoService {
 
 
@@ -171,6 +176,66 @@ class SpuInfoServiceImpl(
             }
         }
         //endregion
+    }
+
+    /**
+     * 商品上架
+     */
+    override fun spuUp(spuId: Long) {
+        // 组装需要的数据
+        val upProducts = mutableListOf<SkuEsModelDto>()
+        //attrs 需要满足是可以被检索的属性
+        val baseAttrList = mProductAttrValueService.baseAttrList(spuId)
+        val attrIds = baseAttrList.mapNotNull { it.attrId }
+        // 查询满足是可以被检索的属性
+        val searchAttrIdsSet = mAttrService.selectSearchAttrIds(attrIds).toSet()
+        //过滤掉不满足条件的属性
+        val attrsEsModelDtoList = baseAttrList.filter {
+            it.attrId in searchAttrIdsSet
+        }.map {
+            val attrsEsModelDto = SkuEsModelDto.AttrsEsModelDto()
+            BeanUtils.copyProperties(it, attrsEsModelDto)
+            attrsEsModelDto
+        }
+        var hasStockMap: Map<Long, Boolean>? = null
+        runCatching {
+            val r = mWareFeignService.getSkusHasStock(upProducts.map { it.skuId })
+            hasStockMap = r.data?.associate { it.skuId to it.hasStock }
+        }.onFailure {
+            logError("库存服务查询异常：${it}")
+        }
+
+
+        val skus: List<SkuInfoEntity> = mSkuInfoService.getSkusBySpuId(spuId)
+        skus.map { sku ->
+            val skuEsModelDto = SkuEsModelDto()
+            BeanUtils.copyProperties(sku, skuEsModelDto)
+            // 拷贝过后剩余数据
+            // skuPrice skuImg ||
+            skuEsModelDto.skuPrice = sku.price!!
+            skuEsModelDto.skuImg = sku.skuDefaultImg.orEmpty()
+
+            //brandName brandImg
+            val brandEntity = mBrandService.getById(sku.brandId)
+            skuEsModelDto.brandName = brandEntity.name.orEmpty()
+            skuEsModelDto.brandImg = brandEntity.logo
+            //catalogName
+            val categoryEntity = mCategoryService.getById(sku.catalogId)
+            skuEsModelDto.catalogName = categoryEntity.name.orEmpty()
+            // attrs 查询
+            skuEsModelDto.attrs = attrsEsModelDtoList
+
+            // hasStock hotScore: 需要远程访问库存系统
+            // 如果是空的，默认就有库存
+            skuEsModelDto.hasStock = hasStockMap?.get(sku.skuId) ?: true
+            //
+            skuEsModelDto.hotScore = 0
+            skuEsModelDto
+        }
+
+
+        //数据发送给es进行保存
+
     }
 
     /**

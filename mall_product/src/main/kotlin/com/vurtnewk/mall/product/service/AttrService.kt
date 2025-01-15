@@ -15,10 +15,11 @@ import com.vurtnewk.mall.product.vo.AttrVO
  */
 interface AttrService : IService<AttrEntity> {
 
-    fun queryPage(params: Map<String, Any> ): PageUtils
+    fun queryPage(params: Map<String, Any>): PageUtils
     fun saveAttrVO(attr: AttrVO)
     fun queryBaseAttrPage(params: Map<String, Any>, catelogId: Long, attrType: String): PageUtils
     fun getAttrInfo(attrId: Long): AttrRespVO
     fun updateAttrVO(attrVo: AttrVO)
+    fun selectSearchAttrIds(attrIds: List<Long>): List<Long>
 }
 

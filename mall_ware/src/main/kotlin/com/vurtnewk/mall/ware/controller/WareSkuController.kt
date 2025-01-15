@@ -6,6 +6,8 @@ import com.vurtnewk.mall.ware.entity.WareSkuEntity
 import com.vurtnewk.mall.ware.service.WareSkuService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.common.utils.R2
+import com.vurtnewk.mall.ware.vo.SkuHasStockVo
 
 /**
  * 商品库存
@@ -17,7 +19,7 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("ware/waresku")
 class WareSkuController @Autowired constructor(
-        private val wareSkuService: WareSkuService
+    private val wareSkuService: WareSkuService,
 ) {
 
     /**
@@ -46,7 +48,7 @@ class WareSkuController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("ware:waresku:save")
     fun save(@RequestBody wareSku: WareSkuEntity): R {
-            wareSkuService.save(wareSku)
+        wareSkuService.save(wareSku)
         return R.ok()
     }
 
@@ -56,7 +58,7 @@ class WareSkuController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("ware:waresku:update")
     fun update(@RequestBody wareSku: WareSkuEntity): R {
-            wareSkuService.updateById(wareSku)
+        wareSkuService.updateById(wareSku)
         return R.ok()
     }
 
@@ -66,7 +68,18 @@ class WareSkuController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("ware:waresku:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            wareSkuService.removeByIds(ids.asList())
+        wareSkuService.removeByIds(ids.asList())
         return R.ok()
+    }
+
+    /**
+     * 查询是否有库存
+     */
+    @PostMapping("/hasStock")
+    fun getSkusHasStock(@RequestBody skuIds: List<Long>): R2<List<SkuHasStockVo>> {
+        val vos = wareSkuService.getSkusHasStock(skuIds)
+        val ok = R2.ok<List<SkuHasStockVo>>()
+        ok.data = vos
+        return ok
     }
 }

@@ -11,6 +11,7 @@ import com.vurtnewk.mall.ware.dao.WareSkuDao
 import com.vurtnewk.mall.ware.entity.WareSkuEntity
 import com.vurtnewk.mall.ware.feign.ProductFeignService
 import com.vurtnewk.mall.ware.service.WareSkuService
+import com.vurtnewk.mall.ware.vo.SkuHasStockVo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -76,5 +77,16 @@ class WareSkuServiceImpl(
         }
 
 
+    }
+
+    override fun getSkusHasStock(skuIds: List<Long>): List<SkuHasStockVo> {
+        return skuIds.map { skuId->
+            val skuHasStockVo = SkuHasStockVo()
+            //查询总库存
+            val count = this.baseMapper.getSkuStock(skuId)
+            skuHasStockVo.skuId = skuId
+            skuHasStockVo.hasStock = count > 0
+            skuHasStockVo
+        }
     }
 }
