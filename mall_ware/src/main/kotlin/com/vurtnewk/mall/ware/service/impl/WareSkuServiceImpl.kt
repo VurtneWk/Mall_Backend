@@ -80,12 +80,12 @@ class WareSkuServiceImpl(
     }
 
     override fun getSkusHasStock(skuIds: List<Long>): List<SkuHasStockVo> {
-        return skuIds.map { skuId->
+        return skuIds.map { skuId ->
             val skuHasStockVo = SkuHasStockVo()
             //查询总库存
             val count = this.baseMapper.getSkuStock(skuId)
             skuHasStockVo.skuId = skuId
-            skuHasStockVo.hasStock = count > 0
+            skuHasStockVo.hasStock = (count ?: 0) > 0
             skuHasStockVo
         }
     }

@@ -4,18 +4,21 @@ import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.constants.ProductConstants
 import com.vurtnewk.common.dto.SkuEsModelDto
 import com.vurtnewk.common.dto.SkuReductionDto
 import com.vurtnewk.common.dto.SpuBoundsDto
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.logError
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
 
 import com.vurtnewk.mall.product.dao.SpuInfoDao
 import com.vurtnewk.mall.product.entity.*
 import com.vurtnewk.mall.product.feign.CouponFeignService
+import com.vurtnewk.mall.product.feign.SearchFeignService
 import com.vurtnewk.mall.product.feign.WareFeignService
 import com.vurtnewk.mall.product.service.*
 import com.vurtnewk.mall.product.vo.SpuInfoVO
@@ -38,6 +41,7 @@ class SpuInfoServiceImpl(
     private val mBrandService: BrandService,
     private val mCategoryService: CategoryService,
     private val mWareFeignService: WareFeignService,
+    private val mSearchFeignService: SearchFeignService,
 ) : ServiceImpl<SpuInfoDao, SpuInfoEntity>(), SpuInfoService {
 
 
@@ -182,9 +186,7 @@ class SpuInfoServiceImpl(
      * 商品上架
      */
     override fun spuUp(spuId: Long) {
-        // 组装需要的数据
-        val upProducts = mutableListOf<SkuEsModelDto>()
-        //attrs 需要满足是可以被检索的属性
+        //查找attrs
         val baseAttrList = mProductAttrValueService.baseAttrList(spuId)
         val attrIds = baseAttrList.mapNotNull { it.attrId }
         // 查询满足是可以被检索的属性
@@ -197,17 +199,22 @@ class SpuInfoServiceImpl(
             BeanUtils.copyProperties(it, attrsEsModelDto)
             attrsEsModelDto
         }
+
+        //查出所有的sku
+        val skus: List<SkuInfoEntity> = mSkuInfoService.getSkusBySpuId(spuId)
+
+        // 查找是否有库存
         var hasStockMap: Map<Long, Boolean>? = null
         runCatching {
-            val r = mWareFeignService.getSkusHasStock(upProducts.map { it.skuId })
+            val r = mWareFeignService.getSkusHasStock(skus.mapNotNull { it.skuId })
+            logInfo("rrrr=> $r ， ${r.data}")
             hasStockMap = r.data?.associate { it.skuId to it.hasStock }
         }.onFailure {
             logError("库存服务查询异常：${it}")
         }
 
 
-        val skus: List<SkuInfoEntity> = mSkuInfoService.getSkusBySpuId(spuId)
-        skus.map { sku ->
+        val upProducts =  skus.map { sku ->
             val skuEsModelDto = SkuEsModelDto()
             BeanUtils.copyProperties(sku, skuEsModelDto)
             // 拷贝过后剩余数据
@@ -235,6 +242,13 @@ class SpuInfoServiceImpl(
 
 
         //数据发送给es进行保存
+        val r = mSearchFeignService.productStatusUp(upProducts)
+        if(r.isSuccess()){
+            //修改spu的状态
+            this.baseMapper.updateSpuStatus(spuId, ProductConstants.StatusEnum.SPU_UP.code)
+        }else{
+            //todo 重复调用？幂等性 . 重试机制
+        }
 
     }
 

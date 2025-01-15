@@ -1,5 +1,7 @@
 package com.vurtnewk.common.utils
 
+import com.baomidou.mybatisplus.core.metadata.IPage
+import com.fasterxml.jackson.annotation.JsonInclude
 import org.apache.http.HttpStatus
 
 /**
@@ -7,65 +9,32 @@ import org.apache.http.HttpStatus
  * author:      vurtnewk
  * description: 返回数据
  */
-class R2<T>(var data: T? = null) : HashMap<String, Any>() {
-
-    init {
-        put("code", 0)
-        put("msg", "success")
-    }
-
+data class R2<T>(
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    var data: T? = null,
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    var page: IPage<T>? = null,
+    var code: Int = 0,
+    var msg: String = "success",
+) {
 
     companion object {
         fun <T> error(): R2<T> {
-            return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, "未知异常，请联系管理员")
-        }
-
-        fun <T> error(msg: String): R2<T> {
-            return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, msg)
+            return R2(null, null, HttpStatus.SC_INTERNAL_SERVER_ERROR, "未知异常，请联系管理员")
         }
 
         fun <T> error(code: Int, msg: String): R2<T> {
-            val r = R2<T>()
-            r["code"] = code
-            r["msg"] = msg
-            return r
+            return R2(null, null, code, msg)
         }
 
-        fun <T> ok(msg: String): R2<T> {
-            val r = R2<T>()
-            r["msg"] = msg
-            return r
+        fun <T> ok(data: T? = null, page: IPage<T>? = null): R2<T> {
+            return R2(data, page, 0, "success")
         }
 
-        fun <T> ok(map: Map<String, Any>): R2<T> {
-            val r = R2<T>()
-            r.putAll(map)
-            return r
+        fun <T> ok(): R2<T> {
+            return R2(null, null, 0, "success")
         }
-
-         fun  <T> ok(): R2<T> {
-            return R2()
-        }
-
     }
 
-
-    override fun put(key: String, value: Any): R2<T> {
-        super.put(key, value)
-        return this
-    }
-
-    fun putData(value: Any): R2<T> {
-        this["data"] = value
-        return this
-    }
-
-    fun getCode(): Int {
-        return this["code"].toString().toInt()
-    }
-
-
-    fun isSuccess(): Boolean {
-        return this.getCode() == 0
-    }
+    fun isSuccess(): Boolean = code == 0
 }

@@ -7,6 +7,7 @@ import com.vurtnewk.mall.ware.service.WareSkuService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.common.utils.R2
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.ware.vo.SkuHasStockVo
 
 /**
@@ -78,8 +79,6 @@ class WareSkuController @Autowired constructor(
     @PostMapping("/hasStock")
     fun getSkusHasStock(@RequestBody skuIds: List<Long>): R2<List<SkuHasStockVo>> {
         val vos = wareSkuService.getSkusHasStock(skuIds)
-        val ok = R2.ok<List<SkuHasStockVo>>()
-        ok.data = vos
-        return ok
+        return R2(vos)
     }
 }

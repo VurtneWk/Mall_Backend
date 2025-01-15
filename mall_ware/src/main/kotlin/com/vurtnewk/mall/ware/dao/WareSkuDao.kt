@@ -15,5 +15,5 @@ import org.apache.ibatis.annotations.Param
 @Mapper
 interface WareSkuDao : BaseMapper<WareSkuEntity> {
     fun updateStock(@Param("skuId") skuId: Long, @Param("wareId") wareId: Long, @Param("skuNum") skuNum: Int)
-    fun getSkuStock(@Param("skuId") skuId: Long): Long
+    fun getSkuStock(@Param("skuId") skuId: Long): Long?
 }

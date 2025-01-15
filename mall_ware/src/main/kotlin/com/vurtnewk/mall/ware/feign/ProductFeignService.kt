@@ -18,4 +18,6 @@ interface ProductFeignService {
      */
     @RequestMapping("/product/skuinfo/info/{skuId}")
     fun info(@PathVariable("skuId") skuId: Long): R
+
+
 }

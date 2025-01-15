@@ -1,6 +1,5 @@
 package com.vurtnewk.mall.product.feign
 
-import com.vurtnewk.common.utils.R
 import com.vurtnewk.common.utils.R2
 import com.vurtnewk.mall.product.vo.SkuHasStockVo
 import org.springframework.cloud.openfeign.FeignClient
@@ -20,6 +19,6 @@ interface WareFeignService {
      * 2. 直接返回需要的数据
      * 3. 自己封装解析结果
      */
-    @PostMapping("ware/waresku/hasStock")
+    @PostMapping("/ware/waresku/hasStock")
     fun getSkusHasStock(@RequestBody skuIds: List<Long>): R2<List<SkuHasStockVo>>
 }
