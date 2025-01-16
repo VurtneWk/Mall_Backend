@@ -2,15 +2,16 @@ package com.vurtnewk.mall.product.service.impl
 
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
-import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.product.dao.CategoryBrandRelationDao
 
 import com.vurtnewk.mall.product.dao.CategoryDao
 import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
+import com.vurtnewk.mall.product.vo.Catalog2Vo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 
@@ -66,6 +67,47 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
         if (!category.name.isNullOrBlank()) {
             mCategoryBrandRelationDao.updateCategoryName(category.catId!!, category.name!!)
         }
+    }
+
+
+    override fun getCatalogJson(): Map<String, List<Catalog2Vo>> {
+        val topLevelCategoryList = this.getTopLevelCategoryList()
+        return topLevelCategoryList.associate { categoryEntity ->
+            //根据一级ID 查出所有的二级
+            val categoryEntities = KtQueryChainWrapper(CategoryEntity::class.java)
+                .eq(CategoryEntity::parentCid, categoryEntity.catId)
+                .list() //查出二级分类
+                .map { category2Entity ->
+                    //组装2级数据
+                    val catalog2Vo = Catalog2Vo()
+                    catalog2Vo.catalog1Id = categoryEntity.catId.toString()
+                    catalog2Vo.id = category2Entity.catId?.toString().orEmpty()
+                    catalog2Vo.name = category2Entity.name.orEmpty()
+                    // catalog2Vo.catalog3List =
+                    //根据2级ID 查询3级数据
+                    catalog2Vo .catalog3List = KtQueryChainWrapper(CategoryEntity::class.java)
+                        .eq(CategoryEntity::parentCid, category2Entity.catId)
+                        .list()
+                        .map { category3Entity ->
+                            //组装3级数据
+                            Catalog2Vo.Catalog3Vo(
+                                category2Entity.catId.toString(),
+                                category3Entity.catId.toString(),
+                                category3Entity.name.toString()
+                            )
+                        }
+                    catalog2Vo
+                }
+            //组装成map
+            Pair(categoryEntity.catId.toString(), categoryEntities)
+        }
+
+    }
+
+    override fun getTopLevelCategoryList(): List<CategoryEntity> {
+        return KtQueryChainWrapper(CategoryEntity::class.java)
+            .eq(CategoryEntity::parentCid, 0)
+            .list()
     }
 
     /**
