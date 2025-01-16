@@ -5,7 +5,6 @@ import com.vurtnewk.mall.product.vo.Catalog2Vo
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseBody
 
 /**
@@ -30,5 +29,11 @@ class IndexController(
     @GetMapping("/index/catalog.json")
     fun getCatalogJson(): Map<String, List<Catalog2Vo>> {
         return categoryService.getCatalogJson()
+    }
+
+    @ResponseBody
+    @GetMapping("/hello")
+    fun hello():String{
+        return "hello"
     }
 }

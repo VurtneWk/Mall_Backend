@@ -71,12 +71,19 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
 
 
     override fun getCatalogJson(): Map<String, List<Catalog2Vo>> {
-        val topLevelCategoryList = this.getTopLevelCategoryList()
+        //优化： 只查一次数据库
+
+        val allCategoryEntities = KtQueryChainWrapper(CategoryEntity::class.java).list()
+
+
+//        val topLevelCategoryList = this.getTopLevelCategoryList()
+        val topLevelCategoryList = this.getCategoryListByParentCId(allCategoryEntities, 0L)
         return topLevelCategoryList.associate { categoryEntity ->
             //根据一级ID 查出所有的二级
-            val categoryEntities = KtQueryChainWrapper(CategoryEntity::class.java)
-                .eq(CategoryEntity::parentCid, categoryEntity.catId)
-                .list() //查出二级分类
+//            val categoryEntities = KtQueryChainWrapper(CategoryEntity::class.java)
+//                .eq(CategoryEntity::parentCid, categoryEntity.catId)
+//                .list() //查出二级分类
+            val categoryEntities = this.getCategoryListByParentCId(allCategoryEntities, categoryEntity.parentCid!!)
                 .map { category2Entity ->
                     //组装2级数据
                     val catalog2Vo = Catalog2Vo()
@@ -85,9 +92,7 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
                     catalog2Vo.name = category2Entity.name.orEmpty()
                     // catalog2Vo.catalog3List =
                     //根据2级ID 查询3级数据
-                    catalog2Vo .catalog3List = KtQueryChainWrapper(CategoryEntity::class.java)
-                        .eq(CategoryEntity::parentCid, category2Entity.catId)
-                        .list()
+                    catalog2Vo.catalog3List = this.getCategoryListByParentCId(allCategoryEntities, category2Entity.parentCid!!)
                         .map { category3Entity ->
                             //组装3级数据
                             Catalog2Vo.Catalog3Vo(
@@ -102,6 +107,10 @@ class CategoryServiceImpl : ServiceImpl<CategoryDao, CategoryEntity>(), Category
             Pair(categoryEntity.catId.toString(), categoryEntities)
         }
 
+    }
+
+    private fun getCategoryListByParentCId(entities: List<CategoryEntity>, parentCid: Long): List<CategoryEntity> {
+        return entities.filter { it.parentCid == parentCid }
     }
 
     override fun getTopLevelCategoryList(): List<CategoryEntity> {

@@ -22,7 +22,7 @@ spring:
         - id: product_route
           uri: lb://mall-product #这里就是nacos上的服务名，也就是application.name 定义的名字
           predicates:
-            - Path=/api/product/**
+            - Path=/api/product/**,/hello
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
 
