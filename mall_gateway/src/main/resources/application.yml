@@ -56,6 +56,11 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
 
+        # 这个要放到最后，不然mall.com/api 也会被优先拦截
+        - id: mall_host_route
+          uri: lb://mall-product
+          predicates:
+            - Host=**.mall.com , mall.com
 
   # 如果没有名字，nacos里看不到
   application:
