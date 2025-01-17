@@ -10,6 +10,8 @@ spring:
   # 如果没有名字，nacos里看不到
   application:
     name: mall-search
+  thymeleaf:
+    cache: false
 
 server:
   port: 5700
