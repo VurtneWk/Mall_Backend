@@ -15,6 +15,7 @@ import com.vurtnewk.mall.product.dao.CategoryDao
 import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
 import com.vurtnewk.mall.product.vo.Catalog2Vo
+import org.redisson.api.RedissonClient
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.transaction.annotation.Transactional
@@ -26,6 +27,7 @@ import java.util.concurrent.TimeUnit
 class CategoryServiceImpl(
     private val mStringRedisTemplate: StringRedisTemplate,
     private val mCategoryBrandRelationDao: CategoryBrandRelationDao,
+    private val mRedissonClient: RedissonClient,
 ) : ServiceImpl<CategoryDao, CategoryEntity>(), CategoryService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -85,7 +87,7 @@ class CategoryServiceImpl(
         val opsForValue = mStringRedisTemplate.opsForValue()
         val catalogJson = opsForValue.get("catalogJson")
         return if (catalogJson.isNullOrEmpty()) {
-            this.getCatalogJsonFromDbWithRedisLock()
+            this.getCatalogJsonFromDbWithRedissonLock()
         } else {
             JSON.parseObject(catalogJson, object : TypeReference<Map<String, List<Catalog2Vo>>>() {})
         }
@@ -98,6 +100,27 @@ class CategoryServiceImpl(
     @Synchronized //默认会使用this对象所谓锁，Spring中默认Bean对象是单例的
     fun getCatalogJsonFromDbWithLocalLock(): Map<String, List<Catalog2Vo>> {
         return getCatalogJsonFromDb()
+    }
+
+    /**
+     * ## 使用的Redisson锁
+     * ---------------
+     * 缓存里面的数据如何和数据库保持一致
+     * 缓存数据一致性
+     * 1、双写模式 ： 更新的同时修改缓存中的数据
+     * 2、失效模式 ： 更新的同时删除缓存中的数据
+     */
+    fun getCatalogJsonFromDbWithRedissonLock(): Map<String, List<Catalog2Vo>> {
+        //1. 锁的名字。锁的粒度，越细越快
+        //锁的粒度：具体缓存的某个数据， 11-号商品 product-11-lock，避免直接起名为：product-lock
+        val lock = mRedissonClient.getLock("catalogJson-lock")
+        lock.lock()
+        var catalogJsonFromDb: Map<String, List<Catalog2Vo>> = emptyMap()
+        kotlin.runCatching {
+            catalogJsonFromDb = getCatalogJsonFromDb()
+        }
+        lock.unlock()
+        return catalogJsonFromDb
     }
 
     /**
