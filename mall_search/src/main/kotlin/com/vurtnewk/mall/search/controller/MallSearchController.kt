@@ -3,6 +3,7 @@ package com.vurtnewk.mall.search.controller
 import com.vurtnewk.mall.search.service.MallSearchService
 import com.vurtnewk.mall.search.vo.SearchParam
 import org.springframework.stereotype.Controller
+import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 
 /**
@@ -17,8 +18,9 @@ class MallSearchController(
 
 
     @GetMapping(value = ["/", "/list.html"])
-    fun listPage(param: SearchParam): String {
-        mMallSearchService.search(param)
+    fun listPage(param: SearchParam, model: Model): String {
+        val searchResult = mMallSearchService.search(param)
+        model.addAttribute("result", searchResult)
         return "list"
     }
 

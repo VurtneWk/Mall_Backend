@@ -66,9 +66,9 @@ data class SearchParam(
      * - attrs=1_其他:安卓 (多个)
      * - attrs=1_其他:安卓&attrs=2_5寸 (属性key也多个)
      */
-    val attrs: List<Long>,
+    val attrs: List<Long>?,
     /**
      * 页码
      */
-    val pageNum: Int,
+    val pageNum: Int?,
 )

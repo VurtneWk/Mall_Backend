@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.search.service
 
 import com.vurtnewk.mall.search.vo.SearchParam
+import com.vurtnewk.mall.search.vo.SearchResult
 
 /**
  *
@@ -8,5 +9,5 @@ import com.vurtnewk.mall.search.vo.SearchParam
  * @since    2025/1/18 02:41
  */
 interface MallSearchService {
-    fun search(param: SearchParam)
+    fun search(param: SearchParam): SearchResult
 }
