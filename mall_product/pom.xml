@@ -55,6 +55,12 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
         </dependency>
+        <!--  redisson 分布式锁   实际有springboot版本的，这里是为了学习而引入原生版本   -->
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.42.0</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>

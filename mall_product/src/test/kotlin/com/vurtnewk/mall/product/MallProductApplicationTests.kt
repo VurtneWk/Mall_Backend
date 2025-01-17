@@ -4,6 +4,7 @@ import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.product.service.BrandService
 import com.vurtnewk.mall.product.service.CategoryService
 import org.junit.jupiter.api.Test
+import org.redisson.api.RedissonClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -20,6 +21,15 @@ class MallProductApplicationTests {
 
     @Autowired
     lateinit var categoryService: CategoryService
+
+    @Autowired
+    lateinit var mRedissonClient: RedissonClient
+
+    @Test
+    fun testRedisson(){
+        println(mRedissonClient)
+    }
+
 
     @Test
     fun testFindCategoryPath() {
