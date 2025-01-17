@@ -37,6 +37,24 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional> <!--这个要加了才有用-->
         </dependency>
+        <!--    redis    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!--   这里是因为5.2版本lettuce-core 有个使用netty时的堆外内存溢出bug
+                教程中更换成使用jedis （这个项目中的lettuce是6.4.1版本，不知道有没有这个bug）
+             -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.cloud</groupId>

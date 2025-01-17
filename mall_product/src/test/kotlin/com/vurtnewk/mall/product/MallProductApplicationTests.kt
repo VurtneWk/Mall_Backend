@@ -6,6 +6,8 @@ import com.vurtnewk.mall.product.service.CategoryService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.data.redis.core.StringRedisTemplate
+import java.util.UUID
 
 @SpringBootTest
 class MallProductApplicationTests {
@@ -13,18 +15,27 @@ class MallProductApplicationTests {
     @Autowired
     lateinit var brandService: BrandService
 
+    @Autowired
+    lateinit var mStringRedisTemplate: StringRedisTemplate
 
     @Autowired
     lateinit var categoryService: CategoryService
 
     @Test
-    fun testFindCategoryPath(){
+    fun testFindCategoryPath() {
         val findCatelogPath = categoryService.findCatelogPath(225L)
         logInfo("完整路径：$findCatelogPath")
     }
 
 
-
+    @Test
+    fun testRedis() {
+        val opsForValue = mStringRedisTemplate.opsForValue()
+        //保存
+        opsForValue.set("hello","world_${UUID.randomUUID()}")
+        val hello = opsForValue.get("hello")
+        logInfo("保存的数据是=> $hello")
+    }
 
 
     @Test

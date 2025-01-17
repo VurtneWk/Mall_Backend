@@ -18,6 +18,10 @@ spring:
     date-format: yyyy-mm-dd HH:mm:ss
   thymeleaf:
     cache: false # 关闭缓存，查看实时效果
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
