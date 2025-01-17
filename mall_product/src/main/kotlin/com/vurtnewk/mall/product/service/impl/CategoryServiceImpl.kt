@@ -16,6 +16,7 @@ import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
 import com.vurtnewk.mall.product.vo.Catalog2Vo
 import org.redisson.api.RedissonClient
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.transaction.annotation.Transactional
@@ -188,6 +189,12 @@ class CategoryServiceImpl(
         return entities.filter { it.parentCid == parentCid }
     }
 
+    /**
+     * ## 缓存解释
+     * -  @Cacheable： 代表当前方法的结果需要缓存，如果缓存中有，方法不用调用。如果缓存中没有，会调用方法，最后将方法的结果放入缓存
+     * -  每一个需要缓存的数据我们都来制定要放到那个名字的缓存。[缓存分区 (推荐按照业务分区)]
+     */
+    @Cacheable(value = ["category"])
     override fun getTopLevelCategoryList(): List<CategoryEntity> {
         return KtQueryChainWrapper(CategoryEntity::class.java)
             .eq(CategoryEntity::parentCid, 0)
