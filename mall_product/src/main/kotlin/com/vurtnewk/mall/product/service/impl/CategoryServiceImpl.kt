@@ -194,7 +194,7 @@ class CategoryServiceImpl(
      * -  @Cacheable： 代表当前方法的结果需要缓存，如果缓存中有，方法不用调用。如果缓存中没有，会调用方法，最后将方法的结果放入缓存
      * -  每一个需要缓存的数据我们都来制定要放到那个名字的缓存。[缓存分区 (推荐按照业务分区)]
      */
-    @Cacheable(value = ["category"])
+    @Cacheable(value = ["category"], key = "'level1Categorys'")
     override fun getTopLevelCategoryList(): List<CategoryEntity> {
         return KtQueryChainWrapper(CategoryEntity::class.java)
             .eq(CategoryEntity::parentCid, 0)
