@@ -60,7 +60,13 @@ spring:
         - id: mall_host_route
           uri: lb://mall-product
           predicates:
-            - Host=**.mall.com , mall.com
+            - Host=mall.com
+
+        # 前台搜索
+        - id: mall_search_route
+          uri: lb://mall-search
+          predicates:
+            - Host=search.mall.com
 
   # 如果没有名字，nacos里看不到
   application:
