@@ -16,7 +16,9 @@ import com.vurtnewk.mall.product.entity.CategoryEntity
 import com.vurtnewk.mall.product.service.CategoryService
 import com.vurtnewk.mall.product.vo.Catalog2Vo
 import org.redisson.api.RedissonClient
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.transaction.annotation.Transactional
@@ -69,6 +71,17 @@ class CategoryServiceImpl(
         return findParentPath(catelogId, mutableListOf()).reversed()
     }
 
+//    @CacheEvict(value = ["category"], key = "'level1Categorys'")
+    /**
+     * 同时删除多个缓存
+     * 方式1. 使用 Caching
+     * 方式2. CacheEvict 的 allEntries 删除所有分区
+     */
+//    @Caching(evict = [
+//        CacheEvict(value = ["category"], key = "'level1Categorys'"),
+//        CacheEvict(value = ["category"], key = "'getCatalogJson'")
+//    ])
+    @CacheEvict(value = ["category"], allEntries = true)
     @Transactional
     override fun updateCascade(category: CategoryEntity) {
         this.updateById(category)
@@ -79,12 +92,49 @@ class CategoryServiceImpl(
     }
 
     /**
+     * 使用注解来加缓存
+     */
+    @Cacheable(value = ["category"], key = "#root.methodName")
+    override fun getCatalogJson(): Map<String, List<Catalog2Vo>> {
+        logInfo("开始查询数据库..")
+        //优化： 只查一次数据库
+        val allCategoryEntities = KtQueryChainWrapper(CategoryEntity::class.java).list()
+        val topLevelCategoryList = this.getCategoryListByParentCId(allCategoryEntities, 0L)
+        val catalogJsonFromDb = topLevelCategoryList.associate { categoryEntity ->
+            //根据一级ID 查出所有的二级
+            val categoryEntities = this.getCategoryListByParentCId(allCategoryEntities, categoryEntity.parentCid!!)
+                .map { category2Entity ->
+                    //组装2级数据
+                    val catalog2Vo = Catalog2Vo()
+                    catalog2Vo.catalog1Id = categoryEntity.catId.toString()
+                    catalog2Vo.id = category2Entity.catId?.toString().orEmpty()
+                    catalog2Vo.name = category2Entity.name.orEmpty()
+                    // catalog2Vo.catalog3List =
+                    //根据2级ID 查询3级数据
+                    catalog2Vo.catalog3List = this.getCategoryListByParentCId(allCategoryEntities, category2Entity.parentCid!!)
+                        .map { category3Entity ->
+                            //组装3级数据
+                            Catalog2Vo.Catalog3Vo(
+                                category2Entity.catId.toString(),
+                                category3Entity.catId.toString(),
+                                category3Entity.name.toString()
+                            )
+                        }
+                    catalog2Vo
+                }
+            //组装成map
+            Pair(categoryEntity.catId.toString(), categoryEntities)
+        }
+        return catalogJsonFromDb
+    }
+
+    /**
      * ## 缓存问题解决
      * 1. 空结果缓存 --- 解决缓存穿透: 大量并发访问一个不存在的数据
      * 2. 设置过期时间（加随机值）--- 解决缓存雪崩: 大量并发访问时缓存同时过期
      * 3. 加锁 --- 解决缓存击穿: 一个热点数据过期时，大量并发访问
      */
-    override fun getCatalogJson(): Map<String, List<Catalog2Vo>> {
+    fun getCatalogJson02(): Map<String, List<Catalog2Vo>> {
         val opsForValue = mStringRedisTemplate.opsForValue()
         val catalogJson = opsForValue.get("catalogJson")
         return if (catalogJson.isNullOrEmpty()) {
@@ -196,6 +246,7 @@ class CategoryServiceImpl(
      */
     @Cacheable(value = ["category"], key = "'level1Categorys'")
     override fun getTopLevelCategoryList(): List<CategoryEntity> {
+        logInfo("查询一级分类")
         return KtQueryChainWrapper(CategoryEntity::class.java)
             .eq(CategoryEntity::parentCid, 0)
             .list()
