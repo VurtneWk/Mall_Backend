@@ -9,25 +9,25 @@ import com.vurtnewk.common.dto.SkuEsModelDto
  */
 data class SearchResult(
 
-    val products: List<SkuEsModelDto>,
+    var products: List<SkuEsModelDto>? = null,
     //region 分页信息
-    val pageNum: Int,
-    val total: Long,
-    val totalPages: Int,
+    var pageNum: Int? = null,
+    var total: Long? = null,
+    var totalPages: Int? = null,
     //endregion
     /**
      * 查询到的结果 涉及的所有品牌
      */
-    val brands: List<BrandVo>,
+    var brands: List<BrandVo>? = null,
 
     /**
      * 查询到的结果 所有涉及的属性
      */
-    val attrs: List<AttrVo>,
+    var attrs: List<AttrVo>? = null,
     /**
      * 查询所涉及到的分类
      */
-    val catalogs: List<CatalogVo>,
+    var catalogs: List<CatalogVo>? = null,
 ) {
     data class BrandVo(
         var brandId: Long = 0L,

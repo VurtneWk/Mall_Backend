@@ -9,5 +9,5 @@ import com.vurtnewk.mall.search.vo.SearchResult
  * @since    2025/1/18 02:41
  */
 interface MallSearchService {
-    fun search(param: SearchParam): SearchResult
+    fun search(param: SearchParam): SearchResult?
 }
