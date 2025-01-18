@@ -784,16 +784,8 @@
                     <div class="sl_value">
                         <div class="sl_value_logo">
                             <ul>
-                                <!--                                <li>-->
-                                <!--                                    <a href="/static/search/#">-->
-                                <!--                                        <img src="/static/search/img/598033b4nd6055897.jpg" alt="">-->
-                                <!--                                        <div>-->
-                                <!--                                            华为(HUAWEI)-->
-                                <!--                                        </div>-->
-                                <!--                                    </a>-->
-                                <!--                                </li>-->
                                 <li th:each="brand: ${result.brands}">
-                                    <a href="/static/search/#">
+                                    <a th:href="${'javascript:searchProducts(&quot;brandId&quot;,'+ brand.brandId +')'}">
                                         <img th:src="${brand.brandImg}" alt="">
                                         <div th:text="${brand.brandName}">
                                             华为(HUAWEI)
@@ -824,7 +816,7 @@
                     <div class="sl_value">
                         <ul>
                             <li th:each="catalog: ${result.catalogs}">
-                                <a href="/static/search/#" th:text="${catalog.getCatalogName()}">
+                                <a th:href="${'javascript:searchProducts(&quot;catalog3Id&quot;,'+ catalog.catalogId +')'}" th:text="${catalog.getCatalogName()}">
                                 </a>
                             </li>
                         </ul>
@@ -850,7 +842,11 @@
                     </div>
                     <div class="sl_value">
                         <ul>
-                            <li th:each="val : ${attr.attrValue}"><a href="/static/search/#" th:text="${val}"></a></li>
+                            <li th:each="val:${attr.attrValue}">
+                                <a th:href="${'javascript:searchProducts(&quot;attrs&quot;,&quot;' + attr.attrId + '_' + val +'&quot;)'}"
+                                th:text="${val}">
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1978,6 +1974,17 @@
     }, function () {
         $(this).css("color", "#727272")
     })
+
+    function searchProducts(name,value){
+        //原来的页面
+        let href = location.href + ""
+        if(href.indexOf("?") !== -1){
+            location.href = location.href + "&" + name + "=" + value
+        }else{
+            location.href = location.href + "?" + name + "=" + value
+        }
+
+    }
 </script>
 </body>
 </html>
