@@ -35,6 +35,6 @@ class MallExceptionControllerAdvice {
 
     @ExceptionHandler(value = [Throwable::class])
     fun handleException(e: Throwable): R {
-        return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.code, BizCodeEnum.UNKNOWN_EXCEPTION.msg)
+        return R.error(BizCodeEnum.UNKNOWN_EXCEPTION.code, BizCodeEnum.UNKNOWN_EXCEPTION.msg + e.message)
     }
 }

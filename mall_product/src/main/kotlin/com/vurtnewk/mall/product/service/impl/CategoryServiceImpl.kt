@@ -184,7 +184,7 @@ class CategoryServiceImpl(
         return if (lock) {
             //锁成功了 才操作数据库
             val script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end"
-            val execute = mStringRedisTemplate.execute(DefaultRedisScript(script, Long::class.java), listOf("lock"), uuid)
+            mStringRedisTemplate.execute(DefaultRedisScript(script, Long::class.java), listOf("lock"), uuid)
             getCatalogJsonFromDb()
         } else {
             //锁失败了进行重试

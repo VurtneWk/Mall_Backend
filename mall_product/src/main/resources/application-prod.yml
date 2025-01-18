@@ -1,0 +1,51 @@
+spring:
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://127.0.0.1:3306/mall_pms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false
+  # 如果没有名字，nacos里看不到
+  application:
+    name: mall-product
+  jackson: # 接口返回的JSON里的时间格式处理
+    date-format: yyyy-mm-dd HH:mm:ss
+  thymeleaf:
+    cache: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+    # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      cache-null-values: true # 可防止缓存穿透
+#      key-prefix: CACHE_   # 前缀：如果制定则使用，没有则默认使用缓存的名字作为前缀
+#      use-key-prefix: true 是否开启前缀等
+
+mybatis-plus:
+  # 配置mapper的位置 , 默认值也是这个
+  mapper-locations: classpath*:/mapper/**/*.xml
+  # 配置ID自增
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1 # 逻辑已删除值
+      logic-not-delete-value: 0 # 逻辑未删除值
+
+server:
+  port: 5400
+
+logging:
+  level:
+    com.vurtnewk.mall: debug
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %-36logger{36} - %msg%n"

@@ -1,17 +1,3 @@
 spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-      config:
-        server-addr: 127.0.0.1:8848
-  config:
-    import:
-      - nacos:third-party.properties?refreshEnabled=true&group=DEFAULT_GROUP
-  # 如果没有名字，nacos里看不到
-  application:
-    name: mall-third-party
-
-
-server:
-  port: 5600
+  profiles:
+    active: @profileActive@

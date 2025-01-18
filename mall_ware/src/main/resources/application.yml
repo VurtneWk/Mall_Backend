@@ -1,36 +1,3 @@
 spring:
-  datasource:
-    username: root
-    password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/mall_wms
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 127.0.0.1:8848
-      config:
-        import-check:
-          enabled: false
-        server-addr: 127.0.0.1:8848
-  # 如果没有名字，nacos里看不到
-  application:
-    name: mall-ware
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: Asia/Shanghai # 这个不加，返回的数据有时差
-
-mybatis-plus:
-  # 配置mapper的位置 , 默认值也是这个
-  mapper-locations: classpath*:/mapper/**/*.xml
-  # 配置ID自增
-  global-config:
-    db-config:
-      id-type: auto
-
-server:
-  port: 5500
-
-
-logging:
-  level:
-    com.vurtnewk.mall: debug
+  profiles:
+    active: @profileActive@
