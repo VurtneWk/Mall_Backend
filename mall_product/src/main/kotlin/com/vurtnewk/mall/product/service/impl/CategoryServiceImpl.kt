@@ -98,11 +98,14 @@ class CategoryServiceImpl(
     override fun getCatalogJson(): Map<String, List<Catalog2Vo>> {
         logInfo("开始查询数据库..")
         //优化： 只查一次数据库
+        //查询出所有数据
         val allCategoryEntities = KtQueryChainWrapper(CategoryEntity::class.java).list()
+        //顶层的集合
         val topLevelCategoryList = this.getCategoryListByParentCId(allCategoryEntities, 0L)
+
         val catalogJsonFromDb = topLevelCategoryList.associate { categoryEntity ->
             //根据一级ID 查出所有的二级
-            val categoryEntities = this.getCategoryListByParentCId(allCategoryEntities, categoryEntity.parentCid!!)
+            val categoryEntities = this.getCategoryListByParentCId(allCategoryEntities, categoryEntity.catId!!)
                 .map { category2Entity ->
                     //组装2级数据
                     val catalog2Vo = Catalog2Vo()
@@ -111,7 +114,7 @@ class CategoryServiceImpl(
                     catalog2Vo.name = category2Entity.name.orEmpty()
                     // catalog2Vo.catalog3List =
                     //根据2级ID 查询3级数据
-                    catalog2Vo.catalog3List = this.getCategoryListByParentCId(allCategoryEntities, category2Entity.parentCid!!)
+                    catalog2Vo.catalog3List = this.getCategoryListByParentCId(allCategoryEntities, category2Entity.catId!!)
                         .map { category3Entity ->
                             //组装3级数据
                             Catalog2Vo.Catalog3Vo(
@@ -123,8 +126,10 @@ class CategoryServiceImpl(
                     catalog2Vo
                 }
             //组装成map
+
             Pair(categoryEntity.catId.toString(), categoryEntities)
         }
+//        logInfo("查询结果： $catalogJsonFromDb")
         return catalogJsonFromDb
     }
 
@@ -207,7 +212,7 @@ class CategoryServiceImpl(
         val topLevelCategoryList = this.getCategoryListByParentCId(allCategoryEntities, 0L)
         val catalogJsonFromDb = topLevelCategoryList.associate { categoryEntity ->
             //根据一级ID 查出所有的二级
-            val categoryEntities = this.getCategoryListByParentCId(allCategoryEntities, categoryEntity.parentCid!!)
+            val categoryEntities = this.getCategoryListByParentCId(allCategoryEntities, categoryEntity.catId!!)
                 .map { category2Entity ->
                     //组装2级数据
                     val catalog2Vo = Catalog2Vo()
@@ -216,7 +221,7 @@ class CategoryServiceImpl(
                     catalog2Vo.name = category2Entity.name.orEmpty()
                     // catalog2Vo.catalog3List =
                     //根据2级ID 查询3级数据
-                    catalog2Vo.catalog3List = this.getCategoryListByParentCId(allCategoryEntities, category2Entity.parentCid!!)
+                    catalog2Vo.catalog3List = this.getCategoryListByParentCId(allCategoryEntities, category2Entity.catId!!)
                         .map { category3Entity ->
                             //组装3级数据
                             Catalog2Vo.Catalog3Vo(

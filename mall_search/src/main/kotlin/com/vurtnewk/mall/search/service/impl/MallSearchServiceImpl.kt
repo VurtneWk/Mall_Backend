@@ -93,7 +93,9 @@ class MallSearchServiceImpl(
             }
         }
         // 是否有库存
-        boolQuery.filter(QueryBuilders.termQuery("hasStock", param.hasStock == 1))
+        param.hasStock?.let {
+            boolQuery.filter(QueryBuilders.termQuery("hasStock", param.hasStock == 1))
+        }
         // 价格区间
         if (!param.skuPrice.isNullOrEmpty()) {
             val rangeQuery = QueryBuilders.rangeQuery("skuPrice")
@@ -129,7 +131,7 @@ class MallSearchServiceImpl(
         if (!param.keyword.isNullOrEmpty()) {
             val highlightBuilder = HighlightBuilder()
             highlightBuilder.field("skuTitle")
-            highlightBuilder.preTags("<b style='color.red'>")
+            highlightBuilder.preTags("<b style='color:red'>")
             highlightBuilder.postTags("</b>")
             searchSourceBuilder.highlighter(highlightBuilder)
         }

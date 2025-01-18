@@ -37,7 +37,7 @@ data class SearchParam(
      * 过滤条件
      * - hasStock 是否有货 0无货/1有货
      */
-    val hasStock: Int = 1,
+    val hasStock: Int?,
     /**
      * 过滤条件
      * - skuPrice 价格区间
