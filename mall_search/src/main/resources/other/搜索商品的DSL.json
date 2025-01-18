@@ -109,7 +109,7 @@
         "size": 10
       },
       "aggs": {
-        "catalog_agg": {
+        "catalog_name_agg": {
           "terms": {
             "field": "catalogName",
             "size": 10

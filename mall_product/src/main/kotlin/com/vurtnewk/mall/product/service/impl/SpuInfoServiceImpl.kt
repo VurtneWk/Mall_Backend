@@ -207,7 +207,7 @@ class SpuInfoServiceImpl(
         var hasStockMap: Map<Long, Boolean>? = null
         runCatching {
             val r = mWareFeignService.getSkusHasStock(skus.mapNotNull { it.skuId })
-            logInfo("rrrr=> $r ， ${r.data}")
+            logInfo("库存服务查询=> $r ， ${r.data}")
             hasStockMap = r.data?.associate { it.skuId to it.hasStock }
         }.onFailure {
             logError("库存服务查询异常：${it}")

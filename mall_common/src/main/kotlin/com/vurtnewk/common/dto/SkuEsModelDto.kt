@@ -82,7 +82,7 @@ import java.math.BigDecimal
  * }
  * ```
  */
-class SkuEsModelDto(
+data class SkuEsModelDto(
     var skuId: Long = 0L,
     var spuId: Long = 0L,
     var skuTitle: String = "",

@@ -21,6 +21,7 @@ import com.vurtnewk.mall.ware.vo.MergePurchaseOrderVo
 import com.vurtnewk.mall.ware.vo.PurchaseOrderDoneVo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.lang.RuntimeException
 import java.util.*
 
 
@@ -163,7 +164,7 @@ class PurchaseServiceImpl(
                 isSuccess = false
             } else {
                 //将成功采购的进行入库
-                val detailEntity = purchaseDetailService.getById(item.itemId)
+                val detailEntity = purchaseDetailService.getById(item.itemId) ?: throw RuntimeException("没有符合条件的商品")
                 wareSkuService.addStock(detailEntity.skuId!!, detailEntity.wareId!!, detailEntity.skuNum!!)
             }
             updates.add(purchaseDetailEntity)

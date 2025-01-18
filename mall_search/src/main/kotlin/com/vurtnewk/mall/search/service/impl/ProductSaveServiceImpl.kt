@@ -5,6 +5,7 @@ package com.vurtnewk.mall.search.service.impl
 import com.alibaba.fastjson2.JSON
 import com.vurtnewk.common.dto.SkuEsModelDto
 import com.vurtnewk.common.utils.ext.logError
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.search.config.MallElasticSearchConfig
 import com.vurtnewk.mall.search.constants.EsConstants
 import com.vurtnewk.mall.search.service.ProductSaveService
@@ -41,6 +42,8 @@ class ProductSaveServiceImpl(
         val response = restHighLevelClient.bulk(bulkRequest, MallElasticSearchConfig.COMMON_OPTIONS)
         if (response.hasFailures()) {
             logError("商品上架错误：${response.items.filter { it.isFailed }.map { it.id }}")
+        }else{
+            logInfo("商品上架完成")
         }
         return response.hasFailures()
 

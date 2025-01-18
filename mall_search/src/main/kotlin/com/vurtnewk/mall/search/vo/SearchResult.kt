@@ -12,7 +12,7 @@ data class SearchResult(
     var products: List<SkuEsModelDto>? = null,
     //region 分页信息
     var pageNum: Int? = null,
-    var total: Long? = null,
+    var total: Long = 0L,
     var totalPages: Int? = null,
     //endregion
     /**
@@ -30,7 +30,7 @@ data class SearchResult(
     var catalogs: List<CatalogVo>? = null,
 ) {
     data class BrandVo(
-        var brandId: Long = 0L,
+        var brandId: Long? = 0L,
         var brandName: String = "",
         var brandImg: String = "",
     )

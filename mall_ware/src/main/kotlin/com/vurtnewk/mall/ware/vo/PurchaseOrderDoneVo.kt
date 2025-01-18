@@ -17,6 +17,9 @@ data class PurchaseOrderDoneVo(
 
 @Serializable
 data class PurchaseOrderItemDoneVo(
+    /**
+     *
+     */
     @field:NotNull
     val itemId: Long,
     @field:NotNull
