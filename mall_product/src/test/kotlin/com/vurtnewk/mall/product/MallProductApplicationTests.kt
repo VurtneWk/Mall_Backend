@@ -2,6 +2,7 @@ package com.vurtnewk.mall.product
 
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.product.dao.AttrGroupDao
+import com.vurtnewk.mall.product.dao.SkuSaleAttrValueDao
 import com.vurtnewk.mall.product.service.BrandService
 import com.vurtnewk.mall.product.service.CategoryService
 import org.junit.jupiter.api.Test
@@ -28,6 +29,13 @@ class MallProductApplicationTests {
 
     @Autowired
     lateinit var mAttrGroupDao: AttrGroupDao
+    @Autowired
+    lateinit var mSkuSaleAttrValueDao: SkuSaleAttrValueDao
+
+    @Test
+    fun testGetSaleAttrsBySpuId(){
+        println(mSkuSaleAttrValueDao.getSaleAttrsBySpuId(5))
+    }
 
     @Test
     fun testAttrGroupWithAttrsBySpuId() {

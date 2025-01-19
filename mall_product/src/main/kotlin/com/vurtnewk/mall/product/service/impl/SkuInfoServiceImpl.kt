@@ -9,10 +9,7 @@ import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.product.dao.SkuInfoDao
 import com.vurtnewk.mall.product.entity.SkuInfoEntity
-import com.vurtnewk.mall.product.service.AttrGroupService
-import com.vurtnewk.mall.product.service.SkuImagesService
-import com.vurtnewk.mall.product.service.SkuInfoService
-import com.vurtnewk.mall.product.service.SpuInfoDescService
+import com.vurtnewk.mall.product.service.*
 import com.vurtnewk.mall.product.vo.SkuItemVo
 import org.springframework.stereotype.Service
 
@@ -21,7 +18,8 @@ import org.springframework.stereotype.Service
 class SkuInfoServiceImpl(
     private val mSkuImagesService: SkuImagesService,
     private val mSpuInfoDescService: SpuInfoDescService,
-    private val mAttrGroupService: AttrGroupService
+    private val mAttrGroupService: AttrGroupService,
+    private val mSkuSaleAttrValueService: SkuSaleAttrValueService,
 ) : ServiceImpl<SkuInfoDao, SkuInfoEntity>(), SkuInfoService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -98,12 +96,7 @@ class SkuInfoServiceImpl(
         //endregion
 
         //region 3. sku对应的spu销售属性组合
-        // pms_product_attr_value 通过 spuId 能获取有哪些属性
-        // pms_attr 能获取是 attr_id 是否是销售属性
-        // 根据 attr_id 能在 pms_attr_attrgroup_relation 获取 对应的组
-        // pms_attr_group 获取 组名信息
-
-
+        skuItemVo.saleAttr = mSkuSaleAttrValueService.getSaleAttrsBySpuId(spuId)
         //endregion
 
         //region 4. sku介绍  spu数据 pms_spu_info
@@ -111,12 +104,10 @@ class SkuInfoServiceImpl(
         //endregion
 
         //region 5. sku规格参数信息
-        mAttrGroupService.getAttrGroupWithAttrsBySpuId(spuId , catalogId)
-
-        
+        skuItemVo.groupAttrs = mAttrGroupService.getAttrGroupWithAttrsBySpuId(spuId, catalogId)
         //endregion
-        
-        
+
+
         return SkuItemVo()
     }
 

@@ -34,11 +34,11 @@ data class SkuItemVo(
     /**
      * sku对应的spu销售属性组合
      */
-    var saleAttr: MutableList<SkuItemSaleAttrVo> = mutableListOf(),
+    var saleAttr: List<SkuItemSaleAttrVo> = listOf(),
     /**
      * sku规格参数信息
      */
-    var groupAttrs: MutableList<SpuItemAttrGroupVo> = mutableListOf(),
+    var groupAttrs: List<SpuItemAttrGroupVo> = listOf(),
 )
 
 data class SkuItemSaleAttrVo(
@@ -50,8 +50,7 @@ data class SkuItemSaleAttrVo(
      * 属性名
      */
     var attrName: String? = null,
-    var attrValues: MutableList<String> = mutableListOf(),
-
+    var attrValues: String? = null,
     )
 
 data class SpuItemAttrGroupVo(
@@ -66,6 +65,6 @@ data class SpuBaseAttrVo(
     var attrName: String = "",
     var attrValue: String = "",
 
- )
+    )
 
 

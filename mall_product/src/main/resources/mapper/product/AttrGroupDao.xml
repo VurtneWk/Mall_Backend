@@ -27,6 +27,20 @@
             <result property="attrValue" column="attr_value"/>
         </collection>
     </resultMap>
+<!--
+  SELECT pav.spu_id,
+       ag.attr_group_id,
+       ag.attr_group_name,
+       aar.attr_id,
+       attr.attr_name,
+       pav.attr_value
+FROM `pms_attr_group` ag
+         LEFT JOIN `pms_attr_attrgroup_relation` aar on aar.attr_group_id = ag.attr_group_id
+         LEFT JOIN `pms_attr` attr on attr.attr_id = aar.attr_id
+         LEFT JOIN `pms_product_attr_value` pav on pav.attr_id = attr.attr_id
+where ag.catelog_id = 225
+  AND pav.spu_id = 5
+  -->
     <select id="getAttrGroupWithAttrsBySpuId" resultMap="spuItemAttrGroupVo">
         SELECT pav.spu_id,
                ag.attr_group_id,
