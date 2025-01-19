@@ -43,6 +43,16 @@
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional> <!--这个要加了才有用-->
         </dependency>
+        <!--feign 需要使用的 两个依赖-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

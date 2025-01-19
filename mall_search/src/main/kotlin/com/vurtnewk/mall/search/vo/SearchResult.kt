@@ -28,6 +28,10 @@ data class SearchResult(
      * 查询所涉及到的分类
      */
     var catalogs: List<CatalogVo>? = null,
+    /**
+     * 面包屑导航数据
+     */
+    var navs: List<NavVo>? = null,
 ) {
     data class BrandVo(
         var brandId: Long? = 0L,
@@ -44,6 +48,12 @@ data class SearchResult(
     data class CatalogVo(
         var catalogId: Long = 0L,
         var catalogName: String = "",
+    )
+
+    data class NavVo(
+        var navName: String? = null,
+        var navValue: String? = null,
+        var link: String? = null,
     )
 }
 

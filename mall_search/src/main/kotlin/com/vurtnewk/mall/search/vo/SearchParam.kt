@@ -71,4 +71,6 @@ data class SearchParam(
      * 页码
      */
     var pageNum: Int = 1,
+
+    var queryString: String = "",
 )

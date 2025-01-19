@@ -70,6 +70,12 @@ class R : HashMap<String, Any>() {
         return JSON.parseObject(str, typeReference)
     }
 
+    fun <T> getData(key: String, typeReference: TypeReference<T>): T {
+        val data = this[key]
+        val str = JSON.toJSONString(data)
+        return JSON.parseObject(str, typeReference)
+    }
+
     fun getCode(): Int {
         return this["code"].toString().toInt()
     }

@@ -3,11 +3,14 @@
 package com.vurtnewk.mall.search.service.impl
 
 import com.alibaba.fastjson2.JSON
+import com.alibaba.fastjson2.TypeReference
 import com.vurtnewk.common.dto.SkuEsModelDto
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.search.config.MallElasticSearchConfig
 import com.vurtnewk.mall.search.constants.EsConstants
+import com.vurtnewk.mall.search.feign.ProductFeignService
 import com.vurtnewk.mall.search.service.MallSearchService
+import com.vurtnewk.mall.search.vo.AttrRespVO
 import com.vurtnewk.mall.search.vo.SearchParam
 import com.vurtnewk.mall.search.vo.SearchResult
 import org.apache.lucene.search.join.ScoreMode
@@ -23,6 +26,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder
 import org.elasticsearch.search.sort.SortOrder
 import org.springframework.stereotype.Service
+import java.net.URLEncoder
 
 /**
  *
@@ -32,6 +36,7 @@ import org.springframework.stereotype.Service
 @Service
 class MallSearchServiceImpl(
     private val mRestHighLevelClient: RestHighLevelClient,
+    private val mProductFeignService: ProductFeignService,
 ) : MallSearchService {
     /**
      * ## 搜索页面主功能
@@ -98,16 +103,18 @@ class MallSearchServiceImpl(
         }
         // 价格区间
         if (!param.skuPrice.isNullOrEmpty()) {
-            val rangeQuery = QueryBuilders.rangeQuery("skuPrice")
             //这里不过滤的话 长度都是2，其中一个是空串 ，和 Java 有区别
             val split = param.skuPrice.split("_").filter { it.isNotEmpty() }
-            when {
-                param.skuPrice.startsWith("_") -> rangeQuery.to(split[0])
-                param.skuPrice.endsWith("_") -> rangeQuery.from(split[0])
-                split.size == 2 -> rangeQuery.gte(split[0]).lte(split[1])
-                else -> {}
+            if (split.isNotEmpty()) {
+                val rangeQuery = QueryBuilders.rangeQuery("skuPrice")
+                when {
+                    param.skuPrice.startsWith("_") -> rangeQuery.to(split[0])
+                    param.skuPrice.endsWith("_") -> rangeQuery.from(split[0])
+                    split.size == 2 -> rangeQuery.gte(split[0]).lte(split[1])
+                    else -> {}
+                }
+                boolQuery.filter(rangeQuery)
             }
-            boolQuery.filter(rangeQuery)
         }
         //把前面构建的条件 都封装进最终的 searchSourceBuilder
         searchSourceBuilder.query(boolQuery)
@@ -173,7 +180,7 @@ class MallSearchServiceImpl(
         val products = mutableListOf<SkuEsModelDto>()
         hits.hits?.forEach { searchHit ->
             val skuEsModelDto = JSON.parseObject(searchHit.sourceAsString, SkuEsModelDto::class.java)
-            if(!param.keyword.isNullOrEmpty()){
+            if (!param.keyword.isNullOrEmpty()) {
                 searchHit.highlightFields["skuTitle"]?.fragments?.get(0)?.let {
                     skuEsModelDto.skuTitle = it.string()
                 }
@@ -242,6 +249,30 @@ class MallSearchServiceImpl(
         // 来源参数的页码
         searchResult.pageNum = param.pageNum
         //endregion
+
+        //region 构建面包屑导航功能
+        searchResult.navs = param.attrs?.map { attr ->
+            val navVo = SearchResult.NavVo()
+            val split = attr.split("_")
+            navVo.navValue = split[1]
+            val result = mProductFeignService.getAttrsInfo(split[0].toLong())
+            if (result.isSuccess()) {
+                navVo.navName = result.getData("attr", object : TypeReference<AttrRespVO>() {}).attrName
+            } else {
+                navVo.navName = split[0]
+            }
+            val encode = URLEncoder.encode(attr,"UTF-8")
+                .replace("+","%20") //浏览器和java对空格处理的差异
+            //有可能前面是 ?attrs= 开头的
+            val replace = param.queryString.replace("&attrs=$encode","")
+                .replace("attrs=$encode&","") // 可能是要替换 ?attrs=xxx&yyyy 里的attrs=xxx&
+                .replace("attrs=$encode","")  // 上面两个都没匹配就直接替换掉 ?attrs=$encode
+            navVo.link = "http://search.mall.com/list.html?$replace"
+            navVo
+        }
+        //endregion
+
+
         logInfo("查询到的结果：$searchResult")
         return searchResult
     }
