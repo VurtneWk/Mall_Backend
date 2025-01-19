@@ -10,6 +10,7 @@ import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.product.dao.SkuInfoDao
 import com.vurtnewk.mall.product.entity.SkuInfoEntity
 import com.vurtnewk.mall.product.service.SkuInfoService
+import com.vurtnewk.mall.product.vo.SkuItemVo
 import org.springframework.stereotype.Service
 
 
@@ -64,6 +65,19 @@ class SkuInfoServiceImpl : ServiceImpl<SkuInfoDao, SkuInfoEntity>(), SkuInfoServ
         return KtQueryChainWrapper(SkuInfoEntity::class.java)
             .eq(SkuInfoEntity::spuId, spuId)
             .list()
+    }
+
+    /**
+     * 需要获取的数据信息
+     * 1. sku基本信息 pms_sku_info
+     * 2. sku图片信息 pms_sku_images
+     * 3. sku对应的spu销售属性组合
+     * 4. sku介绍  spu数据 pms_spu_info
+     * 5. sku规格参数信息
+     */
+    override fun queryItem(skuId: Long): SkuItemVo {
+
+        return SkuItemVo()
     }
 
 
