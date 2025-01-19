@@ -3,6 +3,7 @@ package com.vurtnewk.mall.product.service.impl
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.metadata.IPage
+import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
@@ -13,7 +14,7 @@ import com.vurtnewk.mall.product.service.SkuImagesService
 
 
 @Service("skuImagesService")
-class SkuImagesServiceImpl : ServiceImpl<SkuImagesDao, SkuImagesEntity>() , SkuImagesService {
+class SkuImagesServiceImpl : ServiceImpl<SkuImagesDao, SkuImagesEntity>(), SkuImagesService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
@@ -21,5 +22,11 @@ class SkuImagesServiceImpl : ServiceImpl<SkuImagesDao, SkuImagesEntity>() , SkuI
             QueryWrapper<SkuImagesEntity>()
         )
         return PageUtils(page)
+    }
+
+    override fun getImagesById(skuId: Long): List<SkuImagesEntity> {
+        return KtQueryChainWrapper(SkuImagesEntity::class.java)
+            .eq(SkuImagesEntity::skuId, skuId)
+            .list()
     }
 }

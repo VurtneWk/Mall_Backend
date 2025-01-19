@@ -2,7 +2,9 @@ package com.vurtnewk.mall.product.dao
 
 import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
+import com.vurtnewk.mall.product.vo.SpuItemAttrGroupVo
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 
 /**
  * 属性分组
@@ -13,5 +15,6 @@ import org.apache.ibatis.annotations.Mapper
  */
 @Mapper
 interface AttrGroupDao : BaseMapper<AttrGroupEntity> {
-	
+    fun getAttrGroupWithAttrsBySpuId(@Param("spuId") spuId: Long, @Param("catalogId") catalogId: Long):List<SpuItemAttrGroupVo>
+
 }

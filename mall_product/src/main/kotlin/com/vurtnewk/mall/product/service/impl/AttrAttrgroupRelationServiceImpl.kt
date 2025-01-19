@@ -21,7 +21,7 @@ class AttrAttrgroupRelationServiceImpl : ServiceImpl<AttrAttrgroupRelationDao, A
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
             Query<AttrAttrgroupRelationEntity>().getPage(params),
-            QueryWrapper<AttrAttrgroupRelationEntity>()
+            QueryWrapper()
         )
         return PageUtils(page)
     }

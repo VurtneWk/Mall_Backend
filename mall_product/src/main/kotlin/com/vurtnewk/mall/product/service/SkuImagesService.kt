@@ -14,5 +14,6 @@ import com.vurtnewk.mall.product.entity.SkuImagesEntity
 interface SkuImagesService : IService<SkuImagesEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun getImagesById(skuId: Long): List<SkuImagesEntity>
 }
 

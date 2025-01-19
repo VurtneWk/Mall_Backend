@@ -1,6 +1,5 @@
 package com.vurtnewk.mall.product.service.impl
 
-import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
@@ -9,8 +8,6 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.mall.product.dao.AttrAttrgroupRelationDao
-import com.vurtnewk.mall.product.dao.AttrDao
-
 import com.vurtnewk.mall.product.dao.AttrGroupDao
 import com.vurtnewk.mall.product.entity.AttrAttrgroupRelationEntity
 import com.vurtnewk.mall.product.entity.AttrEntity
@@ -18,15 +15,17 @@ import com.vurtnewk.mall.product.entity.AttrGroupEntity
 import com.vurtnewk.mall.product.service.AttrGroupService
 import com.vurtnewk.mall.product.vo.AttrGroupRelationVO
 import com.vurtnewk.mall.product.vo.AttrGroupWithAttrsVO
+import com.vurtnewk.mall.product.vo.SpuItemAttrGroupVo
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 
 
 @Service("attrGroupService")
 class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrGroupService {
 
-    @Autowired
-    lateinit var mAttrDao: AttrDao
+//    @Autowired
+//    lateinit var mAttrDao: AttrDao
 
     @Autowired
     lateinit var mAttrAttrgroupRelationDao: AttrAttrgroupRelationDao
@@ -154,6 +153,7 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
         return vos
     }
 
+
     /**
      * 根据分组ID ， 查询出所有的分组数据
      *
@@ -174,4 +174,18 @@ class AttrGroupServiceImpl : ServiceImpl<AttrGroupDao, AttrGroupEntity>(), AttrG
             .`in`(AttrEntity::attrId, idList)
             .list()
     }
+
+    /**
+     * 根据spuId 获取属性分组信息
+     *
+     * 查出当前 spuId 对应的 所有属性的分组信息以及当前分组下的所有属性对应的值
+     *
+     * ```sql
+     *
+     * ```
+     */
+    override fun getAttrGroupWithAttrsBySpuId(spuId: Long, catalogId: Long): List<SpuItemAttrGroupVo> {
+        return this.baseMapper.getAttrGroupWithAttrsBySpuId(spuId, catalogId)
+    }
+
 }

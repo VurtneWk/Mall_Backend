@@ -26,7 +26,7 @@ data class SkuItemVo(
     /**
      * sku图片信息
      */
-    val images: MutableList<SkuImagesEntity> = mutableListOf(),
+    var images: List<SkuImagesEntity> = emptyList(),
     /**
      * sku介绍:spu数据
      */
@@ -39,33 +39,33 @@ data class SkuItemVo(
      * sku规格参数信息
      */
     var groupAttrs: MutableList<SpuItemAttrGroupVo> = mutableListOf(),
-    ) {
-    data class SkuItemSaleAttrVo(
-        /**
-         * 属性id
-         */
-        var attrId: Long? = null,
-        /**
-         * 属性名
-         */
-        var attrName: String? = null,
-        var attrValues: MutableList<String> = mutableListOf(),
+)
 
-        )
+data class SkuItemSaleAttrVo(
+    /**
+     * 属性id
+     */
+    var attrId: Long? = null,
+    /**
+     * 属性名
+     */
+    var attrName: String? = null,
+    var attrValues: MutableList<String> = mutableListOf(),
 
-    data class SpuItemAttrGroupVo(
-        var groupName: String = "",
-        var attrs: MutableList<SpuBaseAttrVo> = mutableListOf(),
     )
 
-    data class SpuBaseAttrVo(
-        /**
-         * 属性名
-         */
-        var attrName: String = "",
-        var attrValue: String = "",
+data class SpuItemAttrGroupVo(
+    var groupName: String = "",
+    var attrs: MutableList<SpuBaseAttrVo> = mutableListOf(),
+)
 
-        )
-}
+data class SpuBaseAttrVo(
+    /**
+     * 属性名
+     */
+    var attrName: String = "",
+    var attrValue: String = "",
+
+ )
 
 

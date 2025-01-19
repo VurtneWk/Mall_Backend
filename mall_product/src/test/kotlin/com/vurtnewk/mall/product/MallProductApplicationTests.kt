@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.product
 
 import com.vurtnewk.common.utils.ext.logInfo
+import com.vurtnewk.mall.product.dao.AttrGroupDao
 import com.vurtnewk.mall.product.service.BrandService
 import com.vurtnewk.mall.product.service.CategoryService
 import org.junit.jupiter.api.Test
@@ -25,8 +26,17 @@ class MallProductApplicationTests {
     @Autowired
     lateinit var mRedissonClient: RedissonClient
 
+    @Autowired
+    lateinit var mAttrGroupDao: AttrGroupDao
+
     @Test
-    fun testRedisson(){
+    fun testAttrGroupWithAttrsBySpuId() {
+        val attrGroupWithAttrsBySpuId = mAttrGroupDao.getAttrGroupWithAttrsBySpuId(5, 225)
+        println(attrGroupWithAttrsBySpuId)
+    }
+
+    @Test
+    fun testRedisson() {
         println(mRedissonClient)
     }
 
@@ -42,7 +52,7 @@ class MallProductApplicationTests {
     fun testRedis() {
         val opsForValue = mStringRedisTemplate.opsForValue()
         //保存
-        opsForValue.set("hello","world_${UUID.randomUUID()}")
+        opsForValue.set("hello", "world_${UUID.randomUUID()}")
         val hello = opsForValue.get("hello")
         logInfo("保存的数据是=> $hello")
     }
