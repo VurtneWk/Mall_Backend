@@ -21,7 +21,7 @@ import org.springframework.validation.annotation.Validated
 @RestController
 @RequestMapping("product/brand")
 class BrandController @Autowired constructor(
-    private val brandService: BrandService
+    private val brandService: BrandService,
 ) {
 
     /**
@@ -45,11 +45,20 @@ class BrandController @Autowired constructor(
     }
 
     /**
+     * ## 获取指定Ids的品牌信息
+     */
+    @GetMapping("/infos")
+    fun info(@RequestParam("brandIds") brandIds: List<Long>): R {
+        val brands = brandService.getBrandByIds(brandIds)
+        return R.ok().put("brand", brands)
+    }
+
+    /**
      * 保存
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:brand:save")
-    fun save(@RequestBody @Validated(AddGroup::class)  brand: BrandEntity): R {
+    fun save(@RequestBody @Validated(AddGroup::class) brand: BrandEntity): R {
         brandService.save(brand)
         return R.ok()
     }
@@ -84,4 +93,6 @@ class BrandController @Autowired constructor(
         brandService.removeByIds(brandIds.asList())
         return R.ok()
     }
+
+
 }

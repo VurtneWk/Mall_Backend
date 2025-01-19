@@ -31,7 +31,7 @@ data class SearchResult(
     /**
      * 面包屑导航数据
      */
-    var navs: List<NavVo>? = null,
+    var navs: MutableList<NavVo> = mutableListOf(),
 ) {
     data class BrandVo(
         var brandId: Long? = 0L,

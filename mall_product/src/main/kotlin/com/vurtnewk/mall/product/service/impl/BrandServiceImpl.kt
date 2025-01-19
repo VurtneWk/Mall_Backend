@@ -56,4 +56,8 @@ class BrandServiceImpl : ServiceImpl<BrandDao, BrandEntity>(), BrandService {
             mCategoryBrandRelationService.updateBrandName(brand.brandId!!, brand.name!!)
         }
     }
+
+    override fun getBrandByIds(brandIds: List<Long>): List<BrandEntity> {
+        return baseMapper.selectByIds(brandIds)
+    }
 }

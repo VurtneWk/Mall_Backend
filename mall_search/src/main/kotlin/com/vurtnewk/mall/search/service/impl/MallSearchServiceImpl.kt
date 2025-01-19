@@ -11,6 +11,7 @@ import com.vurtnewk.mall.search.constants.EsConstants
 import com.vurtnewk.mall.search.feign.ProductFeignService
 import com.vurtnewk.mall.search.service.MallSearchService
 import com.vurtnewk.mall.search.vo.AttrRespVO
+import com.vurtnewk.mall.search.vo.BrandDto
 import com.vurtnewk.mall.search.vo.SearchParam
 import com.vurtnewk.mall.search.vo.SearchResult
 import org.apache.lucene.search.join.ScoreMode
@@ -250,8 +251,8 @@ class MallSearchServiceImpl(
         searchResult.pageNum = param.pageNum
         //endregion
 
-        //region 构建面包屑导航功能
-        searchResult.navs = param.attrs?.map { attr ->
+        //region 构建面包屑导航功能 这个完全应该是前端处理的..后端这里没写完 不加了..完全是增加服务器压力
+        param.attrs?.map { attr ->
             val navVo = SearchResult.NavVo()
             val split = attr.split("_")
             navVo.navValue = split[1]
@@ -261,19 +262,44 @@ class MallSearchServiceImpl(
             } else {
                 navVo.navName = split[0]
             }
-            val encode = URLEncoder.encode(attr,"UTF-8")
-                .replace("+","%20") //浏览器和java对空格处理的差异
-            //有可能前面是 ?attrs= 开头的
-            val replace = param.queryString.replace("&attrs=$encode","")
-                .replace("attrs=$encode&","") // 可能是要替换 ?attrs=xxx&yyyy 里的attrs=xxx&
-                .replace("attrs=$encode","")  // 上面两个都没匹配就直接替换掉 ?attrs=$encode
+            val replace = replaceQueryString("attrs", attr, param)  // 上面两个都没匹配就直接替换掉 ?attrs=$encode
             navVo.link = "http://search.mall.com/list.html?$replace"
+            searchResult.navs.add(navVo)
             navVo
         }
+
+        if (!param.brandId.isNullOrEmpty()) {
+            val navVo = SearchResult.NavVo()
+            navVo.navName = "品牌"
+            val r = mProductFeignService.getBrandsInfo(param.brandId)
+            if (r.isSuccess()) {
+                val brandsData = r.getData("brand", object : TypeReference<List<BrandDto>>() {})
+                val sb = StringBuffer()
+                var replace = ""
+                brandsData.forEach {
+                    sb.append(it.name + ";")
+                    replace = replaceQueryString("brandId", it.brandId.toString(), param)
+                }
+                navVo.navValue = sb.toString()
+                navVo.link = "http://search.mall.com/list.html?$replace"
+            }
+            searchResult.navs.add(navVo)
+        }
+
+        //TODO 分类： 不需要导航取消
         //endregion
 
 
         logInfo("查询到的结果：$searchResult")
         return searchResult
+    }
+
+    private fun replaceQueryString(key: String, attr: String, param: SearchParam): String {
+        val encode = URLEncoder.encode(attr, "UTF-8")
+            .replace("+", "%20") //浏览器和java对空格处理的差异
+        //有可能前面是 ?attrs= 开头的
+        return param.queryString.replace("&$key=$encode", "")
+            .replace("$key=$encode&", "") // 可能是要替换 ?attrs=xxx&yyyy 里的attrs=xxx&
+            .replace("$key=$encode", "")
     }
 }

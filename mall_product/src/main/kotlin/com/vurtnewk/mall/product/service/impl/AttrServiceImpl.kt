@@ -22,6 +22,7 @@ import com.vurtnewk.mall.product.vo.AttrRespVO
 import com.vurtnewk.mall.product.vo.AttrVO
 import org.springframework.beans.BeanUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.transaction.annotation.Transactional
 
 
@@ -123,9 +124,10 @@ class AttrServiceImpl : ServiceImpl<AttrDao, AttrEntity>(), AttrService {
             }
     }
 
-    /**
+     /**
      * [反显](https://gitee.com/vurtnewk/typora-image/raw/master/images03/202501110038234.png)
      */
+     @Cacheable(value = ["attr"], key = "'attrinfo:'+#root.args[0]")
     override fun getAttrInfo(attrId: Long): AttrRespVO {
         val attrEntity = this.getById(attrId)
         val attrRespVO = AttrRespVO()
