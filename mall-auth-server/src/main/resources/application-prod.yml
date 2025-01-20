@@ -9,5 +9,15 @@ spring:
     name: mall-auth-server
   thymeleaf:
     cache: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+    # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      cache-null-values: true # 可防止缓存穿透
 server:
   port: 5800

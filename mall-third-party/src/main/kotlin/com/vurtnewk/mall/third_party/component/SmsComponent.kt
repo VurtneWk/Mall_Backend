@@ -1,6 +1,6 @@
 package com.vurtnewk.mall.third_party.component
 
-import com.vurtnewk.mall.third_party.constants.SmsConstants
+import com.vurtnewk.common.constants.ThirdPartyConstants
 import com.vurtnewk.mall.third_party.utils.HttpUtils
 import org.apache.http.HttpResponse
 import org.springframework.beans.factory.annotation.Value
@@ -44,13 +44,14 @@ class SmsComponent {
      * @param code 要发送的验证码
      */
     fun sendSmsCode(phone: String, code: String) {
+        println("sendSmsCode start ")
         val method = "POST"
         val headers: MutableMap<String, String> = HashMap()
         //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
         headers["Authorization"] = "APPCODE $appcode"
         val querys: MutableMap<String, String> = HashMap()
         querys["mobile"] = phone
-        querys["param"] = "**code**:$code,**minute**:${SmsConstants.SMS_CODE_VALID_TIME}"
+        querys["param"] = "**code**:$code,**minute**:${ThirdPartyConstants.SMS_CODE_VALID_TIME}"
         //smsSignId（短信前缀）和templateId（短信模板），可登录国阳云控制台自助申请。参考文档：http://help.guoyangyun.com/Problem/Qm.html
         querys["smsSignId"] = smsSignId
         querys["templateId"] = templateId
@@ -64,7 +65,7 @@ class SmsComponent {
              * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/pom.xml
              */
             val response: HttpResponse = HttpUtils.doPost(host, path, method, headers, querys, bodys)
-            println(response.toString())
+            println("sendSmsCode result = $response ")
             //获取response的body
             //System.out.println(EntityUtils.toString(response.getEntity()));
         } catch (e: Exception) {
