@@ -12,17 +12,18 @@
     <description>聚合服务</description>
 
     <modules>
-        <module>mall_member</module>
-        <module>mall_coupon</module>
-        <module>mall_order</module>
-        <module>mall_product</module>
-        <module>mall_ware</module>
+        <module>mall-member</module>
+        <module>mall-coupon</module>
+        <module>mall-order</module>
+        <module>mall-product</module>
+        <module>mall-ware</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
-        <module>mall_common</module>
-        <module>mall_gateway</module>
-        <module>mall_third_party</module>
-        <module>mall_search</module>
+        <module>mall-common</module>
+        <module>mall-gateway</module>
+        <module>mall-third-party</module>
+        <module>mall-search</module>
+        <module>mall-auth-server</module>
     </modules>
 
 </project>

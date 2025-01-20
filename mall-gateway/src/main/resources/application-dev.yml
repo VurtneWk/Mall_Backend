@@ -1,0 +1,85 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false
+    gateway:
+      routes:
+        # 可通过 http://127.0.0.1:88/?url=baidu 进入baidu
+        #          - id: test_route #随意取的ID
+        #            uri: https://www.baidu.com # 指定网址
+        #            predicates: # 断言规则
+        #              - Query=url, baidu
+        #          - id: qq_route
+        #            uri: https://www.qq.com
+        #            predicates:
+        #            - Query=url, qq
+
+
+        - id: product_route
+          uri: lb://mall-product #这里就是nacos上的服务名，也就是application.name 定义的名字
+          predicates:
+            - Path=/api/product/**,/hello
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+        - id: third_party_route
+          uri: lb://mall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+            - RewritePath=/api/thirdparty/(?<segment>.*),/$\{segment}
+
+        - id: member_route
+          uri: lb://mall-member #这里就是nacos上的服务名，也就是application.name 定义的名字
+          predicates:
+            - Path=/api/member/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+        - id: ware_route
+          uri: lb://mall-ware #这里就是nacos上的服务名，也就是application.name 定义的名字
+          predicates:
+            - Path=/api/ware/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
+        # lb 代表负载均衡 ，RewritePath 重写路径 把/api/(?<segment>.*) 重写成 /renren-fast/$\{segment}
+        # http://localhost:88/api/captcha.jpg  http://localhost:8080/renren-fast/captcha.jpg
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**  #路由匹配有顺序，所以让更精确的在上面
+          filters:
+            - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
+
+        # 这个要放到最后，不然mall.com/api 也会被优先拦截
+        - id: mall_host_route
+          uri: lb://mall-product
+          predicates:
+            - Host=mall.com,item.mall.com
+
+        # 前台搜索
+        - id: mall_search_route
+          uri: lb://mall-search
+          predicates:
+            - Host=search.mall.com
+
+        - id: mall_auth_route
+          uri: lb://mall-auth-server
+          predicates:
+            - Host=auth.mall.com
+
+  # 如果没有名字，nacos里看不到
+  application:
+    name: mall-gateway
+server:
+  port: 88
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
