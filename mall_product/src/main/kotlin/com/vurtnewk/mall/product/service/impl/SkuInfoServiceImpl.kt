@@ -8,11 +8,14 @@ import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
+import com.vurtnewk.mall.product.config.MyThreadConfig
 import com.vurtnewk.mall.product.dao.SkuInfoDao
 import com.vurtnewk.mall.product.entity.SkuInfoEntity
 import com.vurtnewk.mall.product.service.*
 import com.vurtnewk.mall.product.vo.SkuItemVo
 import org.springframework.stereotype.Service
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ThreadPoolExecutor
 
 
 @Service("skuInfoService")
@@ -21,6 +24,7 @@ class SkuInfoServiceImpl(
     private val mSpuInfoDescService: SpuInfoDescService,
     private val mAttrGroupService: AttrGroupService,
     private val mSkuSaleAttrValueService: SkuSaleAttrValueService,
+    private val executor: ThreadPoolExecutor,
 ) : ServiceImpl<SkuInfoDao, SkuInfoEntity>(), SkuInfoService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -81,36 +85,41 @@ class SkuInfoServiceImpl(
      * 4. sku介绍  spu数据 pms_spu_info
      * 5. sku规格参数信息
      */
-    override fun queryItem(skuId: Long): SkuItemVo {
+    override fun queryItem(skuId: Long): SkuItemVo? {
         val skuItemVo = SkuItemVo()
-        //region 1. sku基本信息 pms_sku_info
-        skuItemVo.info = getById(skuId)
-        //如果压根没查到数据 直接返回
-        skuItemVo.info ?: return skuItemVo
+        // 1. sku基本信息 pms_sku_info
+        val infoFuture = CompletableFuture.supplyAsync(
+            {
+                skuItemVo.info = getById(skuId)
+                return@supplyAsync skuItemVo.info
+            }, executor
+        )
+        //2. sku图片信息 pms_sku_images
+        val imageFuture = CompletableFuture.runAsync({
+            skuItemVo.images = mSkuImagesService.getImagesById(skuId)
+        }, executor)
 
-        val spuId = skuItemVo.info!!.spuId!!
-        val catalogId = skuItemVo.info!!.catalogId!!
-        //endregion
+        //可能查询一个数据库里不存在skuId
+        val infoGet = infoFuture.get()
+        infoGet ?: return null
 
-        //region 2. sku图片信息 pms_sku_images
-        skuItemVo.images = mSkuImagesService.getImagesById(skuId)
-        //endregion
+        //3. sku对应的spu销售属性组合
+        val saleAttrFuture = infoFuture.thenAcceptAsync({ info ->
+            skuItemVo.saleAttr = mSkuSaleAttrValueService.getSaleAttrsBySpuId(info!!.spuId!!)
+        }, executor)
+        //4. sku介绍  spu数据 pms_spu_info
+        val descFuture = infoFuture.thenAcceptAsync({ info ->
+            skuItemVo.desc = mSpuInfoDescService.getById(info!!.spuId!!)
+        }, executor)
+        //5. sku规格参数信息
+        val baseAttrFuture = infoFuture.thenAcceptAsync({ info ->
+            skuItemVo.groupAttrs = mAttrGroupService.getAttrGroupWithAttrsBySpuId(info!!.spuId!!, info!!.catalogId!!)
+        }, executor)
 
-        //region 3. sku对应的spu销售属性组合
-        skuItemVo.saleAttr = mSkuSaleAttrValueService.getSaleAttrsBySpuId(spuId)
-        //endregion
-
-        //region 4. sku介绍  spu数据 pms_spu_info
-        skuItemVo.desc = mSpuInfoDescService.getById(spuId)
-        //endregion
-
-        //region 5. sku规格参数信息
-        skuItemVo.groupAttrs = mAttrGroupService.getAttrGroupWithAttrsBySpuId(spuId, catalogId)
-        //endregion
+        CompletableFuture.allOf(infoFuture, saleAttrFuture, descFuture, baseAttrFuture, imageFuture).get()
 
         logInfo("queryItem $skuItemVo")
         return skuItemVo
     }
-
 
 }

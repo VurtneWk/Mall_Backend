@@ -54,8 +54,11 @@ data class SkuItemSaleAttrVo(
      * 属性名
      */
     var attrName: String? = null,
-    var attrValues: String? = null,
+//    var attrValues: String? = null,
+    var attrValues: MutableList<AttrValueWithSkuIdVo> = mutableListOf(),
 )
+
+data class AttrValueWithSkuIdVo(val attrValue: String, val skuIds: String)
 
 data class SpuItemAttrGroupVo(
     var groupName: String = "",

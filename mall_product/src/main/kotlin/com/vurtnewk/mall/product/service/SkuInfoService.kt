@@ -17,6 +17,6 @@ interface SkuInfoService : IService<SkuInfoEntity> {
     fun queryPage(params: Map<String, Any> ): PageUtils
     fun queryPageByCondition(params: Map<String, Any>): PageUtils
     fun getSkusBySpuId(spuId: Long): List<SkuInfoEntity>
-    fun queryItem(skuId: Long): SkuItemVo
+    fun queryItem(skuId: Long): SkuItemVo?
 }
 

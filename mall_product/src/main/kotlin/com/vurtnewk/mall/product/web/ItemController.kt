@@ -21,6 +21,7 @@ class ItemController(
     fun skuItem(@PathVariable("skuId") skuId: Long, model: Model): String {
         println("查询--> $skuId")
         val skuItemVo = mSkuInfoService.queryItem(skuId)
+        skuItemVo ?: return "404"
         model.addAttribute("item", skuItemVo)
         return "item"
     }

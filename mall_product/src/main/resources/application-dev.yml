@@ -62,3 +62,8 @@ logging:
 #  filter:
 #    enabled: true
 #  format.style: http
+mall:
+  thread:
+    core-size: 10
+    max-size: 200
+    keep-alive-time: 10
