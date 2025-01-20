@@ -5,6 +5,7 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.member.entity.MemberEntity
 import com.vurtnewk.mall.member.excetion.PhoneExistException
 import com.vurtnewk.mall.member.excetion.UsernameExistException
+import com.vurtnewk.mall.member.vo.MemberLoginVo
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
 import kotlin.jvm.Throws
 
@@ -23,5 +24,6 @@ interface MemberService : IService<MemberEntity> {
     fun checkPhoneUnique(phone: String)
     @Throws(UsernameExistException::class)
     fun checkUserNameUnique(userName: String)
+    fun login(memberLoginVo: MemberLoginVo): MemberEntity?
 }
 

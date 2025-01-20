@@ -10,6 +10,7 @@ import com.vurtnewk.common.utils.R
 import com.vurtnewk.mall.member.excetion.PhoneExistException
 import com.vurtnewk.mall.member.excetion.UsernameExistException
 import com.vurtnewk.mall.member.feign.CouponFeignService
+import com.vurtnewk.mall.member.vo.MemberLoginVo
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
 
 /**
@@ -40,6 +41,16 @@ class MemberController @Autowired constructor(
             }
         }
         return R.ok()
+    }
+
+    @PostMapping("/login")
+    fun login(@RequestBody memberLoginVo: MemberLoginVo): R {
+        val entity = memberService.login(memberLoginVo)
+        return if (entity == null) {
+            R.error(BizCodeEnum.LOGIN_FAIL_EXCEPTION)
+        } else {
+            R.ok()
+        }
     }
 
 

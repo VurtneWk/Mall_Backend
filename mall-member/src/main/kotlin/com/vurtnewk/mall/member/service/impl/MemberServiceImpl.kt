@@ -13,6 +13,7 @@ import com.vurtnewk.mall.member.entity.MemberEntity
 import com.vurtnewk.mall.member.excetion.PhoneExistException
 import com.vurtnewk.mall.member.excetion.UsernameExistException
 import com.vurtnewk.mall.member.service.MemberService
+import com.vurtnewk.mall.member.vo.MemberLoginVo
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.*
@@ -54,6 +55,22 @@ class MemberServiceImpl(
         memberEntity.createTime = Date()
 
         this.baseMapper.insert(memberEntity)
+    }
+
+    /**
+     * 登录
+     */
+    override fun login(memberLoginVo: MemberLoginVo): MemberEntity? {
+        val memberEntity = KtQueryChainWrapper(MemberEntity::class.java)
+            .eq(MemberEntity::username, memberLoginVo.loginAcct)
+            .or()
+            .eq(MemberEntity::mobile, memberLoginVo.loginAcct)
+            .one()
+        memberEntity?.id ?: return null
+        //匹配查询的数据库里的密码
+        val matches = BCryptPasswordEncoder().matches(memberLoginVo.password, memberEntity.password)
+        if (!matches) return null
+        return memberEntity
     }
 
     override fun checkPhoneUnique(phone: String) {

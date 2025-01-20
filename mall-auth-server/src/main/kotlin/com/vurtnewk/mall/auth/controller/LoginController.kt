@@ -7,6 +7,7 @@ import com.vurtnewk.common.excetion.BizCodeEnum
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.mall.auth.feign.MemberFeignService
 import com.vurtnewk.mall.auth.feign.ThirdPartFeignService
+import com.vurtnewk.mall.auth.vo.UserLoginVo
 import com.vurtnewk.mall.auth.vo.UserRegisterVo
 import jakarta.validation.Valid
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -78,8 +79,7 @@ class LoginController(
      */
     @PostMapping("/register")
     fun register(
-        @Valid userRegisterVo: UserRegisterVo,
-        result: BindingResult,
+        @Valid userRegisterVo: UserRegisterVo, result: BindingResult,
 //        model: Model,
         redirectAttributes: RedirectAttributes,
     ): String {
@@ -129,6 +129,19 @@ class LoginController(
                 redirectAttributes.addFlashAttribute("errors", hashMapOf("code" to "验证码错误"))
                 "redirect:http://auth.mall.com/reg.html"
             }
+        }
+    }
+
+    @PostMapping("/login")
+    fun login(userLoginVo: UserLoginVo, redirectAttributes: RedirectAttributes): String {
+        val r = memberFeignService.login(userLoginVo)
+        return if (r.isSuccess()) {
+            "redirect:http://mall.com"
+        } else {
+            redirectAttributes.addFlashAttribute("errors",
+                hashMapOf("msg" to r.getData("msg", object : TypeReference<String>() {}))
+            )
+            "redirect:http://auth.mall.com/login.html"
         }
     }
 }
