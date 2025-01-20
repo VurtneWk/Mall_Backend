@@ -7,6 +7,7 @@ import com.vurtnewk.mall.member.service.MemberService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.mall.member.feign.CouponFeignService
+import com.vurtnewk.mall.member.vo.MemberRegisterVo
 
 /**
  * 会员
@@ -19,8 +20,22 @@ import com.vurtnewk.mall.member.feign.CouponFeignService
 @RequestMapping("member/member")
 class MemberController @Autowired constructor(
     private val memberService: MemberService,
-    private val couponFeignService: CouponFeignService
+    private val couponFeignService: CouponFeignService,
 ) {
+
+    /**
+     * 注册
+     */
+    @PostMapping("/register")
+    fun register(@RequestBody memberRegisterVo: MemberRegisterVo): R {
+        kotlin.runCatching {
+            memberService.register(memberRegisterVo)
+        }.onFailure {
+
+        }
+        return R.ok()
+    }
+
 
     @RequestMapping("/coupons")
     fun test(): R {

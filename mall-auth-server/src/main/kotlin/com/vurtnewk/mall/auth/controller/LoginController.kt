@@ -102,6 +102,25 @@ class LoginController(
             redirectAttributes.addFlashAttribute("errors", errors)
             return "redirect:http://auth.mall.com/reg.html"
         }
+
+        //注册：
+        val oldCode = mStringRedisTemplate.opsForValue().get(AuthServerConstants.SMS_CODE_CACHE_PREFIX + userRegisterVo.phone)
+        if (oldCode.isNullOrEmpty()) {// redis 里没有，说明已经过期了
+            redirectAttributes.addFlashAttribute("errors", hashMapOf("code" to "验证码错误"))
+            return "redirect:http://auth.mall.com/reg.html"
+        } else {
+            val split = oldCode.split("_")
+            if (userRegisterVo.code.equals(split[0], ignoreCase = true)) {
+                // 删除验证码 ： 令牌机制
+                mStringRedisTemplate.delete(AuthServerConstants.SMS_CODE_CACHE_PREFIX + userRegisterVo.phone)
+                //真正的注册：
+
+            }else{
+                redirectAttributes.addFlashAttribute("errors", hashMapOf("code" to "验证码错误"))
+                return "redirect:http://auth.mall.com/reg.html"
+            }
+        }
+
         return "redirect:/login.html"
     }
 }

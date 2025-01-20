@@ -13,5 +13,6 @@ import org.apache.ibatis.annotations.Mapper
  */
 @Mapper
 interface MemberLevelDao : BaseMapper<MemberLevelEntity> {
-	
+    fun getDefaultLevel(): MemberLevelEntity
+
 }
