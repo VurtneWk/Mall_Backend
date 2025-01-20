@@ -44,8 +44,21 @@ mybatis-plus:
 server:
   port: 5400
 
+#logging:
+#  level:
+#    org.zalando.logbook.Logbook: TRACE
 logging:
   level:
     com.vurtnewk.mall: debug
   pattern:
     console: "%d{HH:mm:ss} %-5level %-36logger{36} - %msg%n"
+#logbook:
+#  predicate:
+#    include:
+#      - path: /api/**
+#        methods:
+#          - GET
+#          - POST
+#  filter:
+#    enabled: true
+#  format.style: http

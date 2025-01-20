@@ -22,7 +22,11 @@ data class SkuItemVo(
     /**
      * sku基本信息 pms_sku_info
      */
-    var skuInfoEntity: SkuInfoEntity? = null,
+    var info: SkuInfoEntity? = null,
+    /**
+     * 是否有货
+     */
+    var hasStock: Boolean = true, //TODO
     /**
      * sku图片信息
      */
@@ -51,7 +55,7 @@ data class SkuItemSaleAttrVo(
      */
     var attrName: String? = null,
     var attrValues: String? = null,
-    )
+)
 
 data class SpuItemAttrGroupVo(
     var groupName: String = "",

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.product.dao.SkuInfoDao
@@ -83,12 +84,12 @@ class SkuInfoServiceImpl(
     override fun queryItem(skuId: Long): SkuItemVo {
         val skuItemVo = SkuItemVo()
         //region 1. sku基本信息 pms_sku_info
-        skuItemVo.skuInfoEntity = getById(skuId)
+        skuItemVo.info = getById(skuId)
         //如果压根没查到数据 直接返回
-        skuItemVo.skuInfoEntity ?: return skuItemVo
+        skuItemVo.info ?: return skuItemVo
 
-        val spuId = skuItemVo.skuInfoEntity!!.spuId!!
-        val catalogId = skuItemVo.skuInfoEntity!!.catalogId!!
+        val spuId = skuItemVo.info!!.spuId!!
+        val catalogId = skuItemVo.info!!.catalogId!!
         //endregion
 
         //region 2. sku图片信息 pms_sku_images
@@ -107,8 +108,8 @@ class SkuInfoServiceImpl(
         skuItemVo.groupAttrs = mAttrGroupService.getAttrGroupWithAttrsBySpuId(spuId, catalogId)
         //endregion
 
-
-        return SkuItemVo()
+        logInfo("queryItem $skuItemVo")
+        return skuItemVo
     }
 
 
