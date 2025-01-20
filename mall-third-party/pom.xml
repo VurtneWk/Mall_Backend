@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.vurtnewk.mall</groupId>
-    <artifactId>mall_third_party</artifactId>
+    <artifactId>mall-third-party</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>mall_third_party</name>
-    <description>mall_third_party</description>
+    <name>mall-third-party</name>
+    <description>mall-third-party</description>
 
     <properties>
         <java.version>17</java.version>

@@ -1,17 +1,29 @@
 package com.vurtnewk.mall.third_party
 
 import com.aliyun.oss.OSSClient
+import com.vurtnewk.mall.third_party.component.SmsComponent
+import com.vurtnewk.mall.third_party.utils.HttpUtils
+import org.apache.http.HttpResponse
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 
+
 @SpringBootTest
 class MallThirdPartyApplicationTests {
 
 	@Autowired
 	lateinit var ossClient: OSSClient
+	@Autowired
+	lateinit var mSmsComponent: SmsComponent
+
+	@Test
+	fun testSendCode2(){
+		mSmsComponent.sendSmsCode("18301532281","321321")
+	}
+
 
 	@Test
 	@Throws(FileNotFoundException::class)
