@@ -1,11 +1,14 @@
 package com.vurtnewk.mall.member.controller
 
+import com.vurtnewk.common.excetion.BizCodeEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import com.vurtnewk.mall.member.entity.MemberEntity
 import com.vurtnewk.mall.member.service.MemberService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.member.excetion.PhoneExistException
+import com.vurtnewk.mall.member.excetion.UsernameExistException
 import com.vurtnewk.mall.member.feign.CouponFeignService
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
 
@@ -31,7 +34,10 @@ class MemberController @Autowired constructor(
         kotlin.runCatching {
             memberService.register(memberRegisterVo)
         }.onFailure {
-
+            when (it) {
+                is UsernameExistException -> return R.error(BizCodeEnum.USER_EXIST_EXCEPTION)
+                is PhoneExistException -> return R.error(BizCodeEnum.PHONE_EXIST_EXCEPTION)
+            }
         }
         return R.ok()
     }

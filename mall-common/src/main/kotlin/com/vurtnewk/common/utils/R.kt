@@ -2,6 +2,7 @@ package com.vurtnewk.common.utils
 
 import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.TypeReference
+import com.vurtnewk.common.excetion.BizCodeEnum
 import org.apache.http.HttpStatus
 
 /**
@@ -23,6 +24,10 @@ class R : HashMap<String, Any>() {
 
         fun error(msg: String): R {
             return error(HttpStatus.SC_INTERNAL_SERVER_ERROR, msg)
+        }
+
+        fun error(enum: BizCodeEnum): R {
+            return error(enum.code, enum.msg)
         }
 
         fun error(code: Int, msg: String): R {

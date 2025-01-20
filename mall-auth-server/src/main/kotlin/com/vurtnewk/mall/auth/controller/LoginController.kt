@@ -1,9 +1,11 @@
 package com.vurtnewk.mall.auth.controller
 
+import com.alibaba.fastjson2.TypeReference
 import com.vurtnewk.common.constants.AuthServerConstants
 import com.vurtnewk.common.constants.ThirdPartyConstants
 import com.vurtnewk.common.excetion.BizCodeEnum
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.auth.feign.MemberFeignService
 import com.vurtnewk.mall.auth.feign.ThirdPartFeignService
 import com.vurtnewk.mall.auth.vo.UserRegisterVo
 import jakarta.validation.Valid
@@ -27,6 +29,7 @@ import java.util.concurrent.TimeUnit
 class LoginController(
     private val mThreadPartFeignService: ThirdPartFeignService,
     private val mStringRedisTemplate: StringRedisTemplate,
+    private val memberFeignService: MemberFeignService,
 ) {
 
 //    @GetMapping("/login.html")
@@ -44,7 +47,7 @@ class LoginController(
         //todo 接口防刷
 
         // 防止1分钟内再次请求发送验证码
-        val redisCode = mStringRedisTemplate.opsForValue().get(AuthServerConstants.SMS_CODE_CACHE_PREFIX + phone)
+        var redisCode = mStringRedisTemplate.opsForValue().get(AuthServerConstants.SMS_CODE_CACHE_PREFIX + phone)
         if (redisCode != null) {
             // 上一次发送验证码的时间
             val lastSendTime = redisCode.split("_")[1]
@@ -52,15 +55,16 @@ class LoginController(
                 return R.error(BizCodeEnum.SMS_CODE_EXCEPTION.code, BizCodeEnum.SMS_CODE_EXCEPTION.msg)
             }
         }
-        val code = "${UUID.randomUUID().toString().subSequence(0, 5)}_${System.currentTimeMillis()}"
+        val code = UUID.randomUUID().toString().subSequence(0, 5).toString()
+
+        redisCode = "${code}_${System.currentTimeMillis()}"
         mStringRedisTemplate.opsForValue()
             .set(
                 AuthServerConstants.SMS_CODE_CACHE_PREFIX + phone,
-                code,
+                redisCode,
                 ThirdPartyConstants.SMS_CODE_VALID_TIME,
                 TimeUnit.MINUTES
             )
-
 
         mThreadPartFeignService.sendCode(phone, code)
         return R.ok()
@@ -110,17 +114,21 @@ class LoginController(
             return "redirect:http://auth.mall.com/reg.html"
         } else {
             val split = oldCode.split("_")
-            if (userRegisterVo.code.equals(split[0], ignoreCase = true)) {
+            return if (userRegisterVo.code.equals(split[0], ignoreCase = true)) {
                 // 删除验证码 ： 令牌机制
                 mStringRedisTemplate.delete(AuthServerConstants.SMS_CODE_CACHE_PREFIX + userRegisterVo.phone)
-                //真正的注册：
-
-            }else{
+                //真正的注册：调用远程服务进行注册
+                val r = memberFeignService.register(userRegisterVo)
+                if (r.isSuccess()) {
+                    "redirect:http://auth.mall.com/login.html"
+                } else {
+                    redirectAttributes.addFlashAttribute("errors", r.getData("msg", object : TypeReference<String>() {}))
+                    "redirect:http://auth.mall.com/reg.html"
+                }
+            } else {
                 redirectAttributes.addFlashAttribute("errors", hashMapOf("code" to "验证码错误"))
-                return "redirect:http://auth.mall.com/reg.html"
+                "redirect:http://auth.mall.com/reg.html"
             }
         }
-
-        return "redirect:/login.html"
     }
 }
