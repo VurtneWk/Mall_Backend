@@ -10,5 +10,8 @@ spring:
   application:
     name: mall-auth-server
 
+  thymeleaf:
+    cache: false
+
 server:
   port: 5800
