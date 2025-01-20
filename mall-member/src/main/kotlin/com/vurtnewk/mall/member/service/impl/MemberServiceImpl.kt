@@ -14,6 +14,7 @@ import com.vurtnewk.mall.member.excetion.PhoneExistException
 import com.vurtnewk.mall.member.excetion.UsernameExistException
 import com.vurtnewk.mall.member.service.MemberService
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.*
 
 
@@ -35,21 +36,22 @@ class MemberServiceImpl(
      */
     override fun register(memberRegisterVo: MemberRegisterVo) {
         val memberEntity = MemberEntity()
-            .apply {
-                username = memberRegisterVo.userName
-                mobile = memberRegisterVo.phone
-                password = memberRegisterVo.password
-                createTime = Date()
-            }
         // 手机号和用户名的唯一性
         // 为了让controller能感知异常，异常机制
         this.checkPhoneUnique(memberRegisterVo.phone)
         this.checkUserNameUnique(memberRegisterVo.userName)
 
+        memberEntity.username = memberRegisterVo.userName
+        memberEntity.mobile = memberRegisterVo.phone
+
         // 会员注册时的默认 会员等级
         val levelEntity = memberLevelDao.getDefaultLevel()
         memberEntity.levelId = levelEntity.id
 
+        //password 需要加密 BCryptPasswordEncoder 已自动进行了加盐
+        memberEntity.password = BCryptPasswordEncoder().encode(memberRegisterVo.password)
+
+        memberEntity.createTime = Date()
 
         this.baseMapper.insert(memberEntity)
     }
