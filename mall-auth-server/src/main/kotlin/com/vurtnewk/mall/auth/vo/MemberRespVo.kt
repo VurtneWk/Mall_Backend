@@ -1,9 +1,6 @@
-package com.vurtnewk.mall.member.entity
+package com.vurtnewk.mall.auth.vo
 
-import com.baomidou.mybatisplus.annotation.TableId
-import com.baomidou.mybatisplus.annotation.TableName
-import java.io.Serializable
-import java.util.Date
+import java.util.*
 
 /**
  * 会员
@@ -12,12 +9,10 @@ import java.util.Date
  * @email vurtnewk@gmail.com
  * @date 2025-01-06 14:35:26
  */
-@TableName("ums_member")
-data class MemberEntity(
+data class MemberRespVo(
     /**
      * id
      */
-    @TableId
     var id: Long? = null,
     /**
      * 会员等级id
@@ -100,8 +95,4 @@ data class MemberEntity(
      * 过期时间
      */
     var expiresIn: String? = null,
-) : Serializable {
-    companion object {
-        private const val serialVersionUID: Long = 1L
-    }
-}
+)

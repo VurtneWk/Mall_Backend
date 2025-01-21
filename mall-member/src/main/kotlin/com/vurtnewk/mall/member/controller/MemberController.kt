@@ -12,6 +12,7 @@ import com.vurtnewk.mall.member.excetion.UsernameExistException
 import com.vurtnewk.mall.member.feign.CouponFeignService
 import com.vurtnewk.mall.member.vo.MemberLoginVo
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
+import com.vurtnewk.mall.member.vo.SocialUser
 
 /**
  * 会员
@@ -53,6 +54,15 @@ class MemberController @Autowired constructor(
         }
     }
 
+    @PostMapping("/oauth2/login")
+    fun oauthLogin(@RequestBody socialUser: SocialUser): R {
+        val entity = memberService.login(socialUser)
+        return if (entity == null) {
+            R.error(BizCodeEnum.LOGIN_FAIL_EXCEPTION)
+        } else {
+            R.ok().putData(entity)
+        }
+    }
 
     @RequestMapping("/coupons")
     fun test(): R {

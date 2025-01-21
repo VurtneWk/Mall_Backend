@@ -1,9 +1,12 @@
 package com.vurtnewk.mall.member.service.impl
 
+import com.alibaba.fastjson2.JSON
 import org.springframework.stereotype.Service
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.utils.HttpUtils
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 
@@ -15,6 +18,8 @@ import com.vurtnewk.mall.member.excetion.UsernameExistException
 import com.vurtnewk.mall.member.service.MemberService
 import com.vurtnewk.mall.member.vo.MemberLoginVo
 import com.vurtnewk.mall.member.vo.MemberRegisterVo
+import com.vurtnewk.mall.member.vo.SocialUser
+import org.apache.http.util.EntityUtils
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import java.util.*
 
@@ -71,6 +76,50 @@ class MemberServiceImpl(
         val matches = BCryptPasswordEncoder().matches(memberLoginVo.password, memberEntity.password)
         if (!matches) return null
         return memberEntity
+    }
+
+    override fun login(socialUser: SocialUser): MemberEntity? {
+        val memberEntity = KtQueryChainWrapper(MemberEntity::class.java)
+            .eq(MemberEntity::socialUid, socialUser.uid)
+            .one()
+        if (memberEntity != null) { //登录过
+            //更新令牌和时间
+            KtUpdateChainWrapper(MemberEntity::class.java)
+                .set(MemberEntity::accessToken, socialUser.access_token)
+                .set(MemberEntity::expiresIn, socialUser.expires_in)
+                .eq(MemberEntity::id, memberEntity.id)
+                .update()
+            memberEntity.accessToken = socialUser.access_token
+            memberEntity.expiresIn = socialUser.expires_in
+            return memberEntity
+        } else {//注册
+            val registerMemberEntity = MemberEntity()
+            // 查出社交用户的社交账号信息 昵称、性别等
+            runCatching {
+                val queryMap = hashMapOf(
+                    "access_token" to socialUser.access_token,
+                    "uid" to socialUser.uid
+                )
+                val response = HttpUtils.doGet(
+                    "https://api.weibo.com",
+                    "/2/users/show.json", "GET",
+                    hashMapOf<String, String>(),
+                    queryMap
+                )
+                if (response.statusLine.statusCode == 200) {
+                    val json = EntityUtils.toString(response.entity)
+                    val jsonObject = JSON.parseObject(json)
+                    registerMemberEntity.nickname = jsonObject.getString("name")
+                    registerMemberEntity.gender = if (jsonObject.getString("gender") == "m") 1 else 0
+                }
+            }
+            //...
+            registerMemberEntity.accessToken = socialUser.access_token
+            registerMemberEntity.expiresIn = socialUser.expires_in
+            registerMemberEntity.socialUid = socialUser.uid
+            this.baseMapper.insert(registerMemberEntity)
+            return registerMemberEntity
+        }
     }
 
     override fun checkPhoneUnique(phone: String) {

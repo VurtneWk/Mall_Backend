@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.auth.feign
 
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.auth.vo.SocialUser
 import com.vurtnewk.mall.auth.vo.UserLoginVo
 import com.vurtnewk.mall.auth.vo.UserRegisterVo
 import org.springframework.cloud.openfeign.FeignClient
@@ -20,4 +21,7 @@ interface MemberFeignService {
 
     @PostMapping("/member/member/login")
     fun login(@RequestBody memberLoginVo: UserLoginVo): R
+
+    @PostMapping("/member/member/oauth2/login")
+    fun oauthLogin(@RequestBody socialUser: SocialUser): R
 }

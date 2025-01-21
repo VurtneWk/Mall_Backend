@@ -1,7 +1,7 @@
 package com.vurtnewk.mall.third_party.component
 
 import com.vurtnewk.common.constants.ThirdPartyConstants
-import com.vurtnewk.mall.third_party.utils.HttpUtils
+import com.vurtnewk.common.utils.HttpUtils
 import org.apache.http.HttpResponse
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.cloud.context.config.annotation.RefreshScope
