@@ -7,6 +7,10 @@ spring:
         import-check:
           enabled: false
         server-addr: 127.0.0.1:8848
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
   # 如果没有名字，nacos里看不到
   application:
     name: mall-search

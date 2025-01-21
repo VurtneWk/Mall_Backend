@@ -48,6 +48,7 @@ class MemberServiceImpl(
         this.checkUserNameUnique(memberRegisterVo.userName)
 
         memberEntity.username = memberRegisterVo.userName
+        memberEntity.nickname = memberRegisterVo.userName
         memberEntity.mobile = memberRegisterVo.phone
 
         // 会员注册时的默认 会员等级

@@ -36,8 +36,18 @@ class LoginController(
     private val memberFeignService: MemberFeignService,
 ) {
 
-//    @GetMapping("/login.html")
-//    fun loginPage() = "login"
+    /**
+     * 如果已经进行了登录 ， 进入登录页面 直接重定向到首页
+     */
+    @GetMapping("/login.html")
+    fun loginPage(htpSession: HttpSession): String {
+        val attribute = htpSession.getAttribute(AuthServerConstants.LOGIN_USER)
+        return  if(attribute == null){
+            "login"
+        }else{
+            "redirect:http://mall.com"
+        }
+    }
 //
 //    @GetMapping("/reg.html")
 //    fun regPage() = "reg"
@@ -142,7 +152,7 @@ class LoginController(
             val data = r.getData(object : TypeReference<MemberRespVo>() {})
             logInfo("login=> $data")
             // 默认发的令牌 作用域为当前域，
-            httpSession.setAttribute("loginUser", data)
+            httpSession.setAttribute(AuthServerConstants.LOGIN_USER, data)
             "redirect:http://mall.com"
         } else {
             redirectAttributes.addFlashAttribute(

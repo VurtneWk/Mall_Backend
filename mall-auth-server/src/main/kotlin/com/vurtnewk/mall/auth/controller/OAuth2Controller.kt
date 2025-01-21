@@ -2,6 +2,7 @@ package com.vurtnewk.mall.auth.controller
 
 import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.TypeReference
+import com.vurtnewk.common.constants.AuthServerConstants
 import com.vurtnewk.common.utils.HttpUtils
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.auth.feign.MemberFeignService
@@ -44,7 +45,7 @@ class OAuth2Controller(
             val r = memberFeignService.oauthLogin(socialUser)
             if (r.isSuccess()) {
                 val data = r.getData(object : TypeReference<MemberRespVo>() {})
-                httpSession.setAttribute("loginUser", data)
+                httpSession.setAttribute(AuthServerConstants.LOGIN_USER, data)
                 logInfo("登录成功，用户:$data")
                 "redirect:http://mall.com"
             } else {

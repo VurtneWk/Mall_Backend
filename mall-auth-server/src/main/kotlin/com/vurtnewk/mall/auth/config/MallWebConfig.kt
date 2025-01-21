@@ -22,7 +22,7 @@ class MallWebConfig : WebMvcConfigurer {
      */
     override fun addViewControllers(registry: ViewControllerRegistry) {
 //        super.addViewControllers(registry)
-        registry.addViewController("/login.html").setViewName("login")
+//        registry.addViewController("/login.html").setViewName("login")
         registry.addViewController("/reg.html").setViewName("reg")
     }
 

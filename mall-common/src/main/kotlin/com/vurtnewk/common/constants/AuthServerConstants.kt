@@ -8,4 +8,6 @@ package com.vurtnewk.common.constants
 object AuthServerConstants {
 
     const val SMS_CODE_CACHE_PREFIX = "sms:code:"
+
+    const val LOGIN_USER = "loginUser"
 }
