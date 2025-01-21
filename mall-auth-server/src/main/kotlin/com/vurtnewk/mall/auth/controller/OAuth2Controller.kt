@@ -5,8 +5,9 @@ import com.alibaba.fastjson2.TypeReference
 import com.vurtnewk.common.utils.HttpUtils
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.auth.feign.MemberFeignService
-import com.vurtnewk.mall.auth.vo.MemberRespVo
+import com.vurtnewk.common.vo.MemberRespVo
 import com.vurtnewk.mall.auth.vo.SocialUser
+import jakarta.servlet.http.HttpSession
 import org.apache.http.util.EntityUtils
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,7 +25,7 @@ class OAuth2Controller(
 
 
     @GetMapping("/oauth2.0/weibo/success")
-    fun webBo(@RequestParam("code") code: String): String {
+    fun webBo(@RequestParam("code") code: String, httpSession: HttpSession): String {
         // 根据 code 换取 accessToken
         val map = hashMapOf(
             "client_id" to "",
@@ -43,6 +44,7 @@ class OAuth2Controller(
             val r = memberFeignService.oauthLogin(socialUser)
             if (r.isSuccess()) {
                 val data = r.getData(object : TypeReference<MemberRespVo>() {})
+                httpSession.setAttribute("loginUser", data)
                 logInfo("登录成功，用户:$data")
                 "redirect:http://mall.com"
             } else {

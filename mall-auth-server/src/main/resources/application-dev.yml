@@ -25,3 +25,6 @@ spring:
 
 server:
   port: 5800
+  servlet:
+    session:
+      timeout: 30m

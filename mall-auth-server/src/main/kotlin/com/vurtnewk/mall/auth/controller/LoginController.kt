@@ -5,10 +5,13 @@ import com.vurtnewk.common.constants.AuthServerConstants
 import com.vurtnewk.common.constants.ThirdPartyConstants
 import com.vurtnewk.common.excetion.BizCodeEnum
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.auth.feign.MemberFeignService
 import com.vurtnewk.mall.auth.feign.ThirdPartFeignService
+import com.vurtnewk.common.vo.MemberRespVo
 import com.vurtnewk.mall.auth.vo.UserLoginVo
 import com.vurtnewk.mall.auth.vo.UserRegisterVo
+import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Controller
@@ -133,12 +136,17 @@ class LoginController(
     }
 
     @PostMapping("/login")
-    fun login(userLoginVo: UserLoginVo, redirectAttributes: RedirectAttributes): String {
+    fun login(userLoginVo: UserLoginVo, redirectAttributes: RedirectAttributes, httpSession: HttpSession): String {
         val r = memberFeignService.login(userLoginVo)
         return if (r.isSuccess()) {
+            val data = r.getData(object : TypeReference<MemberRespVo>() {})
+            logInfo("login=> $data")
+            // 默认发的令牌 作用域为当前域，
+            httpSession.setAttribute("loginUser", data)
             "redirect:http://mall.com"
         } else {
-            redirectAttributes.addFlashAttribute("errors",
+            redirectAttributes.addFlashAttribute(
+                "errors",
                 hashMapOf("msg" to r.getData("msg", object : TypeReference<String>() {}))
             )
             "redirect:http://auth.mall.com/login.html"

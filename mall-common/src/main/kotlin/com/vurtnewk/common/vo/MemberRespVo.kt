@@ -1,5 +1,6 @@
-package com.vurtnewk.mall.auth.vo
+package com.vurtnewk.common.vo
 
+import java.io.Serializable
 import java.util.*
 
 /**
@@ -95,4 +96,4 @@ data class MemberRespVo(
      * 过期时间
      */
     var expiresIn: String? = null,
-)
+):Serializable

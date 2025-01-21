@@ -50,7 +50,7 @@ class MemberController @Autowired constructor(
         return if (entity == null) {
             R.error(BizCodeEnum.LOGIN_FAIL_EXCEPTION)
         } else {
-            R.ok()
+            R.ok().putData(entity)
         }
     }
 
