@@ -14,6 +14,10 @@ spring:
   # 如果没有名字，nacos里看不到
   application:
     name: mall-order
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    virtual-host: /
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
@@ -22,7 +26,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-
 
 server:
   port: 5300
