@@ -1,0 +1,54 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        import-check:
+          enabled: false
+  # 如果没有名字，nacos里看不到
+  application:
+    name: mall-cart
+  jackson: # 接口返回的JSON里的时间格式处理
+    date-format: yyyy-mm-dd HH:mm:ss
+  thymeleaf:
+    cache: false # 关闭缓存，查看实时效果
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+    # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      cache-null-values: true # 可防止缓存穿透
+#      key-prefix: CACHE_   # 前缀：如果制定则使用，没有则默认使用缓存的名字作为前缀
+#      use-key-prefix: true 是否开启前缀等
+
+server:
+  port: 5900
+
+#logging:
+#  level:
+#    org.zalando.logbook.Logbook: TRACE
+logging:
+  level:
+    com.vurtnewk.mall: debug
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %-36logger{36} - %msg%n"
+#logbook:
+#  predicate:
+#    include:
+#      - path: /api/**
+#        methods:
+#          - GET
+#          - POST
+#  filter:
+#    enabled: true
+#  format.style: http
+mall:
+  thread:
+    core-size: 10
+    max-size: 200
+    keep-alive-time: 10

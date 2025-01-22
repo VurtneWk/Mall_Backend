@@ -68,14 +68,19 @@ spring:
           predicates:
             - Host=search.mall.com
 
-        - id: mall_auth_route
+        - id: mall_auth_route # 认证服务
           uri: lb://mall-auth-server
           predicates:
             - Host=auth.mall.com
+        - id: mall_cart_route # 购物车服务
+          uri: lb://mall-cart
+          predicates:
+            - Host=cart.mall.com
 
-  # 如果没有名字，nacos里看不到
+# 如果没有名字，nacos里看不到
   application:
     name: mall-gateway
+
 server:
   port: 88
 
