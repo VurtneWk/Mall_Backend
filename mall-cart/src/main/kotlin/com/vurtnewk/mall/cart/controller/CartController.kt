@@ -25,7 +25,19 @@ class CartController {
     fun cartListPage(): String {
         val userInfo = CartInterceptor.threadLocal.get()
         logInfo("userInfo ==> $userInfo")
+
+
+
         return "cartList"
+    }
+
+    /**
+     * 添加商品到购物车
+     */
+    @GetMapping("/addToCart")
+    fun addToCart(): String {
+
+        return "success"
     }
 
 }
