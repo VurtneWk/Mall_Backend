@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 /**
  *
@@ -43,11 +44,21 @@ class CartController(
     fun addToCart(
         @RequestParam("skuId") skuId: Long,
         @RequestParam("num") num: Int,
-        model: Model,
+        redirectAttributes: RedirectAttributes,
     ): String {
-        val cartItem = cartService.addToCart(skuId, num)
+        cartService.addToCart(skuId, num)
+        redirectAttributes.addAttribute("skuId", skuId)
+        return "redirect:http://cart.mall.com/addToCartSuccess.html"
+    }
+
+    /**
+     * 这是避免 在成功页面 刷新时 再次进行添加商品到购物车
+     */
+    @GetMapping("/addToCartSuccess.html")
+    fun addToCartSuccessPage(@RequestParam("skuId") skuId: Long, model: Model): String {
+        //重定向到成功页面之后. 再次查询购物车数据
+        val cartItem = cartService.getCartItem(skuId)
         model.addAttribute("item", cartItem)
         return "success"
     }
-
 }

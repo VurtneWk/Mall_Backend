@@ -9,4 +9,6 @@ import com.vurtnewk.mall.cart.vo.CartItem
  */
 interface CartService {
     fun addToCart(skuId: Long, num: Int): CartItem
+    fun getCartItem(skuId: Long): CartItem?
+
 }
