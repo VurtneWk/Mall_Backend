@@ -5,9 +5,9 @@ import com.alibaba.fastjson2.TypeReference
 import com.vurtnewk.mall.cart.feign.ProductFeignService
 import com.vurtnewk.mall.cart.interceptor.CartInterceptor
 import com.vurtnewk.mall.cart.service.CartService
+import com.vurtnewk.mall.cart.vo.Cart
 import com.vurtnewk.mall.cart.vo.CartItem
 import com.vurtnewk.mall.cart.vo.SkuInfoVo
-import com.vurtnewk.mall.cart.vo.UserInfoDto
 import org.springframework.data.redis.core.BoundHashOperations
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
@@ -72,12 +72,32 @@ class CartServiceImpl(
 
     override fun getCartItem(skuId: Long): CartItem? {
         val res = getCartOps().get(skuId.toString())
-        return if(res.isNullOrEmpty()){
+        return if (res.isNullOrEmpty()) {
             null
-        }else{
+        } else {
             JSON.parseObject(res, CartItem::class.java)
         }
+    }
 
+    override fun getCart(): Cart {
+        val cart = Cart()
+        val userInfoDto = CartInterceptor.threadLocal.get()
+        if (userInfoDto.userId != null) {
+            // 临时的数据合并
+            val cartKeyNoLogin = CART_PREFIX + userInfoDto.userKey
+            val items = getCartItems(cartKeyNoLogin)
+            items.forEach {
+                addToCart(it.skuId, it.count)
+            }
+            // 清除数据
+            clearCart(cartKeyNoLogin)
+            val cartKey = CART_PREFIX + userInfoDto.userId
+            cart.items = getCartItems(cartKey)
+        } else {
+            val cartKey = CART_PREFIX + userInfoDto.userKey
+            cart.items = getCartItems(cartKey)
+        }
+        return cart
     }
 
     /**
@@ -93,5 +113,22 @@ class CartServiceImpl(
         }
         //        stringRedisTemplate.opsForHash<String,String>().get(cartKey,"1")
         return stringRedisTemplate.boundHashOps(cartKey)
+    }
+
+    /**
+     * 获取购物车里的购物项
+     */
+    private fun getCartItems(cartKey: String): List<CartItem> {
+        val values = stringRedisTemplate.boundHashOps<String, String>(cartKey).values()
+        return values?.map {
+            JSON.parseObject(it, CartItem::class.java)
+        } ?: emptyList()
+    }
+
+    /**
+     * 清除指定key值的购物车
+     */
+    override fun clearCart(cartKey: String){
+        stringRedisTemplate.delete(cartKey)
     }
 }

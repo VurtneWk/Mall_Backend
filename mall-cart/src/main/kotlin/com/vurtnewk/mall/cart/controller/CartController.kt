@@ -28,12 +28,11 @@ class CartController(
      *
      */
     @GetMapping("/cart.html")
-    fun cartListPage(): String {
-        val userInfo = CartInterceptor.threadLocal.get()
-        logInfo("userInfo ==> $userInfo")
-
-
-
+    fun cartListPage(model: Model): String {
+//        val userInfo = CartInterceptor.threadLocal.get()
+//        logInfo("userInfo ==> $userInfo")
+        val cart = cartService.getCart()
+        model.addAttribute("cart", cart)
         return "cartList"
     }
 
