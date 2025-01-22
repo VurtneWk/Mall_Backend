@@ -70,6 +70,9 @@ class CartServiceImpl(
         return cartItem
     }
 
+    /**
+     * 获取购物车中的某一项
+     */
     override fun getCartItem(skuId: Long): CartItem? {
         val res = getCartOps().get(skuId.toString())
         return if (res.isNullOrEmpty()) {
@@ -128,7 +131,18 @@ class CartServiceImpl(
     /**
      * 清除指定key值的购物车
      */
-    override fun clearCart(cartKey: String){
+    override fun clearCart(cartKey: String) {
         stringRedisTemplate.delete(cartKey)
+    }
+
+    /**
+     * 勾选购物项
+     */
+    override fun checkItem(skuId: Long, checked: Int) {
+        val cartItem = this.getCartItem(skuId)
+        cartItem?.let {
+            it.check = checked == 1
+            getCartOps().put(skuId.toString(), JSON.toJSONString(it))
+        }
     }
 }

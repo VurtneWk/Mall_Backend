@@ -35,7 +35,7 @@ data class Cart(
      */
     val totalAmount: BigDecimal
         get() {
-            return items.sumOf { it.totalPrice }
+            return items.sumOf { (if (it.check) it.totalPrice else BigDecimal.ZERO) }
         }
 }
 

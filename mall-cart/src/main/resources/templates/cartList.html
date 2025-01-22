@@ -761,6 +761,11 @@
         $(this).children("p").children("img").attr("src", "img/one_mian_gwc2.png")
     }).mouseout(function () {
         $(this).children("p").children("img").attr("src", "img/one_mian_gwc1.png")
-    })
+    });
+    $(".itemChecked").click(function () {
+        const skuId = $(this).attr("skuId");
+        const checked = $(this).prop("checked");
+        location.href = "http://cart.mall.com/checkItem?skuId=" + skuId + "&checked=" + (checked ? 1 : 0);
+    });
 </script>
 </html>

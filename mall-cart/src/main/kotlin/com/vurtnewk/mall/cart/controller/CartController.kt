@@ -60,4 +60,13 @@ class CartController(
         model.addAttribute("item", cartItem)
         return "success"
     }
+
+    /**
+     * 改变选中状态
+     */
+    @GetMapping("/checkItem")
+    fun checkItem(@RequestParam("skuId") skuId: Long, @RequestParam("checked") checked: Int): String {
+        cartService.checkItem(skuId, checked)
+        return "redirect:http://cart.mall.com/cart.html"
+    }
 }
