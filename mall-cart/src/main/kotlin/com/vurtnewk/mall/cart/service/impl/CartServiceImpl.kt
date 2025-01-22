@@ -146,6 +146,13 @@ class CartServiceImpl(
         }
     }
 
+    /**
+     * 删除购物项
+     */
+    override fun deleteItem(skuId: Long) {
+        getCartOps().delete(skuId.toString())
+    }
+
     override fun changeItemCount(skuId: Long, num: Int) {
         val cartItem = this.getCartItem(skuId)
         cartItem?.let {

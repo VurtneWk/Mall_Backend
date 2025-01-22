@@ -15,4 +15,5 @@ interface CartService {
     fun clearCart(cartKey: String)
     fun checkItem(skuId: Long, checked: Int)
     fun changeItemCount(skuId: Long, num: Int)
+    fun deleteItem(skuId: Long)
 }

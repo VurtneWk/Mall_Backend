@@ -74,4 +74,13 @@ class CartController(
         cartService.changeItemCount(skuId, num)
         return "redirect:http://cart.mall.com/cart.html"
     }
+
+    /**
+     * 删除某个购物项
+     */
+    @GetMapping("/deleteItem")
+    fun deleteItem(@RequestParam("skuId") skuId: Long): String{
+        cartService.deleteItem(skuId)
+        return "redirect:http://cart.mall.com/cart.html"
+    }
 }
