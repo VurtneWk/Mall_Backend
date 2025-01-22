@@ -17,8 +17,14 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/skusaleattrvalue")
 class SkuSaleAttrValueController @Autowired constructor(
-        private val skuSaleAttrValueService: SkuSaleAttrValueService
+    private val skuSaleAttrValueService: SkuSaleAttrValueService,
 ) {
+
+
+    @GetMapping("/stringList/{skuId}")
+    fun getSkuSaleAttrValues(@PathVariable("skuId") skuId: Long): List<String> {
+        return skuSaleAttrValueService.getSkuSaleAttrValuesAsStringList(skuId)
+    }
 
     /**
      * 列表
@@ -46,7 +52,7 @@ class SkuSaleAttrValueController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("product:skusaleattrvalue:save")
     fun save(@RequestBody skuSaleAttrValue: SkuSaleAttrValueEntity): R {
-            skuSaleAttrValueService.save(skuSaleAttrValue)
+        skuSaleAttrValueService.save(skuSaleAttrValue)
         return R.ok()
     }
 
@@ -56,7 +62,7 @@ class SkuSaleAttrValueController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("product:skusaleattrvalue:update")
     fun update(@RequestBody skuSaleAttrValue: SkuSaleAttrValueEntity): R {
-            skuSaleAttrValueService.updateById(skuSaleAttrValue)
+        skuSaleAttrValueService.updateById(skuSaleAttrValue)
         return R.ok()
     }
 
@@ -66,7 +72,7 @@ class SkuSaleAttrValueController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("product:skusaleattrvalue:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            skuSaleAttrValueService.removeByIds(ids.asList())
+        skuSaleAttrValueService.removeByIds(ids.asList())
         return R.ok()
     }
 }

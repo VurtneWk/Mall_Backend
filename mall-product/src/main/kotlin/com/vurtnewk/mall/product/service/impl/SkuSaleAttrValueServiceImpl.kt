@@ -25,4 +25,8 @@ class SkuSaleAttrValueServiceImpl : ServiceImpl<SkuSaleAttrValueDao, SkuSaleAttr
     override fun getSaleAttrsBySpuId(spuId: Long): List<SkuItemSaleAttrVo> {
         return this.baseMapper.getSaleAttrsBySpuId(spuId)
     }
+
+    override fun getSkuSaleAttrValuesAsStringList(skuId: Long): List<String> {
+        return this.baseMapper.getSkuSaleAttrValuesAsStringList(skuId)
+    }
 }

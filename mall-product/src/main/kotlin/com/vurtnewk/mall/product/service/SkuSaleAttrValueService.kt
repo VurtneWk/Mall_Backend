@@ -16,5 +16,6 @@ interface SkuSaleAttrValueService : IService<SkuSaleAttrValueEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
     fun getSaleAttrsBySpuId(spuId: Long): List<SkuItemSaleAttrVo>
+    fun getSkuSaleAttrValuesAsStringList(skuId: Long): List<String>
 }
 

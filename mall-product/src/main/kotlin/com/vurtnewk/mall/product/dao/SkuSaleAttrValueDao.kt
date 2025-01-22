@@ -16,5 +16,6 @@ import org.apache.ibatis.annotations.Param
 @Mapper
 interface SkuSaleAttrValueDao : BaseMapper<SkuSaleAttrValueEntity> {
     fun getSaleAttrsBySpuId(@Param("spuId") spuId: Long): List<SkuItemSaleAttrVo>
+    fun getSkuSaleAttrValuesAsStringList(@Param("skuId") skuId: Long): List<String>
 
 }
