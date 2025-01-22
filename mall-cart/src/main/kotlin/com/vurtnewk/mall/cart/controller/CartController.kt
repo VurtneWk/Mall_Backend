@@ -69,4 +69,9 @@ class CartController(
         cartService.checkItem(skuId, checked)
         return "redirect:http://cart.mall.com/cart.html"
     }
+    @GetMapping("/countItem")
+    fun changeItemCount(@RequestParam("skuId") skuId: Long, @RequestParam("num") num: Int): String{
+        cartService.changeItemCount(skuId, num)
+        return "redirect:http://cart.mall.com/cart.html"
+    }
 }

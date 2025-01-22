@@ -145,4 +145,12 @@ class CartServiceImpl(
             getCartOps().put(skuId.toString(), JSON.toJSONString(it))
         }
     }
+
+    override fun changeItemCount(skuId: Long, num: Int) {
+        val cartItem = this.getCartItem(skuId)
+        cartItem?.let {
+            it.count = num
+            getCartOps().put(skuId.toString(), JSON.toJSONString(it))
+        }
+    }
 }

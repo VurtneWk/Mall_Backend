@@ -767,5 +767,11 @@
         const checked = $(this).prop("checked");
         location.href = "http://cart.mall.com/checkItem?skuId=" + skuId + "&checked=" + (checked ? 1 : 0);
     });
+
+    $(".countOpsBtn").click(function () {
+        const skuId = $(this).parent().attr("skuId");
+        const num = $(this).parent().find(".countOpsNum").text();
+        location.href = "http://cart.mall.com/countItem?skuId=" + skuId + "&num=" + num;
+    });
 </script>
 </html>
