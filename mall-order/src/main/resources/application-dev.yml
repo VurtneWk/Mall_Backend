@@ -25,11 +25,24 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual # 消息的收到 改为手动模式
+  #    publisher-confirm-type: none # 开销低，性能较好，适用于不需要精确确认的场景。
+  #    publisher-confirms: true 新版本中废弃
   thymeleaf:
     cache: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+    # 缓存配置
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      cache-null-values: true # 可防止缓存穿透
+#      key-prefix: CACHE_   # 前缀：如果制定则使用，没有则默认使用缓存的名字作为前缀
+#      use-key-prefix: true 是否开启前缀等
 
-#    publisher-confirm-type: none # 开销低，性能较好，适用于不需要精确确认的场景。
-#    publisher-confirms: true 新版本中废弃
+
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -40,3 +53,9 @@ mybatis-plus:
 
 server:
   port: 5300
+
+mall:
+  thread:
+    core-size: 10
+    max-size: 200
+    keep-alive-time: 10
