@@ -42,6 +42,9 @@ class OrderServiceImpl(
         val attributes = RequestContextHolder.getRequestAttributes()
         coroutineScope {
             launch(executors.asCoroutineDispatcher()) {
+                // 开始这个协程之前重新设置进去
+                // 如果launch 不添加 executors.asCoroutineDispatcher() ， 有可能不会报错，因为多个协程可能会在同一个线程
+                // 添加 executors.asCoroutineDispatcher() 之后就会在指定线程，而不是当前 springmvc里的线程
                 RequestContextHolder.setRequestAttributes(attributes)
                 orderConfirmVo.address = memberFeignService.getAddress(memberRespVo.id!!)
             }

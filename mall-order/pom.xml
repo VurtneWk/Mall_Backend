@@ -38,6 +38,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
             <optional>true</optional> <!--这个要加了才有用-->
         </dependency>
         <!--   kotlin-协程     -->
