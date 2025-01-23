@@ -25,6 +25,8 @@ spring:
     listener:
       simple:
         acknowledge-mode: manual # 消息的收到 改为手动模式
+  thymeleaf:
+    cache: true
 
 #    publisher-confirm-type: none # 开销低，性能较好，适用于不需要精确确认的场景。
 #    publisher-confirms: true 新版本中废弃

@@ -76,7 +76,10 @@ spring:
           uri: lb://mall-cart
           predicates:
             - Host=cart.mall.com
-
+        - id: mall_order_route # 订单服务
+          uri: lb://mall-order
+          predicates:
+            - Host=order.mall.com
 # 如果没有名字，nacos里看不到
   application:
     name: mall-gateway
