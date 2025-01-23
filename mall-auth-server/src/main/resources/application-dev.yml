@@ -19,12 +19,13 @@ spring:
     redis:
       time-to-live: 3600000
       cache-null-values: true # 可防止缓存穿透
-
   thymeleaf:
     cache: false
+#  session:
+#    timeout: 10800
 
 server:
   port: 5800
-  servlet:
-    session:
-      timeout: 3H
+#  servlet:
+#    session:
+#      timeout: 10800

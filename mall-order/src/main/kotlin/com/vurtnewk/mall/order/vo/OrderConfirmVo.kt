@@ -45,6 +45,8 @@ class OrderConfirmVo {
      */
     var orderToken: String = ""
 
+    var stocks: Map<Long, Boolean> = emptyMap()
+
     val count: Int
         get() {
             return items.sumOf { it.count }
@@ -53,7 +55,6 @@ class OrderConfirmVo {
     override fun toString(): String {
         return "OrderConfirmVo(address=$address, items=$items, integration=$integration, total=$total, payPrice=$payPrice, orderToken='$orderToken')"
     }
-
 
 
 }
@@ -125,7 +126,6 @@ class OrderItemVo {
     var skuAttr: List<String> = emptyList()
     var price: BigDecimal = BigDecimal.ZERO
     var count: Int = 0
-    var hasStock: Boolean = false
     var weight: BigDecimal = BigDecimal.ZERO
     val totalPrice: BigDecimal
         get() {

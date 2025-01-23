@@ -5,7 +5,6 @@ import com.vurtnewk.common.constants.AuthServerConstants
 import com.vurtnewk.common.constants.ThirdPartyConstants
 import com.vurtnewk.common.excetion.BizCodeEnum
 import com.vurtnewk.common.utils.R
-import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.auth.feign.MemberFeignService
 import com.vurtnewk.mall.auth.feign.ThirdPartFeignService
 import com.vurtnewk.common.vo.MemberRespVo
@@ -150,7 +149,6 @@ class LoginController(
         val r = memberFeignService.login(userLoginVo)
         return if (r.isSuccess()) {
             val data = r.getData(object : TypeReference<MemberRespVo>() {})
-            logInfo("login=> $data")
             // 默认发的令牌 作用域为当前域，
             httpSession.setAttribute(AuthServerConstants.LOGIN_USER, data)
             "redirect:http://mall.com"

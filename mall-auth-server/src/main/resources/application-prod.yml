@@ -5,10 +5,10 @@ spring:
         server-addr: 127.0.0.1:8848
       config:
         server-addr: 127.0.0.1:8848
+        import-check:
+          enabled: false
   application:
     name: mall-auth-server
-  thymeleaf:
-    cache: true
   data:
     redis:
       host: 127.0.0.1
@@ -17,7 +17,15 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: 3600000
+      time-to-live: 360000
       cache-null-values: true # 可防止缓存穿透
+  thymeleaf:
+    cache: false
+  session:
+    timeout: 10800
+
 server:
   port: 5800
+  servlet:
+    session:
+      timeout: 10800

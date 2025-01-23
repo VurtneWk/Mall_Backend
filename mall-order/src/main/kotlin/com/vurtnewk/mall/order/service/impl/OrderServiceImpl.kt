@@ -9,6 +9,7 @@ import com.vurtnewk.mall.order.dao.OrderDao
 import com.vurtnewk.mall.order.entity.OrderEntity
 import com.vurtnewk.mall.order.feign.CartFeignService
 import com.vurtnewk.mall.order.feign.MemberFeignService
+import com.vurtnewk.mall.order.feign.WareFeignService
 import com.vurtnewk.mall.order.interceptor.LoginUserInterceptor
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.OrderConfirmVo
@@ -25,6 +26,7 @@ class OrderServiceImpl(
     private val memberFeignService: MemberFeignService,
     private val cartFeignService: CartFeignService,
     private val executors: ThreadPoolExecutor,
+    private val wareFeignService: WareFeignService,
 ) : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -51,6 +53,12 @@ class OrderServiceImpl(
             launch(executors.asCoroutineDispatcher()) {
                 RequestContextHolder.setRequestAttributes(attributes)
                 orderConfirmVo.items = cartFeignService.getCurrentUserCartItems()
+                //查询是否有库存
+                orderConfirmVo.stocks = wareFeignService.getSkusHasStock(
+                    orderConfirmVo.items.map { it.skuId })
+                    .data
+                    ?.associate { it.skuId to it.hasStock } ?: emptyMap()
+
             }
         }
 //        orderConfirmVo.address = memberFeignService.getAddress(memberRespVo.id!!)
