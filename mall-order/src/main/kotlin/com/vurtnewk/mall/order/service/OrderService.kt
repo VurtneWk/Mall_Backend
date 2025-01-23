@@ -15,6 +15,6 @@ import com.vurtnewk.mall.order.vo.OrderConfirmVo
 interface OrderService : IService<OrderEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
-    fun confirmOrder(): OrderConfirmVo
+    suspend fun confirmOrder(): OrderConfirmVo
 }
 

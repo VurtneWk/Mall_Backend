@@ -5,6 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import java.math.BigDecimal
 
 /**
  *
@@ -19,4 +20,7 @@ interface ProductFeignService {
 
     @GetMapping("/product/skusaleattrvalue/stringList/{skuId}")
     fun getSkuSaleAttrValues(@PathVariable("skuId") skuId: Long): List<String>
+
+    @GetMapping("/product/skuinfo/{skuId}/price")
+    fun getPrice(@PathVariable("skuId") skuId: Long): BigDecimal?
 }

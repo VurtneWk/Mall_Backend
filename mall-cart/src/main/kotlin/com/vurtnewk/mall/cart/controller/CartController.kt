@@ -3,10 +3,12 @@ package com.vurtnewk.mall.cart.controller
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.cart.interceptor.CartInterceptor
 import com.vurtnewk.mall.cart.service.CartService
+import com.vurtnewk.mall.cart.vo.CartItem
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 /**
@@ -69,8 +71,9 @@ class CartController(
         cartService.checkItem(skuId, checked)
         return "redirect:http://cart.mall.com/cart.html"
     }
+
     @GetMapping("/countItem")
-    fun changeItemCount(@RequestParam("skuId") skuId: Long, @RequestParam("num") num: Int): String{
+    fun changeItemCount(@RequestParam("skuId") skuId: Long, @RequestParam("num") num: Int): String {
         cartService.changeItemCount(skuId, num)
         return "redirect:http://cart.mall.com/cart.html"
     }
@@ -79,8 +82,16 @@ class CartController(
      * 删除某个购物项
      */
     @GetMapping("/deleteItem")
-    fun deleteItem(@RequestParam("skuId") skuId: Long): String{
+    fun deleteItem(@RequestParam("skuId") skuId: Long): String {
         cartService.deleteItem(skuId)
         return "redirect:http://cart.mall.com/cart.html"
+    }
+
+
+    @GetMapping("/currentUserCartItems")
+    @ResponseBody
+    fun getCurrentUserCartItems(): List<CartItem> {
+        println("getCurrentUserCartItems")
+        return cartService.getCurrentUserCartItems()
     }
 }

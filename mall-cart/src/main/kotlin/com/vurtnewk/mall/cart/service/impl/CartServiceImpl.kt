@@ -153,6 +153,21 @@ class CartServiceImpl(
         getCartOps().delete(skuId.toString())
     }
 
+    override fun getCurrentUserCartItems(): List<CartItem> {
+        val userInfoDto = CartInterceptor.threadLocal.get()
+        return if (userInfoDto.userId == null) {
+            emptyList()
+        } else {
+            getCartItems(CART_PREFIX + userInfoDto.userId)
+                .filter { it.check }
+                .map {
+                    //更新为最新价格
+                    it.price = productFeignService.getPrice(it.skuId)!!
+                    it
+                }
+        }
+    }
+
     override fun changeItemCount(skuId: Long, num: Int) {
         val cartItem = this.getCartItem(skuId)
         cartItem?.let {

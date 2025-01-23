@@ -6,6 +6,7 @@ import com.vurtnewk.mall.product.entity.SkuInfoEntity
 import com.vurtnewk.mall.product.service.SkuInfoService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import java.math.BigDecimal
 
 /**
  * sku信息
@@ -17,8 +18,9 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("product/skuinfo")
 class SkuInfoController @Autowired constructor(
-    private val skuInfoService: SkuInfoService
+    private val skuInfoService: SkuInfoService,
 ) {
+
 
     /**
      * 列表
@@ -45,7 +47,7 @@ class SkuInfoController @Autowired constructor(
      */
     @RequestMapping("/save")
     //@RequiresPermissions("product:skuinfo:save")
-    fun save(@RequestBody skuInfoEntity:SkuInfoEntity): R {
+    fun save(@RequestBody skuInfoEntity: SkuInfoEntity): R {
         skuInfoService.save(skuInfoEntity)
         return R.ok()
     }
@@ -68,5 +70,10 @@ class SkuInfoController @Autowired constructor(
     fun delete(@RequestBody skuIds: Array<Long>): R {
         skuInfoService.removeByIds(skuIds.asList())
         return R.ok()
+    }
+
+    @GetMapping("/{skuId}/price")
+    fun getPrice(@PathVariable("skuId") skuId: Long): BigDecimal? {
+        return skuInfoService.getById(skuId).price
     }
 }

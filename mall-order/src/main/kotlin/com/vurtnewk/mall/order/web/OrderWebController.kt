@@ -17,7 +17,7 @@ class OrderWebController(
 
 
     @GetMapping("/toTrade")
-    fun toTrade(model: Model): String {
+    suspend  fun toTrade(model: Model): String {
         val orderConfirmVo = orderService.confirmOrder()
         model.addAttribute("orderConfirmData",orderConfirmVo)
         //展示订单

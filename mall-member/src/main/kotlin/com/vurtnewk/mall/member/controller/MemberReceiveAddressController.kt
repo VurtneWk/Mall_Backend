@@ -17,8 +17,15 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("member/memberreceiveaddress")
 class MemberReceiveAddressController @Autowired constructor(
-        private val memberReceiveAddressService: MemberReceiveAddressService
+    private val memberReceiveAddressService: MemberReceiveAddressService,
 ) {
+
+
+    @GetMapping("/{memberId}/addresses")
+    fun getAddress(@PathVariable("memberId") memberId: Long): List<MemberReceiveAddressEntity> {
+        return memberReceiveAddressService.getAddress(memberId)
+    }
+
 
     /**
      * 列表
@@ -46,7 +53,7 @@ class MemberReceiveAddressController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("member:memberreceiveaddress:save")
     fun save(@RequestBody memberReceiveAddress: MemberReceiveAddressEntity): R {
-            memberReceiveAddressService.save(memberReceiveAddress)
+        memberReceiveAddressService.save(memberReceiveAddress)
         return R.ok()
     }
 
@@ -56,7 +63,7 @@ class MemberReceiveAddressController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("member:memberreceiveaddress:update")
     fun update(@RequestBody memberReceiveAddress: MemberReceiveAddressEntity): R {
-            memberReceiveAddressService.updateById(memberReceiveAddress)
+        memberReceiveAddressService.updateById(memberReceiveAddress)
         return R.ok()
     }
 
@@ -66,7 +73,7 @@ class MemberReceiveAddressController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("member:memberreceiveaddress:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            memberReceiveAddressService.removeByIds(ids.asList())
+        memberReceiveAddressService.removeByIds(ids.asList())
         return R.ok()
     }
 }

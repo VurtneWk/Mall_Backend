@@ -24,7 +24,32 @@ class OrderConfirmVo {
     // 优惠券..
     var integration: Int? = null
 
-    var payPrice: BigDecimal? = null
+    /**
+     * 订单总额
+     */
+    val total: BigDecimal
+        get() {
+            return items.sumOf { it.totalPrice }
+        }
+
+    /**
+     * 应付价格
+     */
+    val payPrice: BigDecimal
+        get() {
+            return items.sumOf { it.totalPrice }
+        }
+
+    /**
+     * 防止重复令牌
+     */
+    var orderToken: String = ""
+
+    override fun toString(): String {
+        return "OrderConfirmVo(address=$address, items=$items, integration=$integration, total=$total, payPrice=$payPrice, orderToken='$orderToken')"
+    }
+
+
 }
 
 
@@ -80,6 +105,11 @@ class MemberAddressVo {
      * 是否默认
      */
     var defaultStatus: Int? = null
+    override fun toString(): String {
+        return "MemberAddressVo(id=$id, memberId=$memberId, name=$name, phone=$phone, postCode=$postCode, province=$province, city=$city, region=$region, detailAddress=$detailAddress, areacode=$areacode, defaultStatus=$defaultStatus)"
+    }
+
+
 }
 
 class OrderItemVo {
@@ -93,4 +123,9 @@ class OrderItemVo {
         get() {
             return this.price.multiply(BigDecimal(this.count))
         }
+
+    override fun toString(): String {
+        return "OrderItemVo(skuId=$skuId, title=$title, image=$image, skuAttr=$skuAttr, price=$price, count=$count, totalPrice=$totalPrice)"
+    }
+
 }

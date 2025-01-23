@@ -4,15 +4,28 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.order.dao.OrderDao
 import com.vurtnewk.mall.order.entity.OrderEntity
+import com.vurtnewk.mall.order.feign.CartFeignService
+import com.vurtnewk.mall.order.feign.MemberFeignService
+import com.vurtnewk.mall.order.interceptor.LoginUserInterceptor
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.OrderConfirmVo
+import kotlinx.coroutines.*
 import org.springframework.stereotype.Service
+import org.springframework.web.context.request.RequestContextHolder
+import org.springframework.web.context.request.ServletRequestAttributes
+import java.util.concurrent.ThreadPoolExecutor
+import kotlin.system.measureTimeMillis
 
 
 @Service("orderService")
-class OrderServiceImpl : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
+class OrderServiceImpl(
+    private val memberFeignService: MemberFeignService,
+    private val cartFeignService: CartFeignService,
+    private val executors: ThreadPoolExecutor,
+) : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
         val page = this.page(
@@ -22,10 +35,25 @@ class OrderServiceImpl : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
         return PageUtils(page)
     }
 
-    override fun confirmOrder(): OrderConfirmVo {
+    override suspend fun confirmOrder(): OrderConfirmVo {
         val orderConfirmVo = OrderConfirmVo()
-
-
+        val memberRespVo = LoginUserInterceptor.loginUserThreadLocal.get()
+        //这个是处理异步线程是丢失 threadLocal 数据
+        val attributes = RequestContextHolder.getRequestAttributes()
+        coroutineScope {
+            launch(executors.asCoroutineDispatcher()) {
+                RequestContextHolder.setRequestAttributes(attributes)
+                orderConfirmVo.address = memberFeignService.getAddress(memberRespVo.id!!)
+            }
+            launch(executors.asCoroutineDispatcher()) {
+                RequestContextHolder.setRequestAttributes(attributes)
+                orderConfirmVo.items = cartFeignService.getCurrentUserCartItems()
+            }
+        }
+//        orderConfirmVo.address = memberFeignService.getAddress(memberRespVo.id!!)
+//        orderConfirmVo.items = cartFeignService.getCurrentUserCartItems()
+        orderConfirmVo.integration = memberRespVo.integration
+        logInfo("orderConfirmVo ===> $orderConfirmVo")
         return orderConfirmVo
     }
 }

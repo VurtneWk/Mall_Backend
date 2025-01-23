@@ -16,4 +16,5 @@ interface CartService {
     fun checkItem(skuId: Long, checked: Int)
     fun changeItemCount(skuId: Long, num: Int)
     fun deleteItem(skuId: Long)
+    fun getCurrentUserCartItems(): List<CartItem>
 }

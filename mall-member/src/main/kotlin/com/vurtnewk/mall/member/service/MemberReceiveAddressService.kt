@@ -14,5 +14,6 @@ import com.vurtnewk.mall.member.entity.MemberReceiveAddressEntity
 interface MemberReceiveAddressService : IService<MemberReceiveAddressEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun getAddress(memberId: Long): List<MemberReceiveAddressEntity>
 }
 
