@@ -79,4 +79,9 @@ class MallOrderApplicationTests {
         reasonEntity.name = "哈哈"
         rabbitTemplate.convertAndSend("hello-java-exchange","hello.java",reasonEntity)
     }
+
+
+    fun testReceiveMessage(){
+
+    }
 }
