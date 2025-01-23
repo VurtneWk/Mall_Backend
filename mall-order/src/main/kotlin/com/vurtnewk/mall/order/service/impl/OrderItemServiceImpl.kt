@@ -45,5 +45,11 @@ class OrderItemServiceImpl : ServiceImpl<OrderItemDao, OrderItemEntity>(), Order
         println("接受到的消息 $message , 消息类型 ${message.javaClass}")
 
         println("orderReturnReasonEntity=>$orderReturnReasonEntity")
+
+        /// 手动签收
+//        channel.basicAck(message.messageProperties.deliveryTag, false)
+        /// 拒绝签收
+//        channel.basicNack(message.messageProperties.deliveryTag, false, true)
+
     }
 }
