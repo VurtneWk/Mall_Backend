@@ -3,6 +3,7 @@ package com.vurtnewk.mall.order.service
 import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.order.entity.OrderEntity
+import com.vurtnewk.mall.order.vo.OrderConfirmVo
 
 /**
  * 订单
@@ -14,5 +15,6 @@ import com.vurtnewk.mall.order.entity.OrderEntity
 interface OrderService : IService<OrderEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun confirmOrder(): OrderConfirmVo
 }
 
