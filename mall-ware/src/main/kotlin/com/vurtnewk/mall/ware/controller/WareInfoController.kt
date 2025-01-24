@@ -6,6 +6,7 @@ import com.vurtnewk.mall.ware.entity.WareInfoEntity
 import com.vurtnewk.mall.ware.service.WareInfoService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
+import java.math.BigDecimal
 
 /**
  * 仓库信息
@@ -17,8 +18,15 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("ware/wareinfo")
 class WareInfoController @Autowired constructor(
-        private val wareInfoService: WareInfoService
+    private val wareInfoService: WareInfoService,
 ) {
+
+
+    @RequestMapping("/fare")
+    fun getFare(@RequestParam("addrId") addrId: Long): R {
+        val fare = wareInfoService.getFare(addrId)
+        return R.ok().putData(fare)
+    }
 
     /**
      * 列表
@@ -46,7 +54,7 @@ class WareInfoController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("ware:wareinfo:save")
     fun save(@RequestBody wareInfo: WareInfoEntity): R {
-            wareInfoService.save(wareInfo)
+        wareInfoService.save(wareInfo)
         return R.ok()
     }
 
@@ -56,7 +64,7 @@ class WareInfoController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("ware:wareinfo:update")
     fun update(@RequestBody wareInfo: WareInfoEntity): R {
-            wareInfoService.updateById(wareInfo)
+        wareInfoService.updateById(wareInfo)
         return R.ok()
     }
 
@@ -66,7 +74,7 @@ class WareInfoController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("ware:wareinfo:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            wareInfoService.removeByIds(ids.asList())
+        wareInfoService.removeByIds(ids.asList())
         return R.ok()
     }
 }

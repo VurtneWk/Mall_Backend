@@ -3,6 +3,7 @@ package com.vurtnewk.mall.ware.service
 import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.ware.entity.WareInfoEntity
+import com.vurtnewk.mall.ware.vo.FareVo
 
 /**
  * 仓库信息
@@ -14,5 +15,6 @@ import com.vurtnewk.mall.ware.entity.WareInfoEntity
 interface WareInfoService : IService<WareInfoEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun getFare(addrId: Long): FareVo?
 }
 

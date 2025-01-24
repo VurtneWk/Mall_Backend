@@ -116,7 +116,6 @@ class MemberAddressVo {
         return "MemberAddressVo(id=$id, memberId=$memberId, name=$name, phone=$phone, postCode=$postCode, province=$province, city=$city, region=$region, detailAddress=$detailAddress, areacode=$areacode, defaultStatus=$defaultStatus)"
     }
 
-
 }
 
 class OrderItemVo {

@@ -24,5 +24,11 @@ mybatis-plus:
     db-config:
       id-type: auto
 
+logging:
+  level:
+    com.vurtnewk.mall: debug
+  pattern:
+    console: "%d{HH:mm:ss} %-5level %-36logger{36} - %msg%n"
+
 server:
   port: 5200

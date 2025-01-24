@@ -10,7 +10,7 @@ import org.apache.http.HttpStatus
  * author:      vurtnewk
  * description: 返回数据
  */
-class R : HashMap<String, Any>() {
+class R : HashMap<String, Any?>() {
 
     init {
         put("code", 0)
@@ -55,12 +55,12 @@ class R : HashMap<String, Any>() {
 
     }
 
-    override fun put(key: String, value: Any): R {
+    override fun put(key: String, value: Any?): R {
         super.put(key, value)
         return this
     }
 
-    fun putData(value: Any): R {
+    fun putData(value: Any?): R {
         this["data"] = value
         return this
     }
@@ -69,13 +69,13 @@ class R : HashMap<String, Any>() {
      * 因为泛型擦除的原因，
      * TypeReference实际就是利用匿名内部类 ，通过继承来获取运行时泛型
      */
-    fun <T> getData(typeReference: TypeReference<T>): T {
-        val data = this["data"]
+    fun <T> getData(typeReference: TypeReference<T>): T? {
+        val data = this["data"] ?: return null
         val str = JSON.toJSONString(data)
         return JSON.parseObject(str, typeReference)
     }
 
-    fun <T> getData(key: String, typeReference: TypeReference<T>): T {
+    fun <T> getData(key: String, typeReference: TypeReference<T>): T? {
         val data = this[key]
         val str = JSON.toJSONString(data)
         return JSON.parseObject(str, typeReference)

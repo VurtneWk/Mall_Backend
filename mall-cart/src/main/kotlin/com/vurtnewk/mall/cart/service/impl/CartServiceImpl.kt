@@ -44,7 +44,7 @@ class CartServiceImpl(
             // 远程查询当前要添加的商品信息
             val infoFuture = CompletableFuture.runAsync({
                 val r = productFeignService.getSkuInfo(skuId)
-                val skuInfoVo = r.getData("skuInfo", object : TypeReference<SkuInfoVo>() {})
+                val skuInfoVo = r.getData("skuInfo", object : TypeReference<SkuInfoVo>() {})!!
                 cartItem.also {
                     it.count = num
                     it.skuId = skuId

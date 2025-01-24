@@ -258,7 +258,7 @@ class MallSearchServiceImpl(
             navVo.navValue = split[1]
             val result = mProductFeignService.getAttrsInfo(split[0].toLong())
             if (result.isSuccess()) {
-                navVo.navName = result.getData("attr", object : TypeReference<AttrRespVO>() {}).attrName
+                navVo.navName = result.getData("attr", object : TypeReference<AttrRespVO>() {})!!.attrName
             } else {
                 navVo.navName = split[0]
             }
@@ -276,7 +276,7 @@ class MallSearchServiceImpl(
                 val brandsData = r.getData("brand", object : TypeReference<List<BrandDto>>() {})
                 val sb = StringBuffer()
                 var replace = ""
-                brandsData.forEach {
+                brandsData?.forEach {
                     sb.append(it.name + ";")
                     replace = replaceQueryString("brandId", it.brandId.toString(), param)
                 }
