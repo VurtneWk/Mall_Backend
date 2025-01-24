@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.logInfo
+import com.vurtnewk.mall.order.constants.OrderConstants
 import com.vurtnewk.mall.order.dao.OrderDao
 import com.vurtnewk.mall.order.entity.OrderEntity
 import com.vurtnewk.mall.order.feign.CartFeignService
@@ -14,10 +15,13 @@ import com.vurtnewk.mall.order.interceptor.LoginUserInterceptor
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.OrderConfirmVo
 import kotlinx.coroutines.*
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
+import java.util.UUID
 import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
 
@@ -27,6 +31,7 @@ class OrderServiceImpl(
     private val cartFeignService: CartFeignService,
     private val executors: ThreadPoolExecutor,
     private val wareFeignService: WareFeignService,
+    private val redisTemplate: StringRedisTemplate,
 ) : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -64,6 +69,15 @@ class OrderServiceImpl(
 //        orderConfirmVo.address = memberFeignService.getAddress(memberRespVo.id!!)
 //        orderConfirmVo.items = cartFeignService.getCurrentUserCartItems()
         orderConfirmVo.integration = memberRespVo.integration
+
+        // 防重令牌 前端一份、后端一份
+        val token = UUID.randomUUID().toString().replace("_", "")
+        orderConfirmVo.orderToken = token
+        redisTemplate.opsForValue().set(
+            OrderConstants.USER_ORDER_TOKEN_PREFIX + memberRespVo.id,
+            token, 30, TimeUnit.MINUTES
+        )
+
         logInfo("orderConfirmVo ===> $orderConfirmVo")
         return orderConfirmVo
     }
