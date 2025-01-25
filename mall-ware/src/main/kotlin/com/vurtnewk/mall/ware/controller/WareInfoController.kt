@@ -21,7 +21,9 @@ class WareInfoController @Autowired constructor(
     private val wareInfoService: WareInfoService,
 ) {
 
-
+    /**
+     * 计算运费
+     */
     @RequestMapping("/fare")
     fun getFare(@RequestParam("addrId") addrId: Long): R {
         val fare = wareInfoService.getFare(addrId)

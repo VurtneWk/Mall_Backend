@@ -9,9 +9,12 @@ import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.ware.dao.WareSkuDao
 import com.vurtnewk.mall.ware.entity.WareSkuEntity
+import com.vurtnewk.mall.ware.excetion.NoStockException
 import com.vurtnewk.mall.ware.feign.ProductFeignService
 import com.vurtnewk.mall.ware.service.WareSkuService
+import com.vurtnewk.mall.ware.vo.LockStockResultDto
 import com.vurtnewk.mall.ware.vo.SkuHasStockVo
+import com.vurtnewk.mall.ware.vo.WareSkuLockVo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -89,4 +92,46 @@ class WareSkuServiceImpl(
             skuHasStockVo
         }
     }
+
+    /**
+     * 锁定库存
+     * (rollbackFor = [NoStockException::class])
+     * 不加，默认是运行时异常都会回滚
+     */
+    @Transactional
+    override fun orderLockStock(vo: WareSkuLockVo): Boolean {
+        //1、正常情况应该是按照下单的收货地址，找一个就近库存，锁定库存
+        // 遍历所有商品信息，查询每个商品再那些仓库有库存
+        val skuWareHasStocks = vo.locks.map {
+            val skuWareHasStock = SkuWareHasStock()
+            skuWareHasStock.skuId = it.skuId
+            skuWareHasStock.wareIds = this.baseMapper.listWareIdHasSkuStock(it.skuId)
+            skuWareHasStock.num = it.count
+            skuWareHasStock
+        }
+        skuWareHasStocks.forEach { skuWareHasStock ->
+            if (skuWareHasStock.wareIds.isEmpty()) {
+                throw NoStockException(skuWareHasStock.skuId)
+            }
+            var skuStocked = false
+            for (wareId in skuWareHasStock.wareIds) {
+                val count = this.baseMapper.lockSkuStock(skuWareHasStock.skuId, wareId, skuWareHasStock.num)
+                if (count == 1L) {
+                    skuStocked = true
+                    break
+                }
+            }
+            //当前商品的所有仓库都没锁住
+            if (!skuStocked) {
+                throw NoStockException(skuWareHasStock.skuId)
+            }
+        }
+        return true
+    }
+
+    data class SkuWareHasStock(
+        var skuId: Long = 0,
+        var num: Int = 0,
+        var wareIds: List<Long> = emptyList(),
+    )
 }

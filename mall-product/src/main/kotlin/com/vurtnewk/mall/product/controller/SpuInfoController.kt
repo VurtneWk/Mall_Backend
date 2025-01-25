@@ -76,8 +76,16 @@ class SpuInfoController @Autowired constructor(
      * /product/spuinfo/{spuId}/up
      */
     @PostMapping("/{spuId}/up")
-    fun spuUp(@PathVariable("spuId") spuId: Long) :R{
+    fun spuUp(@PathVariable("spuId") spuId: Long): R {
         spuInfoService.spuUp(spuId)
         return R.ok()
+    }
+
+    /**
+     * ## 根据SkuId获取Spu信息
+     */
+    @GetMapping("/skuId/{skuId}")
+    fun getSpuInfoBySkuId(@PathVariable("skuId") skuId: Long): R {
+        return R.ok().putData(spuInfoService.getSpuInfoBySkuId(skuId))
     }
 }

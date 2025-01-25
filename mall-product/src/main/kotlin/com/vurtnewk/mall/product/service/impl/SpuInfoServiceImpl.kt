@@ -214,7 +214,7 @@ class SpuInfoServiceImpl(
         }
 
 
-        val upProducts =  skus.map { sku ->
+        val upProducts = skus.map { sku ->
             val skuEsModelDto = SkuEsModelDto()
             BeanUtils.copyProperties(sku, skuEsModelDto)
             // 拷贝过后剩余数据
@@ -243,13 +243,17 @@ class SpuInfoServiceImpl(
 
         //数据发送给es进行保存
         val r = mSearchFeignService.productStatusUp(upProducts)
-        if(r.isSuccess()){
+        if (r.isSuccess()) {
             //修改spu的状态
             this.baseMapper.updateSpuStatus(spuId, ProductConstants.StatusEnum.SPU_UP.code)
-        }else{
+        } else {
             //todo 重复调用？幂等性 . 重试机制
         }
 
+    }
+
+    override fun getSpuInfoBySkuId(skuId: Long): SpuInfoEntity {
+        return this.getById(mSkuInfoService.getById(skuId).spuId)
     }
 
     /**

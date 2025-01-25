@@ -1,5 +1,6 @@
 package com.vurtnewk.mall.ware.controller
 
+import com.vurtnewk.common.excetion.BizCodeEnum
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import com.vurtnewk.mall.ware.entity.WareSkuEntity
@@ -7,8 +8,8 @@ import com.vurtnewk.mall.ware.service.WareSkuService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.R
 import com.vurtnewk.common.utils.R2
-import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.ware.vo.SkuHasStockVo
+import com.vurtnewk.mall.ware.vo.WareSkuLockVo
 
 /**
  * 商品库存
@@ -22,6 +23,19 @@ import com.vurtnewk.mall.ware.vo.SkuHasStockVo
 class WareSkuController @Autowired constructor(
     private val wareSkuService: WareSkuService,
 ) {
+
+    /**
+     * 锁定库存
+     */
+    @PostMapping("/lock/order")
+    fun orderLockStock(@RequestBody vo: WareSkuLockVo): R {
+        return try {
+            wareSkuService.orderLockStock(vo)
+            R.ok()
+        } catch (e: Exception) {
+            R.error(BizCodeEnum.NO_STOCK_EXCEPTION)
+        }
+    }
 
     /**
      * 列表

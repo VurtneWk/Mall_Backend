@@ -19,5 +19,7 @@ interface SpuInfoService : IService<SpuInfoEntity> {
     fun saveSpuInfo(spuInfoVO: SpuInfoVO)
     fun queryPageByCondition(params: Map<String, Any>): PageUtils
     fun spuUp(spuId: Long)
+    fun getSpuInfoBySkuId(skuId: Long): SpuInfoEntity
+
 }
 

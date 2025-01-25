@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.order
 
 import com.vurtnewk.mall.order.entity.OrderReturnReasonEntity
+import kotlinx.coroutines.*
 import org.junit.jupiter.api.Test
 import org.springframework.amqp.core.AmqpAdmin
 import org.springframework.amqp.core.Binding
@@ -10,12 +11,14 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 @SpringBootTest
 class MallOrderApplicationTests {
 
     @Autowired
     private lateinit var amqpAdmin: AmqpAdmin
+
     @Autowired
     private lateinit var rabbitTemplate: RabbitTemplate
 
@@ -68,7 +71,7 @@ class MallOrderApplicationTests {
     }
 
     @Test
-    fun testSendMessage(){
+    fun testSendMessage() {
 //        rabbitTemplate.convertAndSend("hello-java-exchange","hello.java","hello world!")
 //        println("消息发送完成")
 
@@ -77,8 +80,84 @@ class MallOrderApplicationTests {
         reasonEntity.id = 1L
         reasonEntity.createTime = Date()
         reasonEntity.name = "哈哈"
-        rabbitTemplate.convertAndSend("hello-java-exchange","22hx22xx1",reasonEntity)
+        rabbitTemplate.convertAndSend("hello-java-exchange", "22hx22xx1", reasonEntity)
     }
 
+    @Test
+    fun testDelay() = runBlocking {
+        val time = measureTimeMillis {
+            coroutineScope {
+                withContext(Dispatchers.IO) {
+                    launch {
+                        delay(3000)
+                        println("1")
+                    }
+                    launch {
+                        delay(2000)
+                        println("2")
+                    }
+                }
+            }
+        }
+        println("end => $time")
+    }
 
+    @Test
+    fun test2() = runBlocking {
+        //GlobalScope是守护协程,如果没有join，主线程结束时就直接结束了
+        val myJob = GlobalScope.launch {
+            repeat(200) { i ->
+                println("hello: $i")
+                delay(500)
+            }
+        }
+        delay(1100)
+        println("hello world")
+        //默认情况下，也不会打印这个异常
+//        myJob.cancel(CancellationException("just a try"))
+//        myJob.join()
+
+        // 不能先join
+        // 如果 myJob 协程正在执行，并且你调用了 myJob.join()，当前线程将会挂起，直到 myJob 完成执行。
+        // 在这种情况下，cancel() 只有在 myJob.join() 结束后才能执行
+//    myJob.join()
+//    myJob.cancel()
+
+        //This is a shortcut for the invocation of cancel followed by join.
+//        myJob.cancelAndJoin()
+
+        println("welcome")
+    }
+
+    @Test
+    fun test03() = runBlocking {
+        val job1 = launch {
+            repeat(5) { i ->
+                println("Job 1 - $i")
+                delay(1L)
+            }
+        }
+
+        val job2 = launch {
+            repeat(5) { i ->
+                println("Job 2 - $i")
+                yield() // 让出执行权
+            }
+        }
+
+        joinAll(job1, job2)
+        println("Main program ends")
+    }
+
+    @Test
+    fun test04() = runBlocking {
+        coroutineScope {
+            launch {
+                delay(1000)
+                println("job 1")
+            }
+            println("coroutineScope")
+        }
+        println("end")
+    }
 }

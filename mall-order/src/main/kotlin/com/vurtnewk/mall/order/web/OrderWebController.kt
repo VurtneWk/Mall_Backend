@@ -37,8 +37,14 @@ class OrderWebController(
      */
     @PostMapping("/submitOrder")
     @ResponseBody
-    suspend fun submitOrder(orderSubmitVo: OrderSubmitVo) {
+    suspend fun submitOrder(orderSubmitVo: OrderSubmitVo):String {
         println("订单提交的数据 orderService = $orderSubmitVo")
-//        return ""
+        val responseVo = orderService.submitOrder(orderSubmitVo)
+        if(responseVo.code == 0){
+            //下单成功
+            return "pay"
+        }else{
+            return "redirect:http//order.mall.com/toTrade"
+        }
     }
 }
