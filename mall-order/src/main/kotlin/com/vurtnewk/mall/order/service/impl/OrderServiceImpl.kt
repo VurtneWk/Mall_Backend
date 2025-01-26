@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.toolkit.IdWorker
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.R
@@ -23,9 +24,11 @@ import com.vurtnewk.mall.order.service.OrderItemService
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.*
 import kotlinx.coroutines.*
+import org.springframework.aop.framework.AopContext
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.request.RequestContextHolder
 import java.math.BigDecimal
@@ -115,7 +118,7 @@ class OrderServiceImpl(
      *
      */
     @Transactional
-    override suspend fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo {
+    override fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo {
         val memberRespVo = LoginUserInterceptor.loginUserThreadLocal.get()
         val vo = SubmitOrderResponseVo()
         //1、 验证令牌
@@ -149,16 +152,11 @@ class OrderServiceImpl(
                 title = it.skuName
             }
         }
-        var r: R = R.error()
-        coroutineScope {
-            launch(executors.asCoroutineDispatcher()) {
-                r = wareFeignService.orderLockStock(wareSkuLockVo)
-            }
+        val r = wareFeignService.orderLockStock(wareSkuLockVo)
+        if (!r.isSuccess()) {
+            throw NoStockException(null)
         }
-        if (r.isSuccess()) {
-
-        }
-
+        vo.order = orderCreateDto.order
         return vo
     }
 
@@ -171,22 +169,14 @@ class OrderServiceImpl(
         orderItemService.saveBatch(orderCreateDto.orderItems)
     }
 
-    private suspend fun createOrder(orderSubmitVo: OrderSubmitVo): OrderCreateDto {
+    private fun createOrder(orderSubmitVo: OrderSubmitVo): OrderCreateDto {
         val orderCreateDto = OrderCreateDto()
         // 创建订单号
         val orderSn = IdWorker.getTimeId()
-        coroutineScope {
-            withContext(executors.asCoroutineDispatcher()) {
-                launch {
-                    // 生成订单号
-                    orderCreateDto.order = buildOrder(orderSn, orderSubmitVo)
-                }
-                launch {
-                    //生成购物项
-                    orderCreateDto.orderItems = buildOrderItems(orderSn)
-                }
-            }
-        }
+        // 生成订单号
+        orderCreateDto.order = buildOrder(orderSn, orderSubmitVo)
+        //生成购物项
+        orderCreateDto.orderItems = buildOrderItems(orderSn)
         // 设置价格价格
         computePrice(orderCreateDto.order, orderCreateDto.orderItems)
         return orderCreateDto
@@ -238,8 +228,9 @@ class OrderServiceImpl(
      */
     private fun buildOrder(orderSn: String, orderSubmitVo: OrderSubmitVo): OrderEntity {
         val orderEntity = OrderEntity()
-        orderEntity.orderSn = orderSn
         orderEntity.memberId = LoginUserInterceptor.loginUserThreadLocal.get().id
+        orderEntity.orderSn = orderSn
+        orderEntity.createTime = Date()
         // 获取收货地址信息
         val fare = wareFeignService.getFare(orderSubmitVo.addrId)
         val fareResp = fare.getData(object : TypeReference<FareVo>() {})
@@ -280,7 +271,9 @@ class OrderServiceImpl(
         // 1、订单信息
         orderItemEntity.orderSn = orderSn
         // 2、spu信息
-        val spuInfoVo = productFeignService.getSpuInfoBySkuId(orderItemVo.skuId).getData(object : TypeReference<SpuInfoVo>() {})!!
+        val spuInfoBySkuId = productFeignService.getSpuInfoBySkuId(orderItemVo.skuId)
+        println("buildOrderItem => $spuInfoBySkuId")
+        val spuInfoVo = spuInfoBySkuId.getData(object : TypeReference<SpuInfoVo>() {})!!
         orderItemEntity.spuId = spuInfoVo.id
         orderItemEntity.spuBrand = spuInfoVo.brandId.toString()
         orderItemEntity.spuName = spuInfoVo.spuName
@@ -308,4 +301,44 @@ class OrderServiceImpl(
 
         return orderItemEntity
     }
+
+
+    //region 关于事务
+    /**
+     * #### 事务配置
+     * - Propagation.REQUIRES_NEW 创建一个新的事务
+     * - Propagation.REQUIRED 有事务的会就会继承，这是默认实现，在继承的情况下，自身的配置都会失效
+     *
+     * #### 事务失效
+     * - 如果下面的b、c方法是在别的service，那 @Transactional 的配置能生效
+     * - 如果只是和a都在同一个类，会失效 。原因是没有用到代理对象的缘故。
+     *
+     * #### 失效的处理办法
+     * - 导入依赖 spring-boot-starter-aop
+     * - 开启功能 @EnableAspectJAutoProxy
+     * - 使用代码
+     *          ```kotlin
+     *         val currentProxy = AopContext.currentProxy() as OrderServiceImpl
+     *         currentProxy.b()
+     *         currentProxy.c()
+     *         ```
+     */
+    @Transactional(timeout = 30)
+    fun a() {
+        b()
+        c()
+        val currentProxy = AopContext.currentProxy() as OrderServiceImpl
+        currentProxy.b()
+        currentProxy.c()
+    }
+
+    @Transactional(timeout = 5)
+    fun b() {
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    fun c() {
+    }
+    //endregion
 }

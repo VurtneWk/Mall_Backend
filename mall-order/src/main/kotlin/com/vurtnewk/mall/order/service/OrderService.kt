@@ -18,6 +18,6 @@ interface OrderService : IService<OrderEntity> {
 
     fun queryPage(params: Map<String, Any>): PageUtils
     suspend fun confirmOrder(): OrderConfirmVo
-    suspend  fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo
+    fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo
 }
 

@@ -86,6 +86,8 @@ class SpuInfoController @Autowired constructor(
      */
     @GetMapping("/skuId/{skuId}")
     fun getSpuInfoBySkuId(@PathVariable("skuId") skuId: Long): R {
-        return R.ok().putData(spuInfoService.getSpuInfoBySkuId(skuId))
+        val data = spuInfoService.getSpuInfoBySkuId(skuId)
+        println("getSpuInfoBySkuId ==> $data")
+        return R.ok().putData(data)
     }
 }

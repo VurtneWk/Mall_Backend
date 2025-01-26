@@ -15,7 +15,8 @@ spring:
   application:
     name: mall-product
   jackson: # 接口返回的JSON里的时间格式处理
-    date-format: yyyy-mm-dd HH:mm:ss
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   thymeleaf:
     cache: false # 关闭缓存，查看实时效果
   data:

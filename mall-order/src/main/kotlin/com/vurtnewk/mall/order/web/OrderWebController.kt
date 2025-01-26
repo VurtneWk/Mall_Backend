@@ -1,12 +1,14 @@
 package com.vurtnewk.mall.order.web
 
+import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.OrderSubmitVo
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.servlet.mvc.support.RedirectAttributes
+
 
 /**
  *
@@ -36,15 +38,33 @@ class OrderWebController(
      *  下单失败 回到订单确认页重新确认订单信息
      */
     @PostMapping("/submitOrder")
-    @ResponseBody
-    suspend fun submitOrder(orderSubmitVo: OrderSubmitVo):String {
-        println("订单提交的数据 orderService = $orderSubmitVo")
-        val responseVo = orderService.submitOrder(orderSubmitVo)
-        if(responseVo.code == 0){
-            //下单成功
-            return "pay"
-        }else{
-            return "redirect:http//order.mall.com/toTrade"
+    fun submitOrder(
+        orderSubmitVo: OrderSubmitVo,
+        model: Model,
+        redirectAttributes: RedirectAttributes,
+    ): String {
+        try {
+            val responseVo =    orderService.submitOrder(orderSubmitVo)
+            if (responseVo.code == 0) {
+                //下单成功
+                model.addAttribute("submitOrderResp", responseVo)
+                return "pay"
+            } else {
+                val msg = when (responseVo.code) {
+                    1 -> "下单失败: 请刷新后再次提交"
+                    2 -> "下单失败: 订单商品价格发生变化，请确认后在次提交"
+                    3 -> "下单失败: 库存锁定失败，商品库存不足"
+                    else -> "下单失败:"
+                }
+                redirectAttributes.addFlashAttribute("msg", msg)
+                return "redirect:http://order.mall.com/toTrade"
+            }
+        } catch (e: Exception) {
+            if (e is NoStockException) {
+                val message = e.message
+                redirectAttributes.addFlashAttribute("msg", message)
+            }
+            return "redirect:http://order.mall.com/toTrade"
         }
     }
 }
