@@ -23,16 +23,16 @@ class CouponController @Autowired constructor(
     private val couponService: CouponService
 ) {
 
-    @Value("\${coupon.user.name}")
-    private var name: String = "defaultName"
-
-    @Value("\${coupon.user.age}")
-    private var age: Int = 0
-
-    @RequestMapping("/test")
-    fun test(): R {
-        return R.ok().put("name", name).put("age", age)
-    }
+//    @Value("\${coupon.user.name}")
+//    private var name: String = "defaultName"
+//
+//    @Value("\${coupon.user.age}")
+//    private var age: Int = 0
+//
+//    @RequestMapping("/test")
+//    fun test(): R {
+//        return R.ok().put("name", name).put("age", age)
+//    }
 
 
     @RequestMapping("/member/list")

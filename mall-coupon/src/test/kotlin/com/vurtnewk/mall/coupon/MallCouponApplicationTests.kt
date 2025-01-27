@@ -14,8 +14,8 @@ class MallCouponApplicationTests {
 
     @Test
     fun contextLoads() {
-        val test = mCouponController.test()
-        println(test)
+//        val test = mCouponController.test()
+//        println(test)
     }
 
 }

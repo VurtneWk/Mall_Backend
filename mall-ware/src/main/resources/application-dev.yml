@@ -34,3 +34,24 @@ server:
 logging:
   level:
     com.vurtnewk.mall: debug
+
+# ==================== seata ===========================================
+seata:
+  enabled: true
+  application-id: ${spring.application.name} # 应用 ID，通常与 Spring Boot 应用名称一致
+  tx-service-group: mall-ware_tx_group #  Seata 客户端的事务组名称，用于标识当前应用的事务组
+
+  service:
+    vgroup-mapping:
+      mall-ware_tx_group: default #用于将事务组（tx-service-group）映射到 Seata Server 的集群名称。
+    grouplist:
+      default: 127.0.0.1:8091         # Seata Server 地址
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      application: seata-server
+      context-path: /nacos
+      cluster: default
+  data-source-proxy-mode: AT
+  enable-auto-data-source-proxy: false

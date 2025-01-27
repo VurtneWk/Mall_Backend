@@ -80,7 +80,7 @@ class MallOrderApplicationTests {
         reasonEntity.id = 1L
         reasonEntity.createTime = Date()
         reasonEntity.name = "哈哈"
-        rabbitTemplate.convertAndSend("hello-java-exchange", "22hx22xx1", reasonEntity)
+        rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", reasonEntity)
     }
 
     @Test

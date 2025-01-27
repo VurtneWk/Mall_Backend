@@ -11,9 +11,8 @@ spring:
       config:
         import-check:
           enabled: false
-  # 如果没有名字，nacos里看不到
   application:
-    name: mall-order
+    name: mall-order  # 如果没有名字，nacos里看不到
   rabbitmq:
     host: 127.0.0.1
     port: 5672
@@ -36,8 +35,8 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
-    # 缓存配置
-  cache:
+
+  cache:   # 缓存配置
     type: redis
     redis:
       time-to-live: 3600000
@@ -45,7 +44,7 @@ spring:
 #      key-prefix: CACHE_   # 前缀：如果制定则使用，没有则默认使用缓存的名字作为前缀
 #      use-key-prefix: true 是否开启前缀等
 
-
+#===================== mybatis ============================================
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -53,12 +52,32 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-
+#===================== 端口 ============================================
 server:
   port: 5300
-
+#===================== 本地自定义线程池 ==================================
 mall:
   thread:
     core-size: 10
     max-size: 200
     keep-alive-time: 10
+# ==================== seata ===========================================
+seata:
+  enabled: true
+  application-id: ${spring.application.name} # 应用 ID，通常与 Spring Boot 应用名称一致
+  tx-service-group: mall-order_tx_group #  Seata 客户端的事务组名称，用于标识当前应用的事务组
+
+  service:
+    vgroup-mapping:
+      mall-order_tx_group: default #用于将事务组（tx-service-group）映射到 Seata Server 的集群名称。
+    grouplist:
+      default: 127.0.0.1:8091         # Seata Server 地址
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      application: seata-server
+      context-path: /nacos
+      cluster: default  #指定 Seata 客户端的集群名称
+  data-source-proxy-mode: AT #AT（Auto Transaction）：自动模式，Seata 会自动管理分布式事务
+  enable-auto-data-source-proxy: false #指定是否启用 Seata 的自动数据源代理 这里自动会时不时报错

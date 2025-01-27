@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.order.web
 
 import com.vurtnewk.common.excetion.NoStockException
+import com.vurtnewk.common.utils.ext.logError
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.OrderSubmitVo
 import org.springframework.stereotype.Controller
@@ -64,6 +65,7 @@ class OrderWebController(
                 val message = e.message
                 redirectAttributes.addFlashAttribute("msg", message)
             }
+            logError("submitOrder 异常了")
             return "redirect:http://order.mall.com/toTrade"
         }
     }

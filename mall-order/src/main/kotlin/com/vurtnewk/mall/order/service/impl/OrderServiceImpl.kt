@@ -7,11 +7,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
-import com.vurtnewk.common.utils.R
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.order.constants.OrderConstants
 import com.vurtnewk.mall.order.dao.OrderDao
-import com.vurtnewk.mall.order.dao.OrderItemDao
 import com.vurtnewk.mall.order.dto.OrderCreateDto
 import com.vurtnewk.mall.order.entity.OrderEntity
 import com.vurtnewk.mall.order.entity.OrderItemEntity
@@ -23,6 +21,7 @@ import com.vurtnewk.mall.order.interceptor.LoginUserInterceptor
 import com.vurtnewk.mall.order.service.OrderItemService
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.*
+import io.seata.spring.annotation.GlobalTransactional
 import kotlinx.coroutines.*
 import org.springframework.aop.framework.AopContext
 import org.springframework.data.redis.core.StringRedisTemplate
@@ -117,6 +116,7 @@ class OrderServiceImpl(
      *
      *
      */
+    @GlobalTransactional
     @Transactional
     override fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo {
         val memberRespVo = LoginUserInterceptor.loginUserThreadLocal.get()
@@ -157,6 +157,8 @@ class OrderServiceImpl(
             throw NoStockException(null)
         }
         vo.order = orderCreateDto.order
+
+//        val i = 10/0
         return vo
     }
 
@@ -324,6 +326,7 @@ class OrderServiceImpl(
      *         ```
      */
     @Transactional(timeout = 30)
+    @Suppress("unused")
     fun a() {
         b()
         c()

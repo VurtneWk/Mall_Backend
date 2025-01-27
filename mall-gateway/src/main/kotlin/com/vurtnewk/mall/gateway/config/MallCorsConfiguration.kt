@@ -8,7 +8,9 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 
 /**
  * createTime:  2025/1/7 06:58
+ *
  * author:      vurtnewk
+ *
  * description: 解决跨域问题
  */
 @Configuration

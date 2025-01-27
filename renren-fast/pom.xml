@@ -82,6 +82,10 @@
 					<artifactId>mybatis-plus-jsqlparser</artifactId>
 					<groupId>com.baomidou</groupId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.alibaba.cloud</groupId>
+					<artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
