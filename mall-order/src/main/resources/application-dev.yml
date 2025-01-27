@@ -13,6 +13,7 @@ spring:
           enabled: false
   application:
     name: mall-order  # 如果没有名字，nacos里看不到
+  #===================== rabbitmq ============================================
   rabbitmq:
     host: 127.0.0.1
     port: 5672

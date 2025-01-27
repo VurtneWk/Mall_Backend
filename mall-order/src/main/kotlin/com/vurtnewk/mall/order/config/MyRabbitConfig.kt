@@ -7,6 +7,7 @@ import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.boot.autoconfigure.amqp.RabbitTemplateConfigurer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 
 /**
  *
@@ -45,6 +46,7 @@ class MyRabbitConfig {
 //    }
 
     @Bean
+    @Lazy
     fun customRabbitTemplate(rabbitTemplateConfigurer: RabbitTemplateConfigurer, connectionFactory: ConnectionFactory): RabbitTemplate {
         val rabbitTemplate = RabbitTemplate(connectionFactory)
         rabbitTemplateConfigurer.configure(rabbitTemplate, connectionFactory)
