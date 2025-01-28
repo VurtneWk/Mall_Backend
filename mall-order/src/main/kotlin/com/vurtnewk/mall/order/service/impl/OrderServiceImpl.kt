@@ -116,7 +116,7 @@ class OrderServiceImpl(
      *
      *
      */
-    @GlobalTransactional
+//    @GlobalTransactional
     @Transactional
     override fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo {
         val memberRespVo = LoginUserInterceptor.loginUserThreadLocal.get()
@@ -158,7 +158,7 @@ class OrderServiceImpl(
         }
         vo.order = orderCreateDto.order
 
-//        val i = 10/0
+        val i = 10/0
         return vo
     }
 
