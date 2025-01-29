@@ -82,3 +82,5 @@ mall:
 #      cluster: default  #指定 Seata 客户端的集群名称
 #  data-source-proxy-mode: AT #AT（Auto Transaction）：自动模式，Seata 会自动管理分布式事务
 #  enable-auto-data-source-proxy: false #指定是否启用 Seata 的自动数据源代理 这里自动会时不时报错
+
+# ==================== alipay 相关配置 =====================================

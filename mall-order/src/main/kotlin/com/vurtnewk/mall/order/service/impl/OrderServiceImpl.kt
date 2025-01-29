@@ -191,11 +191,18 @@ class OrderServiceImpl(
             //订单关闭成功，未了避免出现 解锁库存消息比关单消息优先到达（这是查询订单状态不丢），所以再发送一个解锁库存消息
             val orderDto = OrderDto()
             BeanUtils.copyProperties(orderEntity,orderDto)
-            rabbitTemplate.convertAndSend(
-                MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE,
-                MQConstants.Order.RoutingKey.ORDER_RELEASE_OTHER_WILDCARD,
-                orderDto
-            )
+
+            kotlin.runCatching {
+                // 保证消息一定会发送出去，每一个消息都可以做好日志记录（数据库）
+                // 定期扫描数据库将失败的消息再发送一遍
+                rabbitTemplate.convertAndSend(
+                    MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE,
+                    MQConstants.Order.RoutingKey.ORDER_RELEASE_OTHER_WILDCARD,
+                    orderDto
+                )
+            }.onFailure {
+                // TODO 将设法失败的消息放入数据库 ，定期查询数据库重新发出
+            }
         }
     }
 
