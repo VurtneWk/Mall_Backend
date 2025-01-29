@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.context.request.RequestContextHolder
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -171,7 +172,7 @@ class OrderServiceImpl(
         return vo
     }
 
-    override fun getOrderStatusByOrderSn(orderSn: String): OrderEntity? {
+    override fun getOrderByOrderSn(orderSn: String): OrderEntity? {
         return KtQueryChainWrapper(OrderEntity::class.java)
             .eq(OrderEntity::orderSn, orderSn)
             .one()
@@ -190,7 +191,7 @@ class OrderServiceImpl(
                 .update()
             //订单关闭成功，未了避免出现 解锁库存消息比关单消息优先到达（这是查询订单状态不丢），所以再发送一个解锁库存消息
             val orderDto = OrderDto()
-            BeanUtils.copyProperties(orderEntity,orderDto)
+            BeanUtils.copyProperties(orderEntity, orderDto)
 
             kotlin.runCatching {
                 // 保证消息一定会发送出去，每一个消息都可以做好日志记录（数据库）
@@ -204,6 +205,23 @@ class OrderServiceImpl(
                 // TODO 将设法失败的消息放入数据库 ，定期查询数据库重新发出
             }
         }
+    }
+
+    override fun getOrderPay(orderSn: String): PayVo {
+        val orderEntity = this.getOrderByOrderSn(orderSn)
+        val payVo = PayVo()
+        payVo.totalAmount = orderEntity!!.payAmount!!.setScale(2, RoundingMode.UP).toString()
+        payVo.outTradeNo = orderSn
+
+        val orderItemEntity = KtQueryChainWrapper(OrderItemEntity::class.java)
+            .eq(OrderItemEntity::orderSn, orderSn)
+            .list()
+            .first()
+
+        payVo.subject = orderItemEntity.skuName.orEmpty()
+        payVo.body = orderItemEntity.skuAttrsVals.orEmpty()
+
+        return payVo
     }
 
     /**

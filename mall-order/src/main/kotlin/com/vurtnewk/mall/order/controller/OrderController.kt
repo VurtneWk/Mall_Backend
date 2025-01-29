@@ -25,7 +25,7 @@ class OrderController @Autowired constructor(
      */
     @GetMapping("/status/{orderSn}")
     fun getOrderStatus(@PathVariable("orderSn") orderSn: String): R {
-        val orderEntity = orderService.getOrderStatusByOrderSn(orderSn)
+        val orderEntity = orderService.getOrderByOrderSn(orderSn)
         return R.ok().putData(orderEntity)
     }
 
