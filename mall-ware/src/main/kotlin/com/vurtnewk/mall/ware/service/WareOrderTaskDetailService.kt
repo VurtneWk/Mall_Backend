@@ -14,5 +14,6 @@ import com.vurtnewk.mall.ware.entity.WareOrderTaskDetailEntity
 interface WareOrderTaskDetailService : IService<WareOrderTaskDetailEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun getLockedOrderDetailByTaskId(id: Long): List<WareOrderTaskDetailEntity>
 }
 

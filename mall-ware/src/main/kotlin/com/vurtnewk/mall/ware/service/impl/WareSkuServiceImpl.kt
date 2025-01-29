@@ -4,7 +4,9 @@ import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.constants.MQConstants
 import com.vurtnewk.common.constants.OrderStatus
+import com.vurtnewk.common.dto.mq.OrderDto
 import com.vurtnewk.common.dto.mq.StockLockedDetail
 import com.vurtnewk.common.dto.mq.StockLockedDto
 import com.vurtnewk.common.excetion.NoStockException
@@ -13,7 +15,6 @@ import com.vurtnewk.common.utils.ext.logError
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
-import com.vurtnewk.mall.ware.constants.MQConstants
 import com.vurtnewk.mall.ware.constants.WareLockStatus
 import com.vurtnewk.mall.ware.dao.WareSkuDao
 import com.vurtnewk.mall.ware.entity.WareOrderTaskDetailEntity
@@ -152,6 +153,7 @@ class WareSkuServiceImpl(
                     val wareOrderTaskDetailEntity = WareOrderTaskDetailEntity(
                         skuId = skuWareHasStock.skuId,
                         skuNum = skuWareHasStock.num,
+                        taskId = wareOrderTaskEntity.id,
                         wareId = wareId,
                         lockStatus = WareLockStatus.WARE_STATUS_LOCKED
                     )
@@ -162,7 +164,7 @@ class WareSkuServiceImpl(
                     BeanUtils.copyProperties(wareOrderTaskDetailEntity, stockLockedDetail)
                     val stockLockedDto = StockLockedDto(wareOrderTaskEntity.id!!, stockLockedDetail)
 
-                    rabbitTemplate.convertAndSend(MQConstants.Exchange.STOCK_EVENT, MQConstants.RoutingKey.STOCK_LOCKED, stockLockedDto)
+                    rabbitTemplate.convertAndSend(MQConstants.Ware.Exchange.STOCK_EVENT, MQConstants.Ware.RoutingKey.STOCK_LOCKED, stockLockedDto)
                     skuStocked = true
                     break
                 }
@@ -217,6 +219,25 @@ class WareSkuServiceImpl(
         }//else 无需解锁
     }
 
+    /**
+     * 防止订单服务卡顿，导致订单状态消息未改时，库存消息优先到期。
+     * 查询订单状态为新建状态，[WareSkuService.unlockStock]什么都不做就结束了
+     */
+    @Transactional
+    override fun unlockStock(orderDto: OrderDto) {
+        // 查询task信息
+        val task = wareOrderTaskService.getOrderTaskByOrderSn(orderDto.orderSn!!)
+        task ?: return
+        //按照工作单 ID 找到 detail 里所有没有解锁的库存
+        val wareOrderTaskDetailEntities = wareOrderTaskDetailService.getLockedOrderDetailByTaskId(task.id!!)
+        wareOrderTaskDetailEntities.forEach { orderTaskDetailEntity ->
+            unLockStock(orderTaskDetailEntity.skuId!!, orderTaskDetailEntity.wareId!!, orderTaskDetailEntity.skuNum!!, orderTaskDetailEntity.id!!)
+        }
+    }
+
+    /**
+     * 实际真正更新表的操作
+     */
     private fun unLockStock(skuId: Long, wareId: Long, skuNum: Int, detailId: Long) {
         this.baseMapper.unLockStock(skuId, wareId, skuNum)
 

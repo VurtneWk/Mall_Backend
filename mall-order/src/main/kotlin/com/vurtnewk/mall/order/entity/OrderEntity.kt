@@ -79,7 +79,7 @@ data class OrderEntity(
 		/**
 	* 订单状态【0->待付款；1->待发货；2->已发货；3->已完成；4->已关闭；5->无效订单】
 	*/
-		var status: Int? = null,
+		var status: Int = 0,
 		/**
 	* 物流公司(配送方式)
 	*/

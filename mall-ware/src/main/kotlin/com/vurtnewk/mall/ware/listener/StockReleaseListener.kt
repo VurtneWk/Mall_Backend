@@ -1,9 +1,10 @@
 package com.vurtnewk.mall.ware.listener
 
 import com.rabbitmq.client.Channel
+import com.vurtnewk.common.constants.MQConstants
+import com.vurtnewk.common.dto.mq.OrderDto
 import com.vurtnewk.common.dto.mq.StockLockedDto
 import com.vurtnewk.common.utils.ext.logInfo
-import com.vurtnewk.mall.ware.constants.MQConstants
 import com.vurtnewk.mall.ware.service.WareSkuService
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.rabbit.annotation.RabbitHandler
@@ -16,9 +17,9 @@ import org.springframework.stereotype.Service
  * @since    2025/1/29 17:59
  */
 @Service
-@RabbitListener(queues = [MQConstants.Queue.STOCK_RELEASE_STOCK])
+@RabbitListener(queues = [MQConstants.Ware.Queue.STOCK_RELEASE_STOCK])
 class StockReleaseListener(
-    private val wareSkuService: WareSkuService
+    private val wareSkuService: WareSkuService,
 ) {
 
     @RabbitHandler
@@ -32,4 +33,17 @@ class StockReleaseListener(
             channel.basicAck(message.messageProperties.deliveryTag, false)
         }
     }
+
+    @RabbitHandler
+    fun handlerOrderCloseRelease(orderDto: OrderDto, message: Message, channel: Channel) {
+        logInfo("收到订单关闭消息=> $orderDto")
+        runCatching {
+            wareSkuService.unlockStock(orderDto)
+        }.onFailure {
+            channel.basicReject(message.messageProperties.deliveryTag, true)
+        }.onSuccess {
+            channel.basicAck(message.messageProperties.deliveryTag, false)
+        }
+    }
+
 }

@@ -1,12 +1,11 @@
 package com.vurtnewk.mall.ware.config
 
-import com.vurtnewk.mall.ware.constants.MQConstants
+import com.vurtnewk.common.constants.MQConstants
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.Exchange
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.core.TopicExchange
-import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.amqp.support.converter.MessageConverter
 import org.springframework.context.annotation.Bean
@@ -28,37 +27,37 @@ class MyRabbitConfig {
 
     @Bean
     fun stockEventExchange(): Exchange {
-        return TopicExchange(MQConstants.Exchange.STOCK_EVENT, true, false)
+        return TopicExchange(MQConstants.Ware.Exchange.STOCK_EVENT, true, false)
     }
 
     @Bean
     fun stockReleaseStockQueue(): Queue {
-        return Queue(MQConstants.Queue.STOCK_RELEASE_STOCK, true, false, false)
+        return Queue(MQConstants.Ware.Queue.STOCK_RELEASE_STOCK, true, false, false)
     }
 
     @Bean
     fun stockDelayQueue(): Queue {
         val arguments = mapOf(
-            "x-dead-letter-exchange" to MQConstants.Exchange.STOCK_EVENT,
-            "x-dead-letter-routing-key" to MQConstants.RoutingKey.STOCK_RELEASE,
+            "x-dead-letter-exchange" to MQConstants.Ware.Exchange.STOCK_EVENT,
+            "x-dead-letter-routing-key" to MQConstants.Ware.RoutingKey.STOCK_RELEASE,
             "x-message-ttl" to 120000
         )
-        return Queue(MQConstants.Queue.STOCK_DELAY, true, false, false, arguments)
+        return Queue(MQConstants.Ware.Queue.STOCK_DELAY, true, false, false, arguments)
     }
 
     @Bean
     fun stockReleaseBinding(): Binding {
         return Binding(
-            MQConstants.Queue.STOCK_RELEASE_STOCK, Binding.DestinationType.QUEUE,
-            MQConstants.Exchange.STOCK_EVENT, MQConstants.RoutingKey.STOCK_RELEASE_WILDCARD, null
+            MQConstants.Ware.Queue.STOCK_RELEASE_STOCK, Binding.DestinationType.QUEUE,
+            MQConstants.Ware.Exchange.STOCK_EVENT, MQConstants.Ware.RoutingKey.STOCK_RELEASE_WILDCARD, null
         )
     }
 
     @Bean
     fun stockLockedBinding(): Binding {
         return Binding(
-            MQConstants.Queue.STOCK_DELAY, Binding.DestinationType.QUEUE,
-            MQConstants.Exchange.STOCK_EVENT, MQConstants.RoutingKey.STOCK_LOCKED, null
+            MQConstants.Ware.Queue.STOCK_DELAY, Binding.DestinationType.QUEUE,
+            MQConstants.Ware.Exchange.STOCK_EVENT, MQConstants.Ware.RoutingKey.STOCK_LOCKED, null
         )
     }
 

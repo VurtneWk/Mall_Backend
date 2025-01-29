@@ -1,13 +1,10 @@
 package com.vurtnewk.mall.order.config
 
-import com.rabbitmq.client.Channel
-import com.vurtnewk.mall.order.entity.OrderEntity
+import com.vurtnewk.common.constants.MQConstants
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.Exchange
-import org.springframework.amqp.core.Message
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.core.TopicExchange
-import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
@@ -23,11 +20,11 @@ class MyMQConfig {
     /**
      * 测试消息
      */
-    @RabbitListener(queues = ["order.release.order.queue"])
-    fun listener(orderEntity: OrderEntity, channel: Channel, message: Message) {
-        println("收到过期的订单信息：=> $orderEntity")
-        channel.basicAck(message.messageProperties.deliveryTag, false)
-    }
+//    @RabbitListener(queues = ["order.release.order.queue"])
+//    fun listener(orderEntity: OrderEntity, channel: Channel, message: Message) {
+//        println("收到过期的订单信息：=> $orderEntity")
+//        channel.basicAck(message.messageProperties.deliveryTag, false)
+//    }
 
     /**
      * 容器中的 binding、queue、exchange 都会自动创建
@@ -39,11 +36,11 @@ class MyMQConfig {
     @Bean
     fun orderDelayQueue(): Queue {
         val arguments = mapOf(
-            "x-dead-letter-exchange" to "order-event-exchange",
-            "x-dead-letter-routing-key" to "order.release.order",
+            "x-dead-letter-exchange" to MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE,
+            "x-dead-letter-routing-key" to MQConstants.Order.RoutingKey.ORDER_RELEASE_ORDER,
             "x-message-ttl" to 60000
         )
-        return Queue("order.delay.queue", true, false, false, arguments)
+        return Queue(MQConstants.Order.Queue.ORDER_DELAY_QUEUE, true, false, false, arguments)
     }
 
     /**
@@ -51,7 +48,7 @@ class MyMQConfig {
      */
     @Bean
     fun orderReleaseQueue(): Queue {
-        return Queue("order.release.order.queue", true, false, false)
+        return Queue(MQConstants.Order.Queue.ORDER_RELEASE_ORDER_QUEUE, true, false, false)
     }
 
     /**
@@ -59,7 +56,7 @@ class MyMQConfig {
      */
     @Bean
     fun orderEventExchange(): Exchange {
-        return TopicExchange("order-event-exchange", true, false)
+        return TopicExchange(MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE, true, false)
     }
 
     /**
@@ -68,8 +65,8 @@ class MyMQConfig {
     @Bean
     fun orderCreateOrderBinding(): Binding {
         return Binding(
-            "order.delay.queue", Binding.DestinationType.QUEUE,
-            "order-event-exchange", "order.create.order", null
+            MQConstants.Order.Queue.ORDER_DELAY_QUEUE, Binding.DestinationType.QUEUE,
+            MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE, MQConstants.Order.RoutingKey.ORDER_CREATE_ORDER, null
         )
     }
 
@@ -79,9 +76,21 @@ class MyMQConfig {
     @Bean
     fun orderReleaseOrderBinding(): Binding {
         return Binding(
-            "order.release.order.queue", Binding.DestinationType.QUEUE,
-            "order-event-exchange", "order.release.order", null
+            MQConstants.Order.Queue.ORDER_RELEASE_ORDER_QUEUE, Binding.DestinationType.QUEUE,
+            MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE, MQConstants.Order.RoutingKey.ORDER_RELEASE_ORDER, null
         )
     }
+
+    /**
+     * 订单关闭和库存释放 直接绑定
+     */
+    @Bean
+    fun orderReleaseOtherBinding(): Binding {
+        return Binding(
+            MQConstants.Ware.Queue.STOCK_RELEASE_STOCK, Binding.DestinationType.QUEUE,
+            MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE, MQConstants.Order.RoutingKey.ORDER_RELEASE_OTHER_WILDCARD, null
+        )
+    }
+
 
 }

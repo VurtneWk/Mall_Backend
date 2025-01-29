@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.ware.service
 
 import com.baomidou.mybatisplus.extension.service.IService
+import com.vurtnewk.common.dto.mq.OrderDto
 import com.vurtnewk.common.dto.mq.StockLockedDto
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.ware.entity.WareSkuEntity
@@ -22,5 +23,6 @@ interface WareSkuService : IService<WareSkuEntity> {
     fun getSkusHasStock(skuIds: List<Long>): List<SkuHasStockVo>
     fun orderLockStock(vo: WareSkuLockVo): Boolean
     fun unlockStock(stockLockedDto: StockLockedDto)
+    fun unlockStock(orderDto: OrderDto)
 }
 

@@ -4,7 +4,11 @@ import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.toolkit.IdWorker
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.constants.MQConstants
+import com.vurtnewk.common.constants.OrderStatus
+import com.vurtnewk.common.dto.mq.OrderDto
 import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
@@ -25,7 +29,9 @@ import com.vurtnewk.mall.order.vo.*
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.aop.framework.AopContext
+import org.springframework.beans.BeanUtils
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
 import org.springframework.stereotype.Service
@@ -48,6 +54,7 @@ class OrderServiceImpl(
     private val redisTemplate: StringRedisTemplate,
     private val productFeignService: ProductFeignService,
     private val orderItemService: OrderItemService,
+    private val rabbitTemplate: RabbitTemplate,
 ) : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -159,15 +166,37 @@ class OrderServiceImpl(
             throw NoStockException(null)
         }
         vo.order = orderCreateDto.order
-
-        val i = 10/0
+        // 订单创建成功
+        rabbitTemplate.convertAndSend(MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE, MQConstants.Order.RoutingKey.ORDER_CREATE_ORDER, vo.order!!)
         return vo
     }
 
     override fun getOrderStatusByOrderSn(orderSn: String): OrderEntity? {
         return KtQueryChainWrapper(OrderEntity::class.java)
-            .eq(OrderEntity::orderSn,orderSn)
+            .eq(OrderEntity::orderSn, orderSn)
             .one()
+    }
+
+    /**
+     * 订单关闭
+     */
+    override fun closeOrder(orderEntity: OrderEntity) {
+        val dbOrderEntity = this.getById(orderEntity.id)
+        // 先查一下订单，是待付款的才关闭
+        if (dbOrderEntity != null && dbOrderEntity.status == OrderStatus.ORDER_STATUS_PENDING_PAYMENT) {
+            KtUpdateChainWrapper(OrderEntity::class.java)
+                .set(OrderEntity::status, OrderStatus.ORDER_STATUS_CLOSED)
+                .eq(OrderEntity::id, orderEntity.id)
+                .update()
+            //订单关闭成功，未了避免出现 解锁库存消息比关单消息优先到达（这是查询订单状态不丢），所以再发送一个解锁库存消息
+            val orderDto = OrderDto()
+            BeanUtils.copyProperties(orderEntity,orderDto)
+            rabbitTemplate.convertAndSend(
+                MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE,
+                MQConstants.Order.RoutingKey.ORDER_RELEASE_OTHER_WILDCARD,
+                orderDto
+            )
+        }
     }
 
     /**
@@ -241,6 +270,7 @@ class OrderServiceImpl(
         orderEntity.memberId = LoginUserInterceptor.loginUserThreadLocal.get().id
         orderEntity.orderSn = orderSn
         orderEntity.createTime = Date()
+        orderEntity.status = OrderStatus.ORDER_STATUS_PENDING_PAYMENT
         // 获取收货地址信息
         val fare = wareFeignService.getFare(orderSubmitVo.addrId)
         val fareResp = fare.getData(object : TypeReference<FareVo>() {})

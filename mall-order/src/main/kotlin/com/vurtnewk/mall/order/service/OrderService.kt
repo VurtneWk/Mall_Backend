@@ -20,5 +20,6 @@ interface OrderService : IService<OrderEntity> {
     suspend fun confirmOrder(): OrderConfirmVo
     fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo
     fun getOrderStatusByOrderSn(orderSn: String): OrderEntity?
+    fun closeOrder(orderEntity: OrderEntity)
 }
 

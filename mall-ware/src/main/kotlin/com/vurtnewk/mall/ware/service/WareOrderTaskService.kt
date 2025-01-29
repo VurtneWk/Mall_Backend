@@ -14,5 +14,6 @@ import com.vurtnewk.mall.ware.entity.WareOrderTaskEntity
 interface WareOrderTaskService : IService<WareOrderTaskEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun getOrderTaskByOrderSn(orderSn: String): WareOrderTaskEntity?
 }
 
