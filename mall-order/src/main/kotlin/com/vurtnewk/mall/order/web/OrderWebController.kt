@@ -45,11 +45,11 @@ class OrderWebController(
         redirectAttributes: RedirectAttributes,
     ): String {
         try {
-            val responseVo =    orderService.submitOrder(orderSubmitVo)
-            if (responseVo.code == 0) {
+            val responseVo = orderService.submitOrder(orderSubmitVo)
+            return if (responseVo.code == 0) {
                 //下单成功
                 model.addAttribute("submitOrderResp", responseVo)
-                return "pay"
+                "pay"
             } else {
                 val msg = when (responseVo.code) {
                     1 -> "下单失败: 请刷新后再次提交"
@@ -58,7 +58,7 @@ class OrderWebController(
                     else -> "下单失败:"
                 }
                 redirectAttributes.addFlashAttribute("msg", msg)
-                return "redirect:http://order.mall.com/toTrade"
+                "redirect:http://order.mall.com/toTrade"
             }
         } catch (e: Exception) {
             if (e is NoStockException) {
@@ -69,4 +69,6 @@ class OrderWebController(
             return "redirect:http://order.mall.com/toTrade"
         }
     }
+
+
 }

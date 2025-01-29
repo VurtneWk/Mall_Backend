@@ -18,4 +18,5 @@ interface WareSkuDao : BaseMapper<WareSkuEntity> {
     fun getSkuStock(@Param("skuId") skuId: Long): Long?
     fun listWareIdHasSkuStock(@Param("skuId") skuId: Long): List<Long>
     fun lockSkuStock(@Param("skuId") skuId: Long, @Param("wareId") wareId: Long, @Param("num") num: Int): Long
+    fun unLockStock(@Param("skuId") skuId: Long, @Param("wareId") wareId: Long, @Param("skuNum") skuNum: Int)
 }

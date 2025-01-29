@@ -1,7 +1,10 @@
 package com.vurtnewk.mall.ware.service.impl
 
+import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
+import com.baomidou.mybatisplus.extension.kotlin.KtUpdateChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
+import com.vurtnewk.common.constants.OrderStatus
 import com.vurtnewk.common.dto.mq.StockLockedDetail
 import com.vurtnewk.common.dto.mq.StockLockedDto
 import com.vurtnewk.common.excetion.NoStockException
@@ -16,28 +19,27 @@ import com.vurtnewk.mall.ware.dao.WareSkuDao
 import com.vurtnewk.mall.ware.entity.WareOrderTaskDetailEntity
 import com.vurtnewk.mall.ware.entity.WareOrderTaskEntity
 import com.vurtnewk.mall.ware.entity.WareSkuEntity
+import com.vurtnewk.mall.ware.feign.OrderFeignService
 import com.vurtnewk.mall.ware.feign.ProductFeignService
 import com.vurtnewk.mall.ware.service.WareOrderTaskDetailService
 import com.vurtnewk.mall.ware.service.WareOrderTaskService
 import com.vurtnewk.mall.ware.service.WareSkuService
+import com.vurtnewk.mall.ware.vo.OrderVo
 import com.vurtnewk.mall.ware.vo.SkuHasStockVo
 import com.vurtnewk.mall.ware.vo.WareSkuLockVo
-import org.springframework.amqp.core.Message
-import org.springframework.amqp.rabbit.annotation.RabbitHandler
-import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.BeanUtils
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 
-@RabbitListener(queues = [MQConstants.Queue.STOCK_RELEASE_STOCK])
 @Service("wareSkuService")
 class WareSkuServiceImpl(
     private val productFeignService: ProductFeignService,
     private val rabbitTemplate: RabbitTemplate,
     private val wareOrderTaskService: WareOrderTaskService,
     private val wareOrderTaskDetailService: WareOrderTaskDetailService,
+    private val orderFeignService: OrderFeignService,
 ) : ServiceImpl<WareSkuDao, WareSkuEntity>(), WareSkuService {
 
     /**
@@ -156,13 +158,9 @@ class WareSkuServiceImpl(
 
                     wareOrderTaskDetailService.save(wareOrderTaskDetailEntity)
                     //
-                    val stockLockedDto = StockLockedDto()
-
-                    stockLockedDto.id = wareOrderTaskEntity.id!!
-
                     val stockLockedDetail = StockLockedDetail()
                     BeanUtils.copyProperties(wareOrderTaskDetailEntity, stockLockedDetail)
-                    stockLockedDto.stockLockedDetail = stockLockedDetail
+                    val stockLockedDto = StockLockedDto(wareOrderTaskEntity.id!!, stockLockedDetail)
 
                     rabbitTemplate.convertAndSend(MQConstants.Exchange.STOCK_EVENT, MQConstants.RoutingKey.STOCK_LOCKED, stockLockedDto)
                     skuStocked = true
@@ -187,10 +185,44 @@ class WareSkuServiceImpl(
      * 处理库存解锁的消息
      *
      * 1. 接受到消息，需要先查看 wms_ware_order_task_detail 表中是否有数据
-     * - 无，说明下单时，虽然发送了消息，但是最后可能因为有某个货物无库存等情况，进行了整体回滚。所以这种情况无需处理
+     * - 无：说明下单时，虽然发送了消息，但是最后可能因为有某个货物无库存等情况，进行了整体回滚。所以这种情况无需处理
+     * - 有：说明库存成功，至于下订单的其它业务是否成功，还未知
+     *      - 没有这个订单: 必须解锁
+     *      - 有这个订单: 查看订单状态
+     *           - 已取消：解锁库存
+     *           - 没取消：不能解锁
      */
-    @RabbitHandler
-    fun handleStockLockedRelease(stockLockedDto: StockLockedDto, message: Message) {
+    override fun unlockStock(stockLockedDto: StockLockedDto) {
+        //查询库中有无指定的 '库存工作单详情'，如果无则无需解锁
+        val wareOrderTaskDetailEntity = wareOrderTaskDetailService.getById(stockLockedDto.stockLockedDetail.id)
+        if (wareOrderTaskDetailEntity != null) {
+            // 根据'库存工作单'查询订单的订单号信息
+            val wareOrderTaskEntity = wareOrderTaskService.getById(stockLockedDto.id)
+            // 根据订单号信息 远程查询订单
+            val r = orderFeignService.getOrderStatus(wareOrderTaskEntity.orderSn!!)
+            if (r.isSuccess()) {
+                //订单数据返回成功
+                val orderVo = r.getData(object : TypeReference<OrderVo>() {})
+                //订单不存在 或是已关闭 就进行解锁
+                if (orderVo == null || orderVo.status == OrderStatus.ORDER_STATUS_CLOSED) {
+                    if (wareOrderTaskDetailEntity.lockStatus == WareLockStatus.WARE_STATUS_LOCKED) {
+                        stockLockedDto.stockLockedDetail.let {
+                            unLockStock(it.skuId!!, it.wareId!!, it.skuNum!!, stockLockedDto.id)
+                        }
+                    }
+                }
+            } else {
+                throw RuntimeException("远程查询失败")
+            }
+        }//else 无需解锁
+    }
 
+    private fun unLockStock(skuId: Long, wareId: Long, skuNum: Int, detailId: Long) {
+        this.baseMapper.unLockStock(skuId, wareId, skuNum)
+
+        KtUpdateChainWrapper(WareOrderTaskDetailEntity::class.java)
+            .set(WareOrderTaskDetailEntity::lockStatus, WareLockStatus.WARE_STATUS_UNLOCK)
+            .eq(WareOrderTaskDetailEntity::id, detailId)
+            .update()
     }
 }

@@ -19,5 +19,6 @@ interface OrderService : IService<OrderEntity> {
     fun queryPage(params: Map<String, Any>): PageUtils
     suspend fun confirmOrder(): OrderConfirmVo
     fun submitOrder(orderSubmitVo: OrderSubmitVo): SubmitOrderResponseVo
+    fun getOrderStatusByOrderSn(orderSn: String): OrderEntity?
 }
 

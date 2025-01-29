@@ -3,6 +3,7 @@ package com.vurtnewk.mall.order.service.impl
 import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.core.toolkit.IdWorker
+import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.common.utils.PageUtils
@@ -21,8 +22,9 @@ import com.vurtnewk.mall.order.interceptor.LoginUserInterceptor
 import com.vurtnewk.mall.order.service.OrderItemService
 import com.vurtnewk.mall.order.service.OrderService
 import com.vurtnewk.mall.order.vo.*
-import io.seata.spring.annotation.GlobalTransactional
-import kotlinx.coroutines.*
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.springframework.aop.framework.AopContext
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.core.script.DefaultRedisScript
@@ -160,6 +162,12 @@ class OrderServiceImpl(
 
         val i = 10/0
         return vo
+    }
+
+    override fun getOrderStatusByOrderSn(orderSn: String): OrderEntity? {
+        return KtQueryChainWrapper(OrderEntity::class.java)
+            .eq(OrderEntity::orderSn,orderSn)
+            .one()
     }
 
     /**

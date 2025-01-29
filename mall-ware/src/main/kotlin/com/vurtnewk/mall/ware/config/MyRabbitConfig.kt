@@ -67,8 +67,8 @@ class MyRabbitConfig {
      * 因为没有监听时，运行项目 不会自动创建上面的 交换机、队列等
      * 只有进行监听了，发现没有对应的 交换机、队列等 才会创建
      */
-    @RabbitListener(queues = ["stock.release.stock.queue"])
-    fun handle(message: Message) {
-        println("message => $message")
-    }
+//    @RabbitListener(queues = ["stock.release.stock.queue"])
+//    fun handle(message: Message) {
+//        println("message => $message")
+//    }
 }

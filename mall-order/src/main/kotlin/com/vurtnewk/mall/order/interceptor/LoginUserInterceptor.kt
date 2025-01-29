@@ -5,6 +5,7 @@ import com.vurtnewk.common.vo.MemberRespVo
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.servlet.HandlerInterceptor
 
 /**
@@ -20,6 +21,10 @@ class LoginUserInterceptor : HandlerInterceptor {
     }
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+        // 配置使用这个路径时 可以不登录
+        val match = AntPathMatcher().match("/order/order/status/**", request.requestURI)
+        if (match) return true
+
         val loginUser = request.session.getAttribute(AuthServerConstants.LOGIN_USER) as? MemberRespVo
         return if (loginUser != null) {
             loginUserThreadLocal.set(loginUser)

@@ -21,6 +21,15 @@ class OrderController @Autowired constructor(
 ) {
 
     /**
+     * ## 查询订单状态
+     */
+    @GetMapping("/status/{orderSn}")
+    fun getOrderStatus(@PathVariable("orderSn") orderSn: String): R {
+        val orderEntity = orderService.getOrderStatusByOrderSn(orderSn)
+        return R.ok().putData(orderEntity)
+    }
+
+    /**
      * 列表
      */
     @RequestMapping("/list")

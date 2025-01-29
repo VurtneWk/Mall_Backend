@@ -7,7 +7,7 @@ package com.vurtnewk.common.dto.mq
  */
 data class StockLockedDto(
     var id: Long = 0L,
-    var stockLockedDetail: StockLockedDetail? = null,
+    var stockLockedDetail: StockLockedDetail,
 )
 
 data class StockLockedDetail(
