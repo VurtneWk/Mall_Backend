@@ -1,0 +1,24 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+      config:
+        server-addr: 127.0.0.1:8848
+        import-check:
+          enabled: false
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+  # =========================== 名字 ===================================
+  application:
+    name: mall-seckill
+
+#============================ 端口 ====================================
+server:
+  port: 6000
+#============================ 日志 ====================================
+logging:
+  level:
+    com.vurtnewk.mall: debug
