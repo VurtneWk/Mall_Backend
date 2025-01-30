@@ -47,6 +47,13 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*), /$\{segment}
 
+        - id: coupon_route
+          uri: lb://mall-coupon #这里就是nacos上的服务名，也就是application.name 定义的名字
+          predicates:
+            - Path=/api/coupon/**
+          filters:
+            - RewritePath=/api/(?<segment>.*), /$\{segment}
+
         # lb 代表负载均衡 ，RewritePath 重写路径 把/api/(?<segment>.*) 重写成 /renren-fast/$\{segment}
         # http://localhost:88/api/captcha.jpg  http://localhost:8080/renren-fast/captcha.jpg
         - id: admin_route

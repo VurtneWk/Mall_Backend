@@ -15,6 +15,9 @@ spring:
   config:
     import:
       - nacos:mall-coupon.properties?refreshEnabled=true&group=DEFAULT_GROUP
+  jackson: # 接口返回的JSON里的时间格式处理
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
