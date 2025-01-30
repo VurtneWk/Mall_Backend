@@ -16,6 +16,9 @@ class MemberWebController(
     private val orderFeignService: OrderFeignService,
 ) {
 
+    /**
+     * 支付宝的同步回调页面
+     */
     @GetMapping("/memberOrder.html")
     fun memberOrderPage(@RequestParam(value = "pageNum", defaultValue = "1") pageNum: Int, model: Model): String {
         val map = mapOf("page" to pageNum)

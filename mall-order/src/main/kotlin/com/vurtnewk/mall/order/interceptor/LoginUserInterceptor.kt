@@ -22,8 +22,10 @@ class LoginUserInterceptor : HandlerInterceptor {
 
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         // 配置使用这个路径时 可以不登录
-        val match = AntPathMatcher().match("/order/order/status/**", request.requestURI)
-        if (match) return true
+        val antPathMatcher = AntPathMatcher()
+        val match = antPathMatcher.match("/order/order/status/**", request.requestURI)
+        val match1 = antPathMatcher.match("/payed/notify", request.requestURI)
+        if (match || match1) return true
 
         val loginUser = request.session.getAttribute(AuthServerConstants.LOGIN_USER) as? MemberRespVo
         return if (loginUser != null) {
