@@ -17,8 +17,15 @@ import com.vurtnewk.common.utils.R
 @RestController
 @RequestMapping("coupon/seckillsession")
 class SeckillSessionController @Autowired constructor(
-        private val seckillSessionService: SeckillSessionService
+    private val seckillSessionService: SeckillSessionService,
 ) {
+
+
+    @GetMapping("/latest3DaySession")
+    fun getLatest3DaySession(): R {
+        val list = seckillSessionService.getLatest3DaySession()
+        return R.ok().putData(list)
+    }
 
     /**
      * 列表
@@ -46,7 +53,7 @@ class SeckillSessionController @Autowired constructor(
     @RequestMapping("/save")
     //@RequiresPermissions("coupon:seckillsession:save")
     fun save(@RequestBody seckillSession: SeckillSessionEntity): R {
-            seckillSessionService.save(seckillSession)
+        seckillSessionService.save(seckillSession)
         return R.ok()
     }
 
@@ -56,7 +63,7 @@ class SeckillSessionController @Autowired constructor(
     @RequestMapping("/update")
     // @RequiresPermissions("coupon:seckillsession:update")
     fun update(@RequestBody seckillSession: SeckillSessionEntity): R {
-            seckillSessionService.updateById(seckillSession)
+        seckillSessionService.updateById(seckillSession)
         return R.ok()
     }
 
@@ -66,7 +73,7 @@ class SeckillSessionController @Autowired constructor(
     @RequestMapping("/delete")
     // @RequiresPermissions("coupon:seckillsession:delete")
     fun delete(@RequestBody ids: Array<Long>): R {
-            seckillSessionService.removeByIds(ids.asList())
+        seckillSessionService.removeByIds(ids.asList())
         return R.ok()
     }
 }

@@ -14,5 +14,6 @@ import com.vurtnewk.mall.coupon.entity.SeckillSessionEntity
 interface SeckillSessionService : IService<SeckillSessionEntity> {
 
     fun queryPage(params: Map<String, Any> ): PageUtils
+    fun getLatest3DaySession(): List<SeckillSessionEntity>
 }
 
