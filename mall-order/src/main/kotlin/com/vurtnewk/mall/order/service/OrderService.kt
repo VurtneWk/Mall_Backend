@@ -23,5 +23,6 @@ interface OrderService : IService<OrderEntity> {
     fun getOrderByOrderSn(orderSn: String): OrderEntity?
     fun closeOrder(orderEntity: OrderEntity)
     fun getOrderPay(orderSn: String): PayVo
+    fun queryPageWithItem(params: Map<String, Any>): PageUtils
 }
 

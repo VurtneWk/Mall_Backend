@@ -28,7 +28,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-
+#========================== 日志 ==================================
 logging:
   level:
     com.vurtnewk.mall: debug

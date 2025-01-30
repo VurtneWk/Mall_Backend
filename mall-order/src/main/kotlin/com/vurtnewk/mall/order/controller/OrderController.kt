@@ -32,6 +32,16 @@ class OrderController @Autowired constructor(
     /**
      * 列表
      */
+    @PostMapping("/listWithItem")
+    //@RequiresPermissions("order:order:list")
+    fun listWithItem(@RequestBody params: Map<String, Any>): R {
+        val page: PageUtils = orderService.queryPageWithItem(params)
+        return R.ok().put("page", page)
+    }
+
+    /**
+     * 列表
+     */
     @RequestMapping("/list")
     //@RequiresPermissions("order:order:list")
     fun list(@RequestParam params: Map<String, Any>): R {

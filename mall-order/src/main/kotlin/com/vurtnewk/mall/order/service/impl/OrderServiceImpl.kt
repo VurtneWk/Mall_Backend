@@ -13,6 +13,8 @@ import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.logInfo
+import com.vurtnewk.common.utils.ext.pageUtils
+import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.order.constants.OrderConstants
 import com.vurtnewk.mall.order.dao.OrderDao
 import com.vurtnewk.mall.order.dto.OrderCreateDto
@@ -205,6 +207,28 @@ class OrderServiceImpl(
                 // TODO 将设法失败的消息放入数据库 ，定期查询数据库重新发出
             }
         }
+    }
+
+    /**
+     * 查询用户的订单列表
+     */
+    override fun queryPageWithItem(params: Map<String, Any>): PageUtils {
+        val memberRespVo = LoginUserInterceptor.loginUserThreadLocal.get()
+        val page = KtQueryChainWrapper(OrderEntity::class.java)
+            .eq(OrderEntity::memberId, memberRespVo.id)
+            .orderByDesc(OrderEntity::id)
+            .toPage(params)
+        // 根据每个订单，查询每个订单里的具体订单项
+        val list = page.records
+            .map {
+                it.itemEntities = KtQueryChainWrapper(OrderItemEntity::class.java)
+                    .eq(OrderItemEntity::orderSn, it.orderSn)
+                    .list()
+                it
+            }
+
+        page.records = list
+        return page.pageUtils()
     }
 
     override fun getOrderPay(orderSn: String): PayVo {
