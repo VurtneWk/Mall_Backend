@@ -15,6 +15,11 @@ spring:
   # 如果没有名字，nacos里看不到
   application:
     name: mall-member
+  # ============================== redis ======================================
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
 
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个

@@ -80,13 +80,18 @@ spring:
           uri: lb://mall-order
           predicates:
             - Host=order.mall.com
-# 如果没有名字，nacos里看不到
+        - id: mall_order_route # 订单服务
+          uri: lb://mall-member
+          predicates:
+            - Host=member.mall.com
+
+#============================== 如果没有名字，nacos里看不到 ==============================
   application:
     name: mall-gateway
-
+#============================== 端口 ==============================
 server:
   port: 88
-
+#============================== 日志 ==============================
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
