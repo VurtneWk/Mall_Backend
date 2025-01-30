@@ -3,10 +3,7 @@ package com.vurtnewk.mall.order.service
 import com.baomidou.mybatisplus.extension.service.IService
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.order.entity.OrderEntity
-import com.vurtnewk.mall.order.vo.OrderConfirmVo
-import com.vurtnewk.mall.order.vo.OrderSubmitVo
-import com.vurtnewk.mall.order.vo.PayVo
-import com.vurtnewk.mall.order.vo.SubmitOrderResponseVo
+import com.vurtnewk.mall.order.vo.*
 
 /**
  * 订单
@@ -24,5 +21,6 @@ interface OrderService : IService<OrderEntity> {
     fun closeOrder(orderEntity: OrderEntity)
     fun getOrderPay(orderSn: String): PayVo
     fun queryPageWithItem(params: Map<String, Any>): PageUtils
+    fun handlePayResult(payAsyncVo: PayAsyncVo): String
 }
 

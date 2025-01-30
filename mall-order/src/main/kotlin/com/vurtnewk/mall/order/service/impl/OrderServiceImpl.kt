@@ -16,10 +16,12 @@ import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.order.constants.OrderConstants
+import com.vurtnewk.mall.order.constants.PayConstants
 import com.vurtnewk.mall.order.dao.OrderDao
 import com.vurtnewk.mall.order.dto.OrderCreateDto
 import com.vurtnewk.mall.order.entity.OrderEntity
 import com.vurtnewk.mall.order.entity.OrderItemEntity
+import com.vurtnewk.mall.order.entity.PaymentInfoEntity
 import com.vurtnewk.mall.order.feign.CartFeignService
 import com.vurtnewk.mall.order.feign.MemberFeignService
 import com.vurtnewk.mall.order.feign.ProductFeignService
@@ -27,6 +29,7 @@ import com.vurtnewk.mall.order.feign.WareFeignService
 import com.vurtnewk.mall.order.interceptor.LoginUserInterceptor
 import com.vurtnewk.mall.order.service.OrderItemService
 import com.vurtnewk.mall.order.service.OrderService
+import com.vurtnewk.mall.order.service.PaymentInfoService
 import com.vurtnewk.mall.order.vo.*
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
@@ -58,6 +61,7 @@ class OrderServiceImpl(
     private val productFeignService: ProductFeignService,
     private val orderItemService: OrderItemService,
     private val rabbitTemplate: RabbitTemplate,
+    private val paymentInfoService: PaymentInfoService,
 ) : ServiceImpl<OrderDao, OrderEntity>(), OrderService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -229,6 +233,31 @@ class OrderServiceImpl(
 
         page.records = list
         return page.pageUtils()
+    }
+
+    /**
+     * 处理支付宝传递的数据
+     */
+    @Transactional
+    override fun handlePayResult(payAsyncVo: PayAsyncVo): String {
+        //1. 保存交易流水
+        val paymentInfoEntity = PaymentInfoEntity()
+        paymentInfoEntity.apply {
+            alipayTradeNo = payAsyncVo.trade_no
+            orderSn = payAsyncVo.out_trade_no
+            totalAmount = BigDecimal(payAsyncVo.buyer_pay_amount)
+            subject = payAsyncVo.body
+            paymentStatus = payAsyncVo.trade_status
+            createTime = Date()
+            callbackTime = payAsyncVo.notify_time
+        }
+        paymentInfoService.save(paymentInfoEntity)
+        //修改订单状态
+        //获取当前状态
+        if ("TRADE_SUCCESS" == payAsyncVo.trade_status || "TRADE_FINISHED" == payAsyncVo.trade_status) {
+            this.baseMapper.updateOrderStatus(payAsyncVo.out_trade_no!!, OrderStatus.ORDER_STATUS_PAYED, PayConstants.ALI_PAY)
+        }
+        return "success"
     }
 
     override fun getOrderPay(orderSn: String): PayVo {

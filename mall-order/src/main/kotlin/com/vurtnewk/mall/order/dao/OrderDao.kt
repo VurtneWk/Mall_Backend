@@ -3,6 +3,7 @@ package com.vurtnewk.mall.order.dao
 import com.vurtnewk.mall.order.entity.OrderEntity
 import com.baomidou.mybatisplus.core.mapper.BaseMapper
 import org.apache.ibatis.annotations.Mapper
+import org.apache.ibatis.annotations.Param
 
 /**
  * 订单
@@ -13,5 +14,6 @@ import org.apache.ibatis.annotations.Mapper
  */
 @Mapper
 interface OrderDao : BaseMapper<OrderEntity> {
-	
+    fun updateOrderStatus(@Param("outTradeNo") outTradeNo: String, @Param("orderStatus") orderStatus: Int, @Param("payType") payType: Int)
+
 }
