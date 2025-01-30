@@ -44,6 +44,8 @@ class AlipayTemplate {
     // 支付宝网关； https://openapi.alipaydev.com/gateway.do
     var gatewayUrl = ""
 
+    var timeOut = ""
+
     @Throws(AlipayApiException::class)
     fun pay(vo: PayVo): String {
 
@@ -72,6 +74,7 @@ class AlipayTemplate {
                 + "\"total_amount\":\"" + vo.totalAmount + "\","
                 + "\"subject\":\"" + subject + "\","
                 + "\"body\":\"" + body + "\","
+                + "\"timeout_express\":\"" + timeOut + "\"," //添加订单过期时间
                 + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}")
         val result = alipayClient.pageExecute(alipayRequest).body
 

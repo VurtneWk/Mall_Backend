@@ -97,7 +97,7 @@ alipay:
   signType: RSA2
   charset: utf-8
   gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
-
+  timeOut: 1m
 #========================== 日志 ==================================
 logging:
   level:

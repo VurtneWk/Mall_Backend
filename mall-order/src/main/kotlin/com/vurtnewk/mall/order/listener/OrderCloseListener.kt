@@ -23,6 +23,8 @@ class OrderCloseListener(private val orderService: OrderService) {
         println("收到订单关闭的订单信息：=> ${orderEntity.orderSn}")
         runCatching {
             orderService.closeOrder(orderEntity)
+            //todo 手动调用支付宝收单
+
         }.onFailure {
             channel.basicReject(message.messageProperties.deliveryTag, true)
         }.onSuccess {
