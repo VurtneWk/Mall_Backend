@@ -18,7 +18,11 @@ spring:
   jackson: # 接口返回的JSON里的时间格式处理
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
-
+  mvc:
+    format: # 只会影响 @RequestParam、@PathVariable 的参数格式 ，不会影响 @RequestBody 反序列化 JSON 时 Date 类型的格式。
+      date: yyyy-MM-dd
+      time: HH:mm:ss
+      date-time: yyyy-MM-dd HH:mm:ss
 mybatis-plus:
   # 配置mapper的位置 , 默认值也是这个
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -29,7 +33,10 @@ mybatis-plus:
 
 server:
   port: 5100
-
+#============================ 日志 ====================================
+logging:
+  level:
+    com.vurtnewk.mall: debug
 # ==================== seata ===========================================
 #seata:
 #  enabled: true

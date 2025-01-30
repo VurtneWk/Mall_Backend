@@ -7,6 +7,7 @@ import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
 import com.vurtnewk.mall.coupon.dao.SeckillSessionDao
 import com.vurtnewk.mall.coupon.entity.SeckillSessionEntity
+import com.vurtnewk.mall.coupon.entity.SeckillSkuRelationEntity
 import com.vurtnewk.mall.coupon.service.SeckillSessionService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -38,5 +39,11 @@ class SeckillSessionServiceImpl : ServiceImpl<SeckillSessionDao, SeckillSessionE
         return KtQueryChainWrapper(SeckillSessionEntity::class.java)
             .between(SeckillSessionEntity::startTime, startTime, endTime)
             .list()
+            .map { seckillSessionEntity ->
+                seckillSessionEntity.relationEntities = KtQueryChainWrapper(SeckillSkuRelationEntity::class.java)
+                    .eq(SeckillSkuRelationEntity::promotionSessionId, seckillSessionEntity.id)
+                    .list()
+                seckillSessionEntity
+            }
     }
 }

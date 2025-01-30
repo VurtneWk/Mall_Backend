@@ -1,6 +1,8 @@
 package com.vurtnewk.mall.seckill.feign
 
+import com.vurtnewk.common.utils.R
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.web.bind.annotation.GetMapping
 
 /**
  *
@@ -9,4 +11,7 @@ import org.springframework.cloud.openfeign.FeignClient
  */
 @FeignClient("mall-coupon")
 interface CouponFeignService {
+
+    @GetMapping("/coupon/seckillsession/latest3DaySession")
+    fun getLatest3DaySession(): R
 }

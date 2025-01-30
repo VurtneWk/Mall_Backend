@@ -1,5 +1,6 @@
 package com.vurtnewk.mall.seckill.scheduled
 
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.seckill.service.SecKillService
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -21,9 +22,11 @@ class SecKillSkuSchedule(
 ) {
 
 
-    @Scheduled(cron = "0 0 3 * * ?")
+//    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     fun uploadSecKillSkuLatest3Days(){
         //1. 重复上架无需处理
+        logInfo("上架商品信息")
         secKillService.uploadSecKillSkuLatest3Days()
     }
 }
