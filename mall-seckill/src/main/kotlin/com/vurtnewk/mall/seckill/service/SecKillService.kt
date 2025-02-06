@@ -1,5 +1,7 @@
 package com.vurtnewk.mall.seckill.service
 
+import com.vurtnewk.mall.seckill.to.SecKillSkuRedisDto
+
 /**
  *
  * @author   vurtnewk
@@ -7,4 +9,5 @@ package com.vurtnewk.mall.seckill.service
  */
 interface SecKillService {
     fun uploadSecKillSkuLatest3Days()
+    fun getCurrentSecKillSkus(): List<SecKillSkuRedisDto>
 }

@@ -63,6 +63,8 @@ spring:
           filters:
             - RewritePath=/api/(?<segment>.*), /renren-fast/$\{segment}
 
+
+
         # 这个要放到最后，不然mall.com/api 也会被优先拦截
         - id: mall_host_route
           uri: lb://mall-product
@@ -79,18 +81,27 @@ spring:
           uri: lb://mall-auth-server
           predicates:
             - Host=auth.mall.com
+
         - id: mall_cart_route # 购物车服务
           uri: lb://mall-cart
           predicates:
             - Host=cart.mall.com
+
         - id: mall_order_route # 订单服务
           uri: lb://mall-order
           predicates:
             - Host=order.mall.com
+
         - id: mall_order_route # 订单服务
           uri: lb://mall-member
           predicates:
             - Host=member.mall.com
+
+        # 秒杀服务
+        - id: mall_seckill_route
+          uri: lb://mall-seckill
+          predicates:
+            - Host=seckill.mall.com
 
 #============================== 如果没有名字，nacos里看不到 ==============================
   application:

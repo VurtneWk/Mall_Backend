@@ -3,7 +3,7 @@ package com.vurtnewk.mall.coupon.entity
 import com.baomidou.mybatisplus.annotation.TableField
 import com.baomidou.mybatisplus.annotation.TableId
 import com.baomidou.mybatisplus.annotation.TableName
-import java.time.LocalDateTime
+import java.util.*
 
 /**
  * 秒杀活动场次
@@ -26,11 +26,11 @@ data class SeckillSessionEntity(
     /**
      * 每日开始时间
      */
-    var startTime: LocalDateTime? = null,
+    var startTime: Date? = null,
     /**
      * 每日结束时间
      */
-    var endTime: LocalDateTime? = null,
+    var endTime: Date? = null,
     /**
      * 启用状态
      */
@@ -38,7 +38,7 @@ data class SeckillSessionEntity(
     /**
      * 创建时间
      */
-    var createTime: LocalDateTime? = null,
+    var createTime: Date? = null,
     /**
      * 关联的商品信息
      */

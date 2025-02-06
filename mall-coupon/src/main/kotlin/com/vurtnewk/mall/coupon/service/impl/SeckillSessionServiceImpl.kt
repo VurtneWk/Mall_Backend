@@ -1,10 +1,10 @@
 package com.vurtnewk.mall.coupon.service.impl
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.utils.PageUtils
-import com.vurtnewk.common.utils.Query
+import com.vurtnewk.common.utils.ext.pageUtils
+import com.vurtnewk.common.utils.ext.toPage
 import com.vurtnewk.mall.coupon.dao.SeckillSessionDao
 import com.vurtnewk.mall.coupon.entity.SeckillSessionEntity
 import com.vurtnewk.mall.coupon.entity.SeckillSkuRelationEntity
@@ -20,11 +20,9 @@ import java.time.format.DateTimeFormatter
 class SeckillSessionServiceImpl : ServiceImpl<SeckillSessionDao, SeckillSessionEntity>(), SeckillSessionService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
-        val page = this.page(
-            Query<SeckillSessionEntity>().getPage(params),
-            QueryWrapper()
-        )
-        return PageUtils(page)
+        return KtQueryChainWrapper(SeckillSessionEntity::class.java)
+            .toPage(params)
+            .pageUtils()
     }
 
     override fun getLatest3DaySession(): List<SeckillSessionEntity> {

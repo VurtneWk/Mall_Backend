@@ -24,6 +24,7 @@ class SeckillSessionController @Autowired constructor(
     @GetMapping("/latest3DaySession")
     fun getLatest3DaySession(): R {
         val list = seckillSessionService.getLatest3DaySession()
+        println("list==> ${list.size}")
         return R.ok().putData(list)
     }
 
