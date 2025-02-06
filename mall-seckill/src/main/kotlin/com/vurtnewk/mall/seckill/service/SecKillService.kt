@@ -10,4 +10,5 @@ import com.vurtnewk.mall.seckill.to.SecKillSkuRedisDto
 interface SecKillService {
     fun uploadSecKillSkuLatest3Days()
     fun getCurrentSecKillSkus(): List<SecKillSkuRedisDto>
+    fun getSkuSecKillInfo(skuId: Long): SecKillSkuRedisDto?
 }

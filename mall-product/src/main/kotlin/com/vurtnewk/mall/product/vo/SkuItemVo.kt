@@ -3,6 +3,7 @@ package com.vurtnewk.mall.product.vo
 import com.vurtnewk.mall.product.entity.SkuImagesEntity
 import com.vurtnewk.mall.product.entity.SkuInfoEntity
 import com.vurtnewk.mall.product.entity.SpuInfoDescEntity
+import java.math.BigDecimal
 
 /**
  * 商品详情sku信息
@@ -43,6 +44,8 @@ data class SkuItemVo(
      * sku规格参数信息
      */
     var groupAttrs: List<SpuItemAttrGroupVo> = listOf(),
+
+    var secKillInfo: SecKillInfoVo? = null,
 )
 
 data class SkuItemSaleAttrVo(
@@ -74,4 +77,41 @@ data class SpuBaseAttrVo(
 
     )
 
+data class SecKillInfoVo(
+    var id: Long? = null,
+    /**
+     * 活动id
+     */
+    var promotionId: Long? = null,
+    /**
+     * 活动场次id
+     */
+    var promotionSessionId: Long? = null,
+    /**
+     * 商品id
+     */
+    var skuId: Long? = null,
+    /**
+     * 秒杀价格
+     */
+    var seckillPrice: BigDecimal? = null,
+    /**
+     * 秒杀总量
+     */
+    var seckillCount: BigDecimal? = null,
+    /**
+     * 每人限购数量
+     */
+    var seckillLimit: BigDecimal? = null,
+    /**
+     * 排序
+     */
+    var seckillSort: Int? = null,
 
+    var startTime: Long = 0L,
+    var endTime: Long = 0L,
+    /**
+     * 当前商品的秒杀随机码
+     */
+    var randomCode: String? = null,
+)

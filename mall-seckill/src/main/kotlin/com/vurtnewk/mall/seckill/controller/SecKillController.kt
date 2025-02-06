@@ -4,6 +4,7 @@ import com.vurtnewk.common.utils.R
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.seckill.service.SecKillService
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -22,5 +23,14 @@ class SecKillController(private val secKillService: SecKillService) {
         logInfo("getCurrentSecKillSkus")
         val list = secKillService.getCurrentSecKillSkus()
         return R.ok().putData(list)
+    }
+
+    /**
+     * 查询指定 skuId 的秒杀信息
+     */
+    @GetMapping("/sku/secKill/{skuId}")
+    fun getSkuSecKillInfo(@PathVariable("skuId") skuId: Long): R {
+        val info = secKillService.getSkuSecKillInfo(skuId)
+        return R.ok().putData(info)
     }
 }

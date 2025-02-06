@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.TypeReference
 import com.vurtnewk.common.constants.CommonConstants
 import com.vurtnewk.common.utils.ext.logError
+import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.seckill.feign.CouponFeignService
 import com.vurtnewk.mall.seckill.feign.ProductFeignService
 import com.vurtnewk.mall.seckill.service.SecKillService
@@ -16,6 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
 import java.util.Date
 import java.util.UUID
+import java.util.regex.Pattern
 
 /**
  *
@@ -49,6 +51,8 @@ class SecKillServiceImpl(
             saveSessionInfos(secKillSessionsWithSkusDto)
             // 2. 缓存活动的关联商品信息
             saveSessionSkuInfos(secKillSessionsWithSkusDto)
+
+            logInfo("上架商品信息: $secKillSessionsWithSkusDto")
         }
     }
 
@@ -127,5 +131,27 @@ class SecKillServiceImpl(
             }
         }
         return list
+    }
+
+    override fun getSkuSecKillInfo(skuId: Long): SecKillSkuRedisDto? {
+        val boundHashOps = redisTemplate.boundHashOps<String, String>(SKU_KILL_CACHE_PREFIX)
+        val keys = boundHashOps.keys()
+        if (!keys.isNullOrEmpty()) {
+            val regx = "\\d-${skuId}"
+            keys.forEach {
+                logInfo("getSkuSecKillInfo ===> $it , ${Pattern.matches(regx, it)} ,${skuId}")
+                if (Pattern.matches(regx, it)) {
+                    val json = boundHashOps.get(it)
+                    val secKillSkuRedisDto = JSON.parseObject(json, SecKillSkuRedisDto::class.java)
+                    //随机码处理
+                    val now = Date().time
+                    if (now >= secKillSkuRedisDto.startTime && now <= secKillSkuRedisDto.endTime) {
+                        secKillSkuRedisDto.randomCode = null
+                    }
+                    return secKillSkuRedisDto
+                }
+            }
+        }
+        return null
     }
 }

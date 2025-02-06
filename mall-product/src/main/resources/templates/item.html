@@ -515,8 +515,14 @@
                             <span>￥</span>
                             <span th:text="${#numbers.formatDecimal(item.info.price,3,2)}">4499.00</span>
                         </li>
-                        <li>
-                            预约享资格
+                        <li style="color: red" th:if="${item.secKillInfo != null}">
+                            <span th:if="${#dates.createNow().getTime() < item.secKillInfo.startTime}">
+                                商品将会在[[${#dates.format(new java.util.Date(item.seckillSkuVo.startTime),"yyyy-MM-dd HH:mm:ss")}]]进行秒杀
+                            </span>
+
+                            <span th:if="${#dates.createNow().getTime() >= item.secKillInfo.startTime && #dates.createNow().getTime() <= item.secKillInfo.endTime}">
+                                秒杀价  [[${#numbers.formatDecimal(item.secKillInfo.seckillPrice,1,2)}]]
+                            </span>
                         </li>
                         <li>
                             <a href="/static/item/">
@@ -623,10 +629,10 @@
                         <input type="text" name="" id="numInput" value="1"/>
                         <div class="box-btns-one1">
                             <div>
-                                <button id="jia"> + </button>
+                                <button id="jia"> +</button>
                             </div>
                             <div>
-                                <button id="jian"> - </button>
+                                <button id="jian"> -</button>
                             </div>
                         </div>
                     </div>
@@ -1254,10 +1260,10 @@
         $("a[class='sku_attr_value checked']").parent().css({"border": "solid 1px red"});
     };
 
-    $("#addToCart").click(function (){
+    $("#addToCart").click(function () {
         let num = $("#numInput").val()
         let skuId = $(this).attr("skuId")
-        location.href = "http://cart.mall.com/addToCart?skuId="+skuId+"&num=" + num
+        location.href = "http://cart.mall.com/addToCart?skuId=" + skuId + "&num=" + num
         return false
     })
 </script>

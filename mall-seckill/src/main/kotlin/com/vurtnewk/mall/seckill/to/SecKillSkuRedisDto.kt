@@ -49,5 +49,5 @@ data class SecKillSkuRedisDto(
     /**
      * 当前商品的秒杀随机码
      */
-    var randomCode: String = "",
+    var randomCode: String? = null,
 )

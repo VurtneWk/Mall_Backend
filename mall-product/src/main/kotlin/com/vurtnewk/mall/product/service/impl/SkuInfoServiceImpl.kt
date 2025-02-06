@@ -1,5 +1,6 @@
 package com.vurtnewk.mall.product.service.impl
 
+import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper
 import com.baomidou.mybatisplus.extension.kotlin.KtQueryChainWrapper
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
@@ -8,10 +9,11 @@ import com.vurtnewk.common.utils.Query
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.common.utils.ext.pageUtils
 import com.vurtnewk.common.utils.ext.toPage
-import com.vurtnewk.mall.product.config.MyThreadConfig
 import com.vurtnewk.mall.product.dao.SkuInfoDao
 import com.vurtnewk.mall.product.entity.SkuInfoEntity
+import com.vurtnewk.mall.product.feign.SecKillFeignService
 import com.vurtnewk.mall.product.service.*
+import com.vurtnewk.mall.product.vo.SecKillInfoVo
 import com.vurtnewk.mall.product.vo.SkuItemVo
 import org.springframework.stereotype.Service
 import java.util.concurrent.CompletableFuture
@@ -25,6 +27,7 @@ class SkuInfoServiceImpl(
     private val mAttrGroupService: AttrGroupService,
     private val mSkuSaleAttrValueService: SkuSaleAttrValueService,
     private val executor: ThreadPoolExecutor,
+    private val secKillFeignService: SecKillFeignService,
 ) : ServiceImpl<SkuInfoDao, SkuInfoEntity>(), SkuInfoService {
 
     override fun queryPage(params: Map<String, Any>): PageUtils {
@@ -103,6 +106,7 @@ class SkuInfoServiceImpl(
         val infoGet = infoFuture.get()
         infoGet ?: return null
 
+
         //3. sku对应的spu销售属性组合
         val saleAttrFuture = infoFuture.thenAcceptAsync({ info ->
             skuItemVo.saleAttr = mSkuSaleAttrValueService.getSaleAttrsBySpuId(info!!.spuId!!)
@@ -113,10 +117,18 @@ class SkuInfoServiceImpl(
         }, executor)
         //5. sku规格参数信息
         val baseAttrFuture = infoFuture.thenAcceptAsync({ info ->
-            skuItemVo.groupAttrs = mAttrGroupService.getAttrGroupWithAttrsBySpuId(info!!.spuId!!, info!!.catalogId!!)
+            skuItemVo.groupAttrs = mAttrGroupService.getAttrGroupWithAttrsBySpuId(info!!.spuId!!, info.catalogId!!)
         }, executor)
 
-        CompletableFuture.allOf(infoFuture, saleAttrFuture, descFuture, baseAttrFuture, imageFuture).get()
+        //6. 查询当前sku是否参与秒杀优惠
+        val secKillFuture = CompletableFuture.runAsync({
+            val r = secKillFeignService.getSkuSecKillInfo(skuId)
+            if (r.isSuccess()) {
+                skuItemVo.secKillInfo = r.getData(object : TypeReference<SecKillInfoVo>() {})
+            }
+        }, executor)
+
+        CompletableFuture.allOf(infoFuture, saleAttrFuture, descFuture, baseAttrFuture, imageFuture, secKillFuture).get()
 
         logInfo("queryItem $skuItemVo")
         return skuItemVo
