@@ -5,6 +5,7 @@ import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.seckill.service.SecKillService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -33,4 +34,16 @@ class SecKillController(private val secKillService: SecKillService) {
         val info = secKillService.getSkuSecKillInfo(skuId)
         return R.ok().putData(info)
     }
+
+    @GetMapping("/kill")
+    fun kill(
+        @RequestParam("killId") killId: String,
+        @RequestParam("key") key: String,
+        @RequestParam("num") num: Int,
+    ): R {
+
+
+        return R.ok()
+    }
+
 }

@@ -636,9 +636,17 @@
                             </div>
                         </div>
                     </div>
-                    <div class="box-btns-two">
+                    <div class="box-btns-two" th:if="${item.secKillInfo == null }">
                         <a href="#" id="addToCart" th:attr="skuId=${item.info.skuId}">
                             加入购物车
+                        </a>
+                    </div>
+
+                    <div class="box-btns-two"
+                         th:if="${item.secKillInfo != null && (#dates.createNow().getTime() >= item.secKillInfo.startTime && #dates.createNow().getTime() <= item.secKillInfo.endTime)}">
+                        <a class="seckill" href="#"
+                           th:attr="skuId=${item.info.skuId},sessionId=${item.secKillInfo.promotionSessionId},code=${item.secKillInfo.randomCode}">
+                            立即抢购
                         </a>
                     </div>
                     <div class="box-btns-three">
@@ -1265,7 +1273,20 @@
         let skuId = $(this).attr("skuId")
         location.href = "http://cart.mall.com/addToCart?skuId=" + skuId + "&num=" + num
         return false
-    })
+    });
+
+    $(".seckill").click(function () {
+        var isLogin = [[${session.loginUser != null}]];     //true
+        if (isLogin) {
+            var killId = $(this).attr("sessionid") + "-" + $(this).attr("skuid");
+            var code = $(this).attr("code");
+            var num = $("#numInput").val();
+            location.href = "http://seckill.mall.com/kill?killId=" + killId + "&key=" + code + "&num=" + num;
+        } else {
+            alert("秒杀请先登录");
+        }
+        return false;
+    });
 </script>
 
 </html>

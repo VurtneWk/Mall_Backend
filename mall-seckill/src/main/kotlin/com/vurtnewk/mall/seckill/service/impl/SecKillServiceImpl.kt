@@ -145,7 +145,8 @@ class SecKillServiceImpl(
                     val secKillSkuRedisDto = JSON.parseObject(json, SecKillSkuRedisDto::class.java)
                     //随机码处理
                     val now = Date().time
-                    if (now >= secKillSkuRedisDto.startTime && now <= secKillSkuRedisDto.endTime) {
+                    // 当前时间不在秒杀时间的范围内
+                    if (now <= secKillSkuRedisDto.startTime || now >= secKillSkuRedisDto.endTime) {
                         secKillSkuRedisDto.randomCode = null
                     }
                     return secKillSkuRedisDto
