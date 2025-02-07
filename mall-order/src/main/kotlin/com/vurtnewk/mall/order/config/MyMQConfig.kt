@@ -93,4 +93,16 @@ class MyMQConfig {
     }
 
 
+    @Bean
+    fun orderSecKillOrderQueue(): Queue {
+        return Queue(MQConstants.Order.Queue.ORDER_SECKILL_ORDER_QUEUE, true, false, false)
+    }
+
+    @Bean
+    fun orderSecKillOrderQueueBinding(): Binding {
+        return Binding(
+            MQConstants.Order.Queue.ORDER_SECKILL_ORDER_QUEUE, Binding.DestinationType.QUEUE,
+            MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE, MQConstants.Order.RoutingKey.ORDER_SEC_KILL_ORDER, null
+        )
+    }
 }

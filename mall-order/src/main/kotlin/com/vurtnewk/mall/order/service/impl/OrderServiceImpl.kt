@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl
 import com.vurtnewk.common.constants.MQConstants
 import com.vurtnewk.common.constants.OrderStatus
 import com.vurtnewk.common.dto.mq.OrderDto
+import com.vurtnewk.common.dto.mq.SecKillOrderDto
 import com.vurtnewk.common.excetion.NoStockException
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.common.utils.Query
@@ -258,6 +259,30 @@ class OrderServiceImpl(
             this.baseMapper.updateOrderStatus(payAsyncVo.out_trade_no!!, OrderStatus.ORDER_STATUS_PAYED, PayConstants.ALI_PAY)
         }
         return "success"
+    }
+
+    /**
+     * todo 数据保存不完整
+     */
+    override fun createSecKillOrder(secKillOrderDto: SecKillOrderDto) {
+        // 保存订单信息
+        val orderEntity = OrderEntity(
+            orderSn = secKillOrderDto.orderSn,
+            memberId = secKillOrderDto.memberId
+        )
+
+        // 收货地址等
+        orderEntity.status = OrderStatus.ORDER_STATUS_PENDING_PAYMENT
+        orderEntity.payAmount = secKillOrderDto.seckillPrice.multiply(BigDecimal(secKillOrderDto.num))
+
+        this.save(orderEntity)
+        //保存订单项信息
+        val orderItemEntity = OrderItemEntity(
+            orderSn = secKillOrderDto.orderSn,
+            realAmount = secKillOrderDto.seckillPrice,
+            skuQuantity = secKillOrderDto.num
+        )
+        orderItemService.save(orderItemEntity)
     }
 
     override fun getOrderPay(orderSn: String): PayVo {

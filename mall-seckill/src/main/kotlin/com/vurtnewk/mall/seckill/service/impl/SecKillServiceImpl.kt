@@ -4,6 +4,8 @@ import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.core.toolkit.IdWorker
 import com.vurtnewk.common.constants.CommonConstants
+import com.vurtnewk.common.constants.MQConstants
+import com.vurtnewk.common.dto.mq.SecKillOrderDto
 import com.vurtnewk.common.utils.ext.logError
 import com.vurtnewk.common.utils.ext.logInfo
 import com.vurtnewk.mall.seckill.feign.CouponFeignService
@@ -14,6 +16,7 @@ import com.vurtnewk.mall.seckill.to.SecKillSkuRedisDto
 import com.vurtnewk.mall.seckill.vo.SecKillSessionsWithSkusVo
 import com.vurtnewk.mall.seckill.vo.SkuInfoVo
 import org.redisson.api.RedissonClient
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.BeanUtils
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
@@ -34,6 +37,7 @@ class SecKillServiceImpl(
     private val redisTemplate: StringRedisTemplate,
     private val productFeignService: ProductFeignService,
     private val redissonClient: RedissonClient,
+    private val rabbitTemplate: RabbitTemplate,
 ) : SecKillService {
 
     companion object {
@@ -194,12 +198,29 @@ class SecKillServiceImpl(
 
         //region 开始准备减redis里的库存
         val semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + key)
-        try {
-            val tryAcquire = semaphore.tryAcquire(num, Duration.ofMillis(100))
-            //秒杀成功 快速下单
-            if (tryAcquire) return IdWorker.getTimeId()
-        } catch (e: Exception) {
-            logError("尝试减 redis 库存失败: ${e.message}")
+        val tryAcquire = semaphore.tryAcquire(num)
+        logInfo("tryAcquire ==> $tryAcquire")
+        //秒杀成功 快速下单
+        if (tryAcquire) {
+            val orderSn = IdWorker.getTimeId()
+            val secKillOrderDto = SecKillOrderDto().apply {
+                this.orderSn = orderSn
+                this.memberId = memberRespVo.id
+                this.num = num
+                this.promotionSessionId = secKillSkuRedisDto.promotionSessionId
+                this.skuId = secKillSkuRedisDto.skuId
+                this.seckillPrice = secKillSkuRedisDto.seckillPrice!!
+            }
+            rabbitTemplate.convertAndSend(
+                MQConstants.Order.Exchange.ORDER_EVENT_EXCHANGE,
+                MQConstants.Order.RoutingKey.ORDER_SEC_KILL_ORDER,
+                secKillOrderDto
+            )
+            return orderSn
+        }else{
+            //如果下单失败，应该把之前的占位删除，不然如果因为后续其它原因导致 下单失败，该用户再次抢单也因为已经占位而不能再次抢单
+            //这里是因为：不删除的情况下，如果A用户进行抢单，但是因为库存不够，抢单会失败，但是又有了占位。假如手动修改了库存，会导致这个用户因为站位不能抢单。
+            redisTemplate.delete(redisKey)
         }
         //endregion
         return null

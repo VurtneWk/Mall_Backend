@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.order.service
 
 import com.baomidou.mybatisplus.extension.service.IService
+import com.vurtnewk.common.dto.mq.SecKillOrderDto
 import com.vurtnewk.common.utils.PageUtils
 import com.vurtnewk.mall.order.entity.OrderEntity
 import com.vurtnewk.mall.order.vo.*
@@ -22,5 +23,6 @@ interface OrderService : IService<OrderEntity> {
     fun getOrderPay(orderSn: String): PayVo
     fun queryPageWithItem(params: Map<String, Any>): PageUtils
     fun handlePayResult(payAsyncVo: PayAsyncVo): String
+    fun createSecKillOrder(secKillOrderDto: SecKillOrderDto)
 }
 

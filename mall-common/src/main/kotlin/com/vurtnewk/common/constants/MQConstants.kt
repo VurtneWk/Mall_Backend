@@ -15,12 +15,14 @@ object MQConstants {
         object Queue {
             const val ORDER_DELAY_QUEUE = "order.delay.queue"
             const val ORDER_RELEASE_ORDER_QUEUE = "order.release.order.queue"
+            const val ORDER_SECKILL_ORDER_QUEUE = "order.seckill.order.queue"
         }
 
         object RoutingKey {
             const val ORDER_CREATE_ORDER = "order.create.order"
             const val ORDER_RELEASE_ORDER = "order.release.order"
             const val ORDER_RELEASE_OTHER_WILDCARD = "order.release.other.#"
+            const val ORDER_SEC_KILL_ORDER = "order.seckill.order"
         }
     }
 

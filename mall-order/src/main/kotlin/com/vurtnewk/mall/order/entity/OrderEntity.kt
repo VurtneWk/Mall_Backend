@@ -160,7 +160,7 @@ data class OrderEntity(
     /**
      * 删除状态【0->未删除；1->已删除】
      */
-    var deleteStatus: Int? = null,
+    var deleteStatus: Int = 0,
     /**
      * 下单时使用的积分
      */
