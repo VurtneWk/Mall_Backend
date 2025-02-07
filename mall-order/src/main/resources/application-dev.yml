@@ -11,6 +11,11 @@ spring:
       config:
         import-check:
           enabled: false
+    # =========================== sentinel spring.cloud ===================================
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8333 # 控制台地址
+        port: 8719 # 传输端口 （8719默认的）
   application:
     name: mall-order  # 如果没有名字，nacos里看不到
   #===================== rabbitmq ============================================
@@ -104,3 +109,9 @@ logging:
     com.vurtnewk.mall: debug
   pattern:
     console: "%d{HH:mm:ss} %-5level %-36logger{36} - %msg%n"
+#============================ sentinel的统计信息配置 暴露endpoints ====================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

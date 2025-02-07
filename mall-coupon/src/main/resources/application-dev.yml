@@ -10,6 +10,11 @@ spring:
         server-addr: 127.0.0.1:8848
       config:
         server-addr: 127.0.0.1:8848
+    # =========================== sentinel spring.cloud ===================================
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8333 # 控制台地址
+        port: 8719 # 传输端口 （8719默认的）
   application:
     name: mall-coupon
   config:
@@ -57,3 +62,9 @@ logging:
 #      cluster: default
 #  data-source-proxy-mode: AT
 #  enable-auto-data-source-proxy: false
+#============================ sentinel的统计信息配置 暴露endpoints ====================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

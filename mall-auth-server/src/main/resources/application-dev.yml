@@ -29,3 +29,10 @@ server:
 #  servlet:
 #    session:
 #      timeout: 10800
+
+#============================ sentinel的统计信息配置 暴露endpoints ====================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

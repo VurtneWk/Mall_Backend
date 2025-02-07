@@ -32,6 +32,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--  actuator   -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
         <!--  导入ES的API -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>

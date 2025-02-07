@@ -5,9 +5,15 @@ spring:
         server-addr: 127.0.0.1:8848
       config:
         server-addr: 127.0.0.1:8848
+    # =========================== sentinel spring.cloud ===================================
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8333 # 控制台地址
+        port: 8719 # 传输端口 （8719默认的）
   config:
     import:
       - nacos:third-party.properties?refreshEnabled=true&group=DEFAULT_GROUP
+
   # 如果没有名字，nacos里看不到
   application:
     name: mall-third-party
@@ -15,3 +21,9 @@ spring:
 
 server:
   port: 5600
+#============================ sentinel的统计信息配置 暴露endpoints ====================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
