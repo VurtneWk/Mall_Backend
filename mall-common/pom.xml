@@ -94,6 +94,11 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
         </dependency>
+        <!--    Sentinel 以流量为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性。     -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
 
         <!--     自定义jsr303 规则需要导入的包
            这个没有 URL 规则
@@ -116,11 +121,11 @@
             <artifactId>spring-boot-starter-logging</artifactId>
             <version>3.4.1</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.zalando</groupId>-->
-<!--            <artifactId>logbook-spring-boot-starter</artifactId>-->
-<!--            <version>3.10.0</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.zalando</groupId>-->
+        <!--            <artifactId>logbook-spring-boot-starter</artifactId>-->
+        <!--            <version>3.10.0</version>-->
+        <!--        </dependency>-->
         <!--kotlin-->
 
 
@@ -174,10 +179,10 @@
                     </execution>
                 </executions>
                 <configuration>
-<!--                    <compilerPlugins>-->
-<!--                        <plugin>kotlinx-serialization</plugin>-->
-<!--                    </compilerPlugins>-->
-<!--                    <jvmTarget>1.8</jvmTarget>-->
+                    <!--                    <compilerPlugins>-->
+                    <!--                        <plugin>kotlinx-serialization</plugin>-->
+                    <!--                    </compilerPlugins>-->
+                    <!--                    <jvmTarget>1.8</jvmTarget>-->
                     <!--                    &lt;!&ndash; 添加 allopen 插件 &ndash;&gt;-->
                     <!--                    <compilerPlugins>-->
                     <!--                        <plugin>all-open</plugin>-->

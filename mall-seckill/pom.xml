@@ -77,6 +77,12 @@
             <optional>true</optional> <!--这个要加了才有用-->
         </dependency>
 
+        <!--  actuator   -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

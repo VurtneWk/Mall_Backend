@@ -7,7 +7,12 @@ spring:
         server-addr: 127.0.0.1:8848
         import-check:
           enabled: false
-   # =========================== redis ===================================
+    # =========================== sentinel spring.cloud ===================================
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8333 # 控制台地址
+        port: 8719 # 传输端口 （8719默认的）
+    # =========================== redis ===================================
   data:
     redis:
      host: 127.0.0.1
@@ -52,3 +57,9 @@ server:
 logging:
   level:
     com.vurtnewk.mall: debug
+#============================ sentinel的统计信息配置 暴露endpoints ====================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
