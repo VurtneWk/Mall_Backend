@@ -1,5 +1,8 @@
 package com.vurtnewk.mall.seckill.service.impl
 
+import com.alibaba.csp.sentinel.SphU
+import com.alibaba.csp.sentinel.annotation.SentinelResource
+import com.alibaba.csp.sentinel.slots.block.BlockException
 import com.alibaba.fastjson2.JSON
 import com.alibaba.fastjson2.TypeReference
 import com.baomidou.mybatisplus.core.toolkit.IdWorker
@@ -20,9 +23,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.BeanUtils
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.stereotype.Service
-import java.time.Duration
-import java.util.Date
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
@@ -113,33 +114,53 @@ class SecKillServiceImpl(
 
     /**
      * 获取当前要上架的商品数据
+     *
+     * blockHandler 函数会在原方法被限流/降级/系统保护的时候调用，而 fallback 函数会针对所有类型的异常
+     *
+     * https://github.com/alibaba/Sentinel/wiki/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8#%E5%AE%9A%E4%B9%89%E8%B5%84%E6%BA%90
      */
+    @SentinelResource(value = "getCurrentSecKillSkusResource", blockHandler = "blockHandler")
     override fun getCurrentSecKillSkus(): List<SecKillSkuRedisDto> {
-        val now = Date().time
-        // //获取所有指定key格式的列表
-        val keys = redisTemplate.keys("$SESSIONS_CACHE_PREFIX*")
-        val list = mutableListOf<SecKillSkuRedisDto>()
-        keys.forEach { key ->
-            //key的格式： seckill:sessions:1738332000000_1738335600000
-            val splitTime = key.replace(SESSIONS_CACHE_PREFIX, "")
-                .split(CommonConstants.UNDERLINE)
-            if (now >= splitTime[0].toLong() && now <= splitTime[1].toLong()) {
-                // 获取这个秒杀场次的需要的所有商品信息
-                val range = redisTemplate.opsForList().range(key, -100, 100)
-                // 存的具体商品信息
-                val boundHashOps = redisTemplate.boundHashOps<String, String>(SKU_KILL_CACHE_PREFIX)
-                range ?: return@forEach
-                val skusJsonList = boundHashOps.multiGet(range)
-                skusJsonList ?: return@forEach
-                skusJsonList.forEach { itemJson ->
+        try {
+            //限流
+            SphU.entry("seckillSkus").use {
+                val now = Date().time
+                // //获取所有指定key格式的列表
+                val keys = redisTemplate.keys("$SESSIONS_CACHE_PREFIX*")
+                val list = mutableListOf<SecKillSkuRedisDto>()
+                keys.forEach { key ->
+                    //key的格式： seckill:sessions:1738332000000_1738335600000
+                    val splitTime = key.replace(SESSIONS_CACHE_PREFIX, "")
+                        .split(CommonConstants.UNDERLINE)
+                    if (now >= splitTime[0].toLong() && now <= splitTime[1].toLong()) {
+                        // 获取这个秒杀场次的需要的所有商品信息
+                        val range = redisTemplate.opsForList().range(key, -100, 100)
+                        // 存的具体商品信息
+                        val boundHashOps = redisTemplate.boundHashOps<String, String>(SKU_KILL_CACHE_PREFIX)
+                        range ?: return@forEach
+                        val skusJsonList = boundHashOps.multiGet(range)
+                        skusJsonList ?: return@forEach
+                        skusJsonList.forEach { itemJson ->
 //                    secKillSkuRedisDto.randomCode = "" //当前秒杀是已经开始了 就可以带随机码
-                    // ???? 教程中这里直接使用map收集，return了集合，上面的keys如果有多个是有问题的啊 ????
-                    list.add(JSON.parseObject(itemJson, SecKillSkuRedisDto::class.java))
+                            // ???? 教程中这里直接使用map收集，return了集合，上面的keys如果有多个是有问题的啊 ????
+                            list.add(JSON.parseObject(itemJson, SecKillSkuRedisDto::class.java))
+                        }
+                    }
                 }
+                return list
             }
+        } catch (e: BlockException) {
+            //
+            logError("资源被限流 ${e.message}")
         }
-        return list
+        return emptyList()
     }
+    @Suppress("unused")
+    fun blockHandler(exception: BlockException): List<SecKillSkuRedisDto> {
+        logError("blockHandler => ${exception.message}")
+        return emptyList()
+    }
+
 
     override fun getSkuSecKillInfo(skuId: Long): SecKillSkuRedisDto? {
         val boundHashOps = redisTemplate.boundHashOps<String, String>(SKU_KILL_CACHE_PREFIX)
@@ -217,7 +238,7 @@ class SecKillServiceImpl(
                 secKillOrderDto
             )
             return orderSn
-        }else{
+        } else {
             //如果下单失败，应该把之前的占位删除，不然如果因为后续其它原因导致 下单失败，该用户再次抢单也因为已经占位而不能再次抢单
             //这里是因为：不删除的情况下，如果A用户进行抢单，但是因为库存不够，抢单会失败，但是又有了占位。假如手动修改了库存，会导致这个用户因为站位不能抢单。
             redisTemplate.delete(redisKey)
