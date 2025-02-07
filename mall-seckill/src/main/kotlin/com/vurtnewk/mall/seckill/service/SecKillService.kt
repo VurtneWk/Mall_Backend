@@ -11,4 +11,5 @@ interface SecKillService {
     fun uploadSecKillSkuLatest3Days()
     fun getCurrentSecKillSkus(): List<SecKillSkuRedisDto>
     fun getSkuSecKillInfo(skuId: Long): SecKillSkuRedisDto?
+    fun kill(killId: String, key: String, num: Int): String?
 }

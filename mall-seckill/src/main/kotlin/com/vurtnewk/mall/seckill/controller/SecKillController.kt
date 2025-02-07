@@ -41,9 +41,8 @@ class SecKillController(private val secKillService: SecKillService) {
         @RequestParam("key") key: String,
         @RequestParam("num") num: Int,
     ): R {
-
-
-        return R.ok()
+        val orderSn = secKillService.kill(killId, key, num)
+        return R.ok().putData(orderSn)
     }
 
 }

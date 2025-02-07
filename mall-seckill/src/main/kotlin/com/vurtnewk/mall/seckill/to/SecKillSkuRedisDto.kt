@@ -33,7 +33,7 @@ data class SecKillSkuRedisDto(
     /**
      * 每人限购数量
      */
-    var seckillLimit: BigDecimal? = null,
+    var seckillLimit: Int? = null,
     /**
      * 排序
      */
