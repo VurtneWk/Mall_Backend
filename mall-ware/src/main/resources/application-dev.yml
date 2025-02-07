@@ -83,3 +83,7 @@ management:
     web:
       exposure:
         include: "*"
+#============================ 开启 feign 的 sentinel 功能 ====================================
+feign:
+  sentinel:
+    enabled: true

@@ -1,6 +1,7 @@
 package com.vurtnewk.mall.product.feign
 
 import com.vurtnewk.common.utils.R
+import com.vurtnewk.mall.product.feign.fallback.SecKillFeignServiceFallback
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable
  * @author   vurtnewk
  * @since    2025/2/6 23:40
  */
-@FeignClient("mall-seckill")
+// 远程失败调用后 fallback
+@FeignClient("mall-seckill" , fallback = SecKillFeignServiceFallback::class)
 interface SecKillFeignService {
 
     /**
