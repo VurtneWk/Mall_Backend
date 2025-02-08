@@ -56,6 +56,7 @@ server:
 logging:
   level:
     com.vurtnewk.mall: debug
+    org.springframework.cloud.openfeign: debug #开启openfeign的debug日志
   pattern:
     console: "%d{HH:mm:ss} %-5level %-36logger{36} - %msg%n"
 #logbook:
@@ -93,8 +94,16 @@ mall:
 ##      cluster: default
 ##  data-source-proxy-mode: AT
 #  enable-auto-data-source-proxy: false
-#============================ sentinel的统计信息配置 暴露endpoints ====================================
+
 management:
+  #============================ zipkin ====================================
+  tracing:
+    sampling:
+      probability: 1
+  zipkin:
+    tracing:
+      endpoint: http://127.0.0.1:9411/api/v2/spans
+  #============================ sentinel的统计信息配置 暴露endpoints ====================================
   endpoints:
     web:
       exposure:

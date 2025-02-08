@@ -42,8 +42,15 @@ logging:
 
 server:
   port: 5200
-#============================ sentinel的统计信息配置 暴露endpoints ====================================
 management:
+  #============================ zipkin ====================================
+  tracing:
+    sampling:
+      probability: 1
+  zipkin:
+    tracing:
+      endpoint: http://127.0.0.1:9411/api/v2/spans
+  #============================ sentinel的统计信息配置 暴露endpoints ====================================
   endpoints:
     web:
       exposure:
